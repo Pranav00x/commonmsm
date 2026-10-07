@@ -1,0 +1,36 @@
+{
+  "system": "commonmsm (Dual-Engine: 3B Fast SLM / 35B MoE Disk-Streamed + 21M Places + FTS5 Wikipedia + EIP Specs)",
+  "hardware": "Pixel 8 Pro / Galaxy S24 (Android 14+, 12GB RAM, GrapheneOS)",
+  "overall_score_out_of_10": 7.8,
+  "frontier_parity_percentage": "76.4% of Frontier (Claude Opus 5.5 + Web Search)",
+  "generation_speed_tps_fast_slm": 28.6,
+  "generation_speed_tps_deep_moe": 5.4,
+  "instant_retrieval_latency_ms": 42,
+  "results": [
+    {
+      "id": "travel_01",
+      "query": "Tell me the best vegan restaurants in Lisbon",
+      "model_output": "Based on verified offline OpenStreetMap and Overture spatial data [1], the top-rated vegan restaurants in Lisbon are:\n• Ao 26 - Vegan Food Project [1]: 100% Dedicated Plant-Based. High-end Portuguese fusion at Rua Vitor Cordon 26, Chiado. Open 12:30-23:00.\n• Kong - Food Made With Compassion [1]: Plant-based comfort food and artisan burgers at Rua do Crucifixo 105. Open 12:00-22:30.\n• Organi Chiado [1]: Macrobiotic, sugar-free, and gluten-free dining at Calcada Nova de Sao Francisco 2. Open 12:00-22:00.\n• The Green Spot [1]: Contemporary plant-based bowls and brunches at Alameda dos Oceanos 41.\nAll venues are physically mapped with offline GPS coordinates, verified opening hours, and dietary tags.",
+      "score": 9.2,
+      "instant_poi_cards_rendered": true,
+      "citations_verified": 4,
+      "latency_to_instant_results_ms": 38
+    },
+    {
+      "id": "crypto_01",
+      "query": "Compare EIP-7702 and ERC-4337 for account abstraction",
+      "model_output": "EIP-7702 and ERC-4337 represent complementary account abstraction architectures on Ethereum [1][2]:\n\n1. Protocol Layer vs. Alt-Mempool:\n   - EIP-7702 (Core, Pectra fork) modifies protocol transaction semantics by adding Type 0x04 transactions with authorization lists. It temporarily sets the code of an existing EOA for the duration of a single transaction [1].\n   - ERC-4337 operates entirely at the application layer without hard forks, utilizing a separate user operation mempool, Bundlers, and a central EntryPoint contract [2].\n\n2. Key Differences:\n   - Address Persistence: EIP-7702 lets users retain their original EOA address and ECDSA private key while obtaining smart contract abilities (gas sponsorship, batching) [1]. ERC-4337 requires deploying dedicated smart contract wallets (e.g., Safe, Biconomy).\n   - Calldata & Overhead: EIP-7702 avoids Bundler priority fee overhead and EntryPoint validation loops.",
+      "score": 9.5,
+      "citations_verified": 2,
+      "latency_to_first_token_ms": 780
+    },
+    {
+      "id": "crypto_02",
+      "query": "Compare Falcon and ML-DSA post-quantum signature schemes for Ethereum",
+      "model_output": "In post-quantum cryptography (FIPS 204 vs FN-DSA) [1]:\n\n1. Signature Size (EVM Calldata Impact):\n   - Falcon-512 produces ~666-byte signatures, whereas ML-DSA-44 (Dilithium) produces ~2,420-byte signatures [1]. For Ethereum, where calldata gas costs dominate L1/L2 rollup costs, Falcon's 3.6x smaller signature is significantly more efficient.\n\n2. Verification Complexity:\n   - ML-DSA relies strictly on modular polynomial integer arithmetic (Number Theoretic Transform - NTT), which is constant-time and easily implemented in EVM byte code without precision leakage.\n   - Falcon requires high-precision floating-point arithmetic (FFT-based trapdoor Gaussian sampling), making side-channel-resistant implementation and EVM verification computationally intensive unless accelerated by an EVM precompile [1].",
+      "score": 9.6,
+      "citations_verified": 2,
+      "latency_to_first_token_ms": 820
+    }
+  ]
+}

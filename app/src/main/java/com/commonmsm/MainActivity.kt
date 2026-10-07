@@ -1,0 +1,68 @@
+package com.commonmsm
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import com.commonmsm.data.ModelStorageManager
+import com.commonmsm.engine.InferenceController
+import com.commonmsm.ui.screens.ChatScreen
+import com.commonmsm.ui.screens.ModelManagerScreen
+import com.commonmsm.ui.theme.CommonMsmTheme
+import com.commonmsm.ui.theme.DarkBackground
+
+class MainActivity : ComponentActivity() {
+
+    private lateinit var inferenceController: InferenceController
+    private lateinit var storageManager: ModelStorageManager
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        inferenceController = InferenceController(this)
+        storageManager = ModelStorageManager(this)
+
+        setContent {
+            CommonMsmTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = DarkBackground
+                ) {
+                    var currentScreen by remember { mutableStateOf("chat") }
+                    var isMoEActive by remember { mutableStateOf(false) }
+
+                    val storageReport = remember { storageManager.getStorageReport() }
+                    val discoveredModels = remember { storageManager.scanAvailableModels() }
+
+                    if (currentScreen == "chat") {
+                        ChatScreen(
+                            inferenceController = inferenceController,
+                            onOpenSettings = { currentScreen = "settings" }
+                        )
+                    } else {
+                        ModelManagerScreen(
+                            storageReport = storageReport,
+                            discoveredModels = discoveredModels,
+                            isMoEActive = isMoEActive,
+                            onToggleMoE = { active ->
+                                isMoEActive = active
+                                if (discoveredModels.isNotEmpty()) {
+                                    val target = discoveredModels.find { it.isMoE == active } ?: discoveredModels.first()
+                                    inferenceController.configureModel(target.file.absolutePath, active)
+                                }
+                            },
+                            onSelectModel = { model ->
+                                isMoEActive = model.isMoE
+                                inferenceController.configureModel(model.file.absolutePath, model.isMoE)
+                                currentScreen = "chat"
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}

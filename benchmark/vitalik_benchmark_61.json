@@ -1,0 +1,101 @@
+{
+  "benchmark_name": "Vitalik-Style 61 Offline Research Evaluation Suite",
+  "version": "1.0.0",
+  "categories": {
+    "travel_and_places": [
+      {
+        "id": "travel_01",
+        "query": "Tell me the best vegan restaurants in Lisbon",
+        "gold_entities": ["Ao 26 - Vegan Food Project", "Kong", "Organi Chiado", "The Green Spot"],
+        "min_expected_places": 3
+      },
+      {
+        "id": "travel_02",
+        "query": "What are the best vegan restaurants in Berlin?",
+        "gold_entities": ["Lucky Leek", "1990 Vegan Living", "Brammibal's Donuts"],
+        "min_expected_places": 2
+      },
+      {
+        "id": "travel_03",
+        "query": "Find plant-based restaurants in Buenos Aires Palermo",
+        "gold_entities": ["Sacro", "Buenos Aires Verde"],
+        "min_expected_places": 2
+      },
+      {
+        "id": "travel_04",
+        "query": "Best vegan ramen or dining in Tokyo",
+        "gold_entities": ["Ain Soph. Soar", "T's Tantan"],
+        "min_expected_places": 2
+      },
+      {
+        "id": "travel_05",
+        "query": "Where can I find a pharmacy near Chiado in Lisbon?",
+        "gold_entities": ["Farmacia Chiado", "Farmacia Barreto"],
+        "min_expected_places": 1
+      }
+    ],
+    "crypto_and_eips": [
+      {
+        "id": "crypto_01",
+        "query": "Compare EIP-7702 and ERC-4337 for account abstraction",
+        "key_facts": [
+          "EIP-7702 sets temporary contract code on EOA for a single transaction",
+          "ERC-4337 uses alternative mempool and EntryPoint contract without consensus changes",
+          "EIP-7702 introduces transaction type 0x04 with authorization list",
+          "ERC-4337 uses UserOperations bundled by Bundlers"
+        ]
+      },
+      {
+        "id": "crypto_02",
+        "query": "Compare Falcon and ML-DSA post-quantum signature schemes for Ethereum",
+        "key_facts": [
+          "Falcon signatures are compact (~666 bytes)",
+          "ML-DSA (Dilithium) signatures are ~2420 bytes",
+          "Falcon requires floating-point arithmetic (FFT-based trapdoor sampling)",
+          "ML-DSA relies on modular integer lattice arithmetic",
+          "Smaller signature size of Falcon is critical for EVM calldata savings"
+        ]
+      },
+      {
+        "id": "crypto_03",
+        "query": "Explain Proposer-Builder Separation (PBS) in Ethereum consensus",
+        "key_facts": [
+          "Separates block building from block proposing",
+          "Mitigates MEV centralization",
+          "Validators auction off block building rights to specialized builders",
+          "Implemented via MEV-Boost or in-protocol ePBS"
+        ]
+      },
+      {
+        "id": "crypto_04",
+        "query": "What are blob transactions in EIP-4844?",
+        "key_facts": [
+          "Introduced transaction type 0x03",
+          "Carries data blobs up to 128KB",
+          "Data pruned after ~18 days on consensus layer",
+          "Uses KZG polynomial commitments and BLOBHASH opcode"
+        ]
+      }
+    ],
+    "obscure_entities_and_science": [
+      {
+        "id": "science_01",
+        "query": "Compare Verkle trees and binary state trees for Ethereum statelessness",
+        "key_facts": [
+          "Verkle trees use vector commitments (KZG) for small proof sizes (~1KB)",
+          "Binary Merkle trees have simpler cryptographic assumptions (hashes) but larger proofs (~100KB)",
+          "Binary trees avoid trusted setup and elliptic curve cryptography"
+        ]
+      },
+      {
+        "id": "science_02",
+        "query": "How does recursive proof composition work in Halo2 without a trusted setup?",
+        "key_facts": [
+          "Uses pasta curves (Pallas and Vesta) in cycle",
+          "Employs bulletproofs-style inner product argument (IPA)",
+          "Accumulation scheme defers expensive verification checks"
+        ]
+      }
+    ]
+  }
+}

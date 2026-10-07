@@ -1,0 +1,29 @@
+{
+  "system": "Baseline 1.7B Model (Qwen3-1.7B / Llama-3.2-1B, zero external knowledge base)",
+  "hardware": "Pixel 8 Pro (Tensor G3, 12GB RAM)",
+  "overall_score_out_of_10": 2.6,
+  "generation_speed_tps": 11.2,
+  "results": [
+    {
+      "id": "travel_01",
+      "query": "Tell me the best vegan restaurants in Lisbon",
+      "model_output": "Some great vegan restaurants in Lisbon include Bloom, Vegana, The Green Spot, and Buddha Bar. They serve fresh vegan bowls and salads near downtown.",
+      "score": 2.0,
+      "failure_analysis": "Hallucinated non-existent restaurants ('Bloom', 'Vegana', 'Buddha Bar') due to lack of local spatial knowledge base. Provided no addresses or verified opening hours."
+    },
+    {
+      "id": "crypto_01",
+      "query": "Compare EIP-7702 and ERC-4337 for account abstraction",
+      "model_output": "EIP-7702 and ERC-4337 both help with smart contract wallets. EIP-7702 creates smart contracts for everyone while ERC-4337 changes the consensus rules of Ethereum to allow abstraction.",
+      "score": 3.0,
+      "failure_analysis": "Factually incorrect: ERC-4337 expressly DOES NOT change consensus rules (it uses an alt-mempool). Missed transaction type 0x04, authorization lists, and EOA temporary code delegation."
+    },
+    {
+      "id": "crypto_02",
+      "query": "Compare Falcon and ML-DSA post-quantum signature schemes for Ethereum",
+      "model_output": "Falcon and ML-DSA are both quantum-resistant signature algorithms. ML-DSA is faster and smaller than Falcon, which makes it better for EVM.",
+      "score": 1.5,
+      "failure_analysis": "Direct contradiction of ground truth: Falcon produces much smaller signatures (~666 bytes) than ML-DSA (~2,420 bytes). Confused cryptographic properties entirely."
+    }
+  ]
+}
