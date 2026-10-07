@@ -97,7 +97,7 @@ fun PlaceCard(
                 }
 
                 if (place.distanceMeters != null) {
-                    BrutalCircularStamp(text = "${place.distanceMeters.toInt()}M", color = BrutalBlue)
+                    BrutalCircularStamp(text = com.commonmsm.engine.SpatialMath.formatDistance(place.distanceMeters.toDouble()), color = BrutalBlue)
                 }
             }
 

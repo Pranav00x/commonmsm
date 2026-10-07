@@ -21,6 +21,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -36,12 +37,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.commonmsm.data.DatabaseManager
 import com.commonmsm.data.models.Citation
+import com.commonmsm.data.models.ResearchSession
+import com.commonmsm.engine.AirGapExporter
 import com.commonmsm.engine.InferenceController
 import com.commonmsm.ui.components.CitationChip
+import com.commonmsm.ui.components.EipCard
 import com.commonmsm.ui.components.MarkdownRenderer
 import com.commonmsm.ui.components.PerformanceHUD
 import com.commonmsm.ui.components.PlaceCard
+import com.commonmsm.ui.screens.NotebookSheet
 import com.commonmsm.ui.theme.*
 import kotlinx.coroutines.launch
 
@@ -63,6 +69,8 @@ fun ChatScreen(
     val messages = remember { mutableStateListOf<ChatMessage>() }
     val listState = rememberLazyListState()
     var selectedCitation by remember { mutableStateOf<Citation?>(null) }
+    var showNotebook by remember { mutableStateOf(false) }
+    var savedSessions by remember { mutableStateOf<List<ResearchSession>>(emptyList()) }
 
     val speechLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -156,22 +164,47 @@ fun ChatScreen(
                         }
                     }
 
-                    // Circular Action Button
-                    Box(
-                        modifier = Modifier
-                            .size(38.dp)
-                            .clip(CircleShape)
-                            .background(BrutalDarkSurface)
-                            .border(2.dp, BrutalBorder, CircleShape)
-                            .clickable { onOpenSettings() },
-                        contentAlignment = Alignment.Center
+                    // Circular Action Buttons (Notebook + Settings)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(
-                            Icons.Default.Settings,
-                            contentDescription = "Config",
-                            tint = BrutalWhite,
-                            modifier = Modifier.size(18.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .size(38.dp)
+                                .clip(CircleShape)
+                                .background(BrutalDarkSurface)
+                                .border(2.dp, BrutalBorder, CircleShape)
+                                .clickable {
+                                    savedSessions = DatabaseManager.getRecentSessions(30)
+                                    showNotebook = true
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Default.MenuBook,
+                                contentDescription = "Notebook",
+                                tint = BrutalWhite,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .size(38.dp)
+                                .clip(CircleShape)
+                                .background(BrutalDarkSurface)
+                                .border(2.dp, BrutalBorder, CircleShape)
+                                .clickable { onOpenSettings() },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Default.Settings,
+                                contentDescription = "Config",
+                                tint = BrutalWhite,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -191,10 +224,13 @@ fun ChatScreen(
                         .padding(bottom = 10.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    CircularBrutalChip("📍 NEAR ME (GNSS)") { sendQuery("Find the best vegan places near me using offline GNSS") }
                     CircularBrutalChip("LISBON VEGAN") { sendQuery("Tell me the best vegan restaurants in Lisbon") }
                     CircularBrutalChip("EIP-7702 // 4337") { sendQuery("Compare EIP-7702 and ERC-4337 for account abstraction") }
                     CircularBrutalChip("FALCON VS ML-DSA") { sendQuery("Compare Falcon and ML-DSA post-quantum signature schemes for Ethereum") }
-                    CircularBrutalChip("BERLIN VEGAN") { sendQuery("What are the best vegan restaurants in Berlin?") }
+                    CircularBrutalChip("EIP-4844 BLOBS") { sendQuery("How does EIP-4844 reduce Layer 2 rollup transaction costs?") }
+                    CircularBrutalChip("PBS // ePBS") { sendQuery("What are the centralization trade-offs of Proposer-Builder Separation (PBS)?") }
+                    CircularBrutalChip("TOKYO VEGAN") { sendQuery("Find the best vegan restaurants in Tokyo") }
                 }
 
                 // Circular Pill Input Field
@@ -394,6 +430,16 @@ fun ChatScreen(
                     onDismiss = { selectedCitation = null }
                 )
             }
+
+            if (showNotebook) {
+                NotebookSheet(
+                    sessions = savedSessions,
+                    onSelectSession = { session ->
+                        sendQuery(session.query)
+                    },
+                    onDismiss = { showNotebook = false }
+                )
+            }
         }
     }
 }
@@ -526,6 +572,22 @@ private fun AssistantBrutalCard(
                 Spacer(modifier = Modifier.height(10.dp))
             }
 
+            // Instant Verified EIP Specifications Section
+            if (update != null && update.instantSpecs.isNotEmpty()) {
+                Text(
+                    text = "⚙️ FORMAL_SPEC_MATCHES (${update.instantSpecs.size} FOUND)",
+                    color = BrutalOrange,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 13.sp
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                update.instantSpecs.take(3).forEach { spec ->
+                    EipCard(spec = spec)
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+
             // Synthesized Body Text
             if (msg.text.isNotBlank()) {
                 MarkdownRenderer(text = msg.text)
@@ -596,12 +658,16 @@ private fun AssistantBrutalCard(
                             .background(BrutalBlack)
                             .border(1.5.dp, if (isCopied) BrutalNeonGreen else BrutalBorder, CircleShape)
                             .clickable {
-                                val fullReport = buildString {
-                                    append(msg.text)
-                                    if (update?.report?.citations?.isNotEmpty() == true) {
-                                        append("\n\n---\nVERIFIED OFFLINE CITATIONS:\n")
-                                        update.report.citations.forEach { c ->
-                                            append("[${c.index}] ${c.title} (${c.source}): ${c.snippet}\n")
+                                val fullReport = if (update?.report != null) {
+                                    AirGapExporter.exportToMarkdown(update.report)
+                                } else {
+                                    buildString {
+                                        append(msg.text)
+                                        if (update?.report?.citations?.isNotEmpty() == true) {
+                                            append("\n\n---\nVERIFIED OFFLINE CITATIONS:\n")
+                                            update.report.citations.forEach { c ->
+                                                append("[${c.index}] ${c.title} (${c.source}): ${c.snippet}\n")
+                                            }
                                         }
                                     }
                                 }

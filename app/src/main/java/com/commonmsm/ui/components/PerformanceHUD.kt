@@ -44,12 +44,24 @@ fun PerformanceHUD(
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.sp
             )
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(BrutalNeonGreen)
-                    .size(8.dp)
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (stats.deviceTempCelsius != null) {
+                    Text(
+                        text = "${stats.deviceTempCelsius.toInt()}°C // ${stats.thermalStatus ?: "NOMINAL"}",
+                        color = if ((stats.deviceTempCelsius ?: 0f) > 42f) BrutalRed else BrutalNeonGreen,
+                        fontSize = 9.sp,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Black
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                }
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(if ((stats.deviceTempCelsius ?: 0f) > 42f) BrutalRed else BrutalNeonGreen)
+                        .size(8.dp)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))

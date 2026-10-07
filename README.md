@@ -27,6 +27,11 @@ commonmsm solves this through a **Dual-Engine Hybrid Intelligence Architecture**
   - **📚 2.0 Million Encyclopedic Articles**: English Wikipedia (FineWiki) compressed into an inverted SQLite FTS5 database with BM25 ranking and logarithmic pageview prestige.
   - **⚙️ Complete Ethereum & Crypto Specs**: All 1,208 EIPs and ERCs (including EIP-7702, ERC-4337, EIP-4844, Pectra fork specs) and NIST Post-Quantum standards (ML-KEM, ML-DSA, Falcon).
 - **Zero Hallucination Grounding**: All model outputs are cited with verified footnote chips (`[1]`, `[2]`), allowing users to tap and read the original offline source passage directly on their device.
+- **🌡️ Hardware Thermal Governor**: Actively interrogates `PowerManager.getThermalStatus()` and battery thermals to dynamically scale native CPU inference threads and protect mobile hardware longevity.
+- **📖 On-Disk N-Gram Language Model**: Zero-RAM flash-resident N-gram continuation engine (~100B parameter capability) directly fulfilling Vitalik's architectural suggestion for mobile phones.
+- **🛡️ Air-Gapped Cleanroom Exporter**: Generates publication-ready Markdown reports with SHA-256 integrity digests and air-gapped QR transfer envelopes for cleanroom inspection.
+- **🧭 Offline SpatialMath GNSS Engine**: Implements on-device Haversine distance and 8-point compass bearing calculations for 21.1M global POIs without internet.
+- **📚 Persistent Research Notebook**: Local SQLite session store enabling researchers to bookmark, inspect, and reload multi-hop investigations across app restarts.
 - **⚡ Brutalist & Circular UI (Zero Gradients)**:
   - **Zero Color Gradients**: Strictly flat, solid-color styling built on true OLED pitch black (`#000000`) for maximum battery efficiency on mobile screens.
   - **Circular Telemetry Dials**: Real-time circular gauges for token speed (t/s), memory allocation (MB), and storage quota (50GB limit).

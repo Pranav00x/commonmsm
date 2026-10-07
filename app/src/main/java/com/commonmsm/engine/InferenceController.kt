@@ -23,6 +23,8 @@ class InferenceController(private val context: Context) {
     private val cryptoRepo = CryptoSpecsRepository()
     private val ragSynthesizer = RAGSynthesizer()
     private val citationVerifier = CitationVerifier()
+    private val thermalGovernor = ThermalGovernor(context)
+    private val ngramEngine = NgramDiskEngine()
 
     private var activeModelPath: String? = null
     private var isMoEEnabled: Boolean = false
@@ -30,10 +32,11 @@ class InferenceController(private val context: Context) {
     fun configureModel(modelPath: String, isMoE: Boolean) {
         this.activeModelPath = modelPath
         this.isMoEEnabled = isMoE
+        val thermal = thermalGovernor.getSnapshot(if (isMoE) 6 else 4)
         if (LlamaEngineBridge.isAvailable()) {
             LlamaEngineBridge.nativeInitEngine(
                 modelPath = modelPath,
-                nThreads = if (isMoE) 6 else 4,
+                nThreads = thermal.recommendedThreads,
                 nCtx = 4096,
                 enableMoeStreaming = isMoE,
                 moeCacheMb = 4096L
@@ -174,6 +177,7 @@ class InferenceController(private val context: Context) {
         val verifiedCitations = citationVerifier.extractAndVerifyCitations(fullAnswer, sources)
 
         val memoryUsedMb = (Debug.getPss() / 1024L).coerceAtLeast(180L)
+        val thermal = thermalGovernor.getSnapshot()
 
         val stats = ExecutionStats(
             retrievalTimeMs = retrievalTime,
@@ -182,7 +186,9 @@ class InferenceController(private val context: Context) {
             tokensGenerated = tokenCount,
             tokensPerSecond = tps,
             memoryUsedMb = memoryUsedMb,
-            moeCacheHitRate = if (isMoEEnabled) 0.84 else null
+            moeCacheHitRate = if (isMoEEnabled) 0.84 else null,
+            deviceTempCelsius = thermal.temperatureCelsius,
+            thermalStatus = thermal.status
         )
 
         val report = ResearchReport(
@@ -194,6 +200,18 @@ class InferenceController(private val context: Context) {
             synthesizedText = fullAnswer,
             citations = verifiedCitations,
             stats = stats
+        )
+
+        // Persist to local offline research notebook
+        com.commonmsm.data.DatabaseManager.saveResearchSession(
+            com.commonmsm.data.models.ResearchSession(
+                id = System.currentTimeMillis().toString(),
+                query = query,
+                summary = fullAnswer.take(160) + if (fullAnswer.length > 160) "..." else "",
+                intent = decision.intent.name,
+                sourcesCount = sources.size,
+                timestamp = System.currentTimeMillis()
+            )
         )
 
         emit(

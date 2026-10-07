@@ -100,3 +100,28 @@ An LLM alone cannot answer "What is the best vegan restaurant in Lisbon?" or pro
    - Wiki DB: $21.3\text{ GB}$
    - Crypto DB: $19\text{ MB}$
    - **Total Storage**: **$\mathbf{26.4\text{ GB}}$** (Fast tier) / **$\mathbf{36.6\text{ GB}}$** (MoE tier), fitting comfortably within the standard $\le 50\text{ GB}$ mobile storage budget.
+
+---
+
+## 5. Advanced Edge Resilience & Cleanroom Protocols
+
+### 5.1. Dynamic Hardware Thermal Governor (`ThermalGovernor.kt`)
+Mobile devices during sustained multi-hop inference can heat up. The thermal governor polls `PowerManager.getThermalStatus()` and battery thermistors:
+- **`NOMINAL` / `LIGHT`**: Normal execution (4–6 threads).
+- **`MODERATE`**: Native threads decremented to prevent thermal ceiling crossing.
+- **`SEVERE` / `CRITICAL`**: Native threads halved, cooling interval injected between token generation passes.
+
+### 5.2. On-Disk N-Gram Language Model Engine (`NgramDiskEngine.kt`)
+Directly implementing Vitalik Buterin's architectural proposal for mobile phones: an on-disk N-gram engine storing tens of millions of phrase transitions directly on flash storage. Operates with zero active RAM overhead, performing memory-mapped binary lookups for fast perplexity estimation and token continuation.
+
+### 5.3. Geodesic SpatialMath GNSS Engine (`SpatialMath.kt`)
+Computes exact Haversine great-circle distance and 8-point compass bearing (`N`, `NE`, `E`, `SE`, `S`, `SW`, `W`, `NW`) from the device's hardware GNSS coordinates directly to any of the 21.1M local POIs without internet map SDKs.
+
+### 5.4. Air-Gapped Cleanroom Exporter (`AirGapExporter.kt`)
+For high-assurance research on air-gapped GrapheneOS hardware:
+- Computes deterministic SHA-256 integrity digests of the synthesized text.
+- Exports publication-grade Markdown reports.
+- Packages output into standard air-gap transfer envelopes (`=== BEGIN COMMONMSM AIR-GAP ENVELOPE v1 ===`) for optical QR transfer across physical air gaps.
+
+### 5.5. Persistent SQLite Research Notebook (`NotebookSheet.kt`)
+All multi-hop queries, grounded evidence snippets, and execution telemetry are recorded in an encrypted/private SQLite table (`research_sessions`), enabling instant session reloading and longitudinal research persistence.

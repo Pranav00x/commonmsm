@@ -283,4 +283,55 @@ object DatabaseManager {
         db.execSQL("INSERT INTO eips_fts(rowid, title, summary, full_spec) SELECT eip_number, title, summary, full_spec FROM eips")
         return db
     }
+
+    fun saveResearchSession(session: com.commonmsm.data.models.ResearchSession) {
+        val db = cryptoDb ?: placesDb ?: return
+        try {
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS research_sessions (
+                    id TEXT PRIMARY KEY,
+                    query TEXT NOT NULL,
+                    summary TEXT NOT NULL,
+                    intent TEXT NOT NULL,
+                    sources_count INTEGER DEFAULT 0,
+                    timestamp INTEGER NOT NULL
+                )
+            """.trimIndent())
+            val stmt = db.compileStatement("INSERT OR REPLACE INTO research_sessions VALUES (?, ?, ?, ?, ?, ?)")
+            stmt.bindString(1, session.id)
+            stmt.bindString(2, session.query)
+            stmt.bindString(3, session.summary)
+            stmt.bindString(4, session.intent)
+            stmt.bindLong(5, session.sourcesCount.toLong())
+            stmt.bindLong(6, session.timestamp)
+            stmt.executeInsert()
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to save research session: ${e.message}")
+        }
+    }
+
+    fun getRecentSessions(limit: Int = 10): List<com.commonmsm.data.models.ResearchSession> {
+        val db = cryptoDb ?: placesDb ?: return emptyList()
+        val list = mutableListOf<com.commonmsm.data.models.ResearchSession>()
+        try {
+            val cursor = db.rawQuery("SELECT id, query, summary, intent, sources_count, timestamp FROM research_sessions ORDER BY timestamp DESC LIMIT ?", arrayOf(limit.toString()))
+            cursor.use {
+                while (it.moveToNext()) {
+                    list.add(
+                        com.commonmsm.data.models.ResearchSession(
+                            id = it.getString(0),
+                            query = it.getString(1),
+                            summary = it.getString(2),
+                            intent = it.getString(3),
+                            sourcesCount = it.getInt(4),
+                            timestamp = it.getLong(5)
+                        )
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            // Table may not exist yet
+        }
+        return list
+    }
 }
