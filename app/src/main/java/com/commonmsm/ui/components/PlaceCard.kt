@@ -87,9 +87,9 @@ fun PlaceCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (place.isStrictlyVegan) {
-                    BrutalCircularStamp(text = "🌱 VEGAN: 100%", color = BrutalNeonGreen)
+                    BrutalCircularStamp(text = "VEGAN: 100%", color = BrutalNeonGreen)
                 } else if (place.dietTags.contains("vegan")) {
-                    BrutalCircularStamp(text = "🥗 VEGAN OPTIONS", color = BrutalNeonGreen)
+                    BrutalCircularStamp(text = "VEGAN OPTIONS", color = BrutalNeonGreen)
                 }
 
                 if (!place.cuisine.isNullOrBlank()) {
@@ -175,7 +175,7 @@ fun PlaceCard(
                         .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = "NAVIGATE ➔",
+                        text = "NAVIGATE ->",
                         color = BrutalOrange,
                         fontFamily = FontFamily.Monospace,
                         fontSize = 10.sp,

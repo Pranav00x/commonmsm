@@ -224,7 +224,7 @@ fun ChatScreen(
                         .padding(bottom = 10.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    CircularBrutalChip("📍 NEAR ME (GNSS)") { sendQuery("Find the best vegan places near me using offline GNSS") }
+                    CircularBrutalChip("NEAR ME (GNSS)") { sendQuery("Find the best vegan places near me using offline GNSS") }
                     CircularBrutalChip("LISBON VEGAN") { sendQuery("Tell me the best vegan restaurants in Lisbon") }
                     CircularBrutalChip("EIP-7702 // 4337") { sendQuery("Compare EIP-7702 and ERC-4337 for account abstraction") }
                     CircularBrutalChip("FALCON VS ML-DSA") { sendQuery("Compare Falcon and ML-DSA post-quantum signature schemes for Ethereum") }
@@ -559,7 +559,7 @@ private fun AssistantBrutalCard(
             // Instant Verified Places Section
             if (update != null && update.instantPlaces.isNotEmpty()) {
                 Text(
-                    text = "🗺️ INSTANT_POI_MATCHES (${update.instantPlaces.size} FOUND)",
+                    text = "INSTANT_POI_MATCHES (${update.instantPlaces.size} FOUND)",
                     color = BrutalOrange,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Black,
@@ -575,7 +575,7 @@ private fun AssistantBrutalCard(
             // Instant Verified EIP Specifications Section
             if (update != null && update.instantSpecs.isNotEmpty()) {
                 Text(
-                    text = "⚙️ FORMAL_SPEC_MATCHES (${update.instantSpecs.size} FOUND)",
+                    text = "FORMAL_SPEC_MATCHES (${update.instantSpecs.size} FOUND)",
                     color = BrutalOrange,
                     fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Black,

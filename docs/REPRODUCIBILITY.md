@@ -84,7 +84,7 @@ adb push models/Qwen3.6-35B-A3B-UD-Q2_K_XL.gguf /sdcard/OfflineAI/
 
 1. Put the phone into **Airplane Mode** (disable Wi-Fi, Cellular, and Bluetooth).
 2. Launch **commonmsm**.
-3. Notice the **`🔒 100% OFFLINE`** indicator in the top app bar.
+3. Notice the **`100% OFFLINE`** indicator in the top app bar.
 4. Test the following benchmark queries:
 
 ### Query 1: Travel & Food

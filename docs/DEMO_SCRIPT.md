@@ -1,10 +1,10 @@
-# commonmsm: Real-Device Video Demo Script & Walkthrough ⛺
+# commonmsm: Real-Device Video Demo Script & Walkthrough
 
 This document outlines the demonstration script and video walkthrough for showcasing **commonmsm** running 100% offline on Android and GrapheneOS hardware.
 
 ---
 
-## 📹 Video Recording Guide
+## Video Recording Guide
 
 ### Step 1: The Air-Gap Verification (15 seconds)
 1. Show the device running on camera (e.g. Google Pixel or Galaxy S24).
@@ -17,7 +17,7 @@ This document outlines the demonstration script and video walkthrough for showca
 
 ---
 
-## 🔬 Benchmark Queries: Where 1B Models Break
+## Benchmark Queries: Where 1B Models Break
 
 A standard on-device 1B parameter model fails on non-trivial spatial, dietary, and cryptographic queries. Below is the side-by-side demonstration protocol.
 
@@ -31,7 +31,7 @@ A standard on-device 1B parameter model fails on non-trivial spatial, dietary, a
 | **Latency to First Result** | 4,200 ms | **38 ms (Instant Verified POI Cards)** |
 | **Factual Accuracy** | **0%** *(hallucinates fake venues like "Lisbon Green Bistro")* | **100%** *(Ao 26, Kong, Organi Chiado)* |
 | **Actionable Data** | None | Addresses, Dietary Stamps, Opening Hours |
-| **Navigation** | None | 1-Tap Offline Map Integration (`NAVIGATE ➔`) |
+| **Navigation** | None | 1-Tap Offline Map Integration (`NAVIGATE ->`) |
 
 **What Appears On Screen**:
 - 3 stark neo-brutalist POI cards appear in $< 50\text{ ms}$:
@@ -80,7 +80,7 @@ A standard on-device 1B parameter model fails on non-trivial spatial, dietary, a
 
 ---
 
-## 📱 Public Post Templates (X / Farcaster)
+## Public Post Templates (X / Farcaster)
 
 ### Post Draft 1: Architecture & Video Demo
 ```
@@ -88,7 +88,7 @@ Running frontier AI research on a phone with zero internet connection has always
 
 Meet commonmsm: an air-gapped offline research engine for Android & GrapheneOS.
 
-🎥 Demo in Airplane Mode:
+Demo in Airplane Mode:
 • Instant vegan venue lookup in Lisbon with real addresses & hours (38ms)
 • Precise EIP-7702 vs ERC-4337 protocol analysis with verified citations
 • Post-quantum signature comparisons (Falcon 666B vs ML-DSA 2420B)

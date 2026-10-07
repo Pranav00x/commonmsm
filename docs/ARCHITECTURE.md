@@ -39,7 +39,7 @@ commonmsm bridges the gap between frontier search and edge computing using a **T
 +-----------------------------------------------------------------------------------+
 |                           DUAL-ENGINE NEURAL INFERENCE                            |
 |                                                                                   |
-|  [⚡ Fast-Path SLM Mode]                     [🧠 Deep Extreme MoE Mode]           |
+|  [Fast-Path SLM Mode]                       [Deep Extreme MoE Mode]             |
 |  • Model: Qwen2.5-3B / Llama-3.2-3B        • Model: Qwen3.6-35B-A3B (100B arch)   |
 |  • Speed: 25 - 35 tokens/s                 • Speed: 5 - 7 tokens/s                |
 |  • In-RAM footprint: ~2.1 GB               • Flash mmap Pager + 4GB LRU Cache     |

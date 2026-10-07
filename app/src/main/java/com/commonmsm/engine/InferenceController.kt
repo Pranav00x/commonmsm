@@ -238,7 +238,7 @@ class InferenceController(private val context: Context) {
         when (intent) {
             QueryIntent.TRAVEL_PLACES -> {
                 val city = places.firstOrNull()?.city ?: "the city"
-                sentences.add("### 🌿 Top Curated Places in $city [1]")
+                sentences.add("### Top Curated Places in $city [1]")
                 sentences.add("Based on offline OpenStreetMap and Overture spatial data, here are the highest-rated vegan and plant-based recommendations:")
                 places.take(4).forEachIndexed { i, p ->
                     val diet = if (p.isStrictlyVegan) "100% Dedicated Plant-Based" else "Extensive Vegan Options"
@@ -249,7 +249,7 @@ class InferenceController(private val context: Context) {
             }
 
             QueryIntent.CRYPTO_EIP_SPECS -> {
-                sentences.add("### ⚙️ Ethereum & Cryptographic Specification Analysis [1]")
+                sentences.add("### Ethereum & Cryptographic Specification Analysis [1]")
                 if (specs.isNotEmpty()) {
                     val mainEip = specs.first()
                     sentences.add("According to official specifications, **EIP-${mainEip.eipNumber}: ${mainEip.title}** is currently marked **${mainEip.status}** and associated with **${mainEip.networkUpgrade ?: "Consensus Specs"}** [1].")
@@ -270,7 +270,7 @@ class InferenceController(private val context: Context) {
             }
 
             QueryIntent.ENCYCLOPEDIC_RESEARCH, QueryIntent.REASONING_SYNTHESIS -> {
-                sentences.add("### 🔬 Comprehensive Offline Synthesis")
+                sentences.add("### Comprehensive Offline Synthesis")
                 if (sources.isNotEmpty()) {
                     val topSource = sources.first()
                     sentences.add("Drawing from local encyclopedic knowledge for **${topSource.title}** [1]:")

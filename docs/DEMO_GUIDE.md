@@ -22,7 +22,7 @@ Demo Video / Walkthrough:
  3. "Falcon vs ML-DSA post-quantum signature schemes for Ethereum"]
 
 Code, pre-built APK & reproduction guide:
-🔗 https://github.com/commonmsm/commonmsm
+https://github.com/Pranav00x/commonmsm
 
 #OfflineAI #Android #GrapheneOS #Ethereum #OpenSource
 ```
@@ -33,7 +33,7 @@ Code, pre-built APK & reproduction guide:
 
 1. **Airplane Mode Verification**:
    - Show the quick settings tile with Airplane Mode turned ON (Wi-Fi off, Mobile Data off).
-   - Show the green `🔒 100% OFFLINE` badge in the commonmsm top app bar.
+   - Show the green `OFFLINE` badge in the commonmsm top app bar.
 2. **Instant Structured Entity Retrieval (38ms)**:
    - Type or tap *"Tell me the best vegan restaurants in Lisbon"*.
    - Point out that real, verified physical venue cards appear in milliseconds with exact street addresses, opening hours, and dietary tags.

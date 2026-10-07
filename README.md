@@ -1,4 +1,4 @@
-# commonmsm
+﻿# commonmsm
 ### The Offline Information Lookup & Research Engine for Android
 
 [![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20GrapheneOS-blue.svg)](https://grapheneos.org)
@@ -20,30 +20,30 @@ When traveling or off-grid, cloud LLMs and remote search engines cease to functi
 ### The Breakthrough: commonmsm
 commonmsm solves this through a **Dual-Engine Hybrid Intelligence Architecture**:
 - **Dual Neural Tiers**:
-  - **⚡ Fast-Path SLM Mode**: Runs an ultra-optimized 3B dense SLM (e.g., Qwen2.5-3B) at **25–35 tokens/sec** entirely in RAM (~2.1 GB) with cool device thermals and instant interactive streaming.
-  - **🧠 Extreme MoE Deep Research Mode**: Implements extreme MoE weight streaming (~35B–100B parameters) where weights reside on flash storage and routed experts are streamed via `mmap` into a 4GB in-RAM LRU cache, achieving an **84.2% expert cache hit rate**.
+  - **Fast-Path SLM Mode**: Runs an ultra-optimized 3B dense SLM (e.g., Qwen2.5-3B) at **25–35 tokens/sec** entirely in RAM (~2.1 GB) with cool device thermals and instant interactive streaming.
+  - **Extreme MoE Deep Research Mode**: Implements extreme MoE weight streaming (~35B–100B parameters) where weights reside on flash storage and routed experts are streamed via `mmap` into a 4GB in-RAM LRU cache, achieving an **84.2% expert cache hit rate**.
 - **Offline World Knowledge Index**:
-  - **🗺️ 21.1 Million Global Places**: OpenStreetMap dietary tags (`diet:vegan`, `diet:vegetarian`, `cuisine`, opening hours) merged with Overture Maps and GeoNames. Resolves queries like *"Tell me the best vegan restaurants in Lisbon"* in **38 milliseconds**!
-  - **📚 2.0 Million Encyclopedic Articles**: English Wikipedia (FineWiki) compressed into an inverted SQLite FTS5 database with BM25 ranking and logarithmic pageview prestige.
-  - **⚙️ Complete Ethereum & Crypto Specs**: All 1,208 EIPs and ERCs (including EIP-7702, ERC-4337, EIP-4844, Pectra fork specs) and NIST Post-Quantum standards (ML-KEM, ML-DSA, Falcon).
+  - **21.1 Million Global Places**: OpenStreetMap dietary tags (`diet:vegan`, `diet:vegetarian`, `cuisine`, opening hours) merged with Overture Maps and GeoNames. Resolves queries like *"Tell me the best vegan restaurants in Lisbon"* in **38 milliseconds**!
+  - **2.0 Million Encyclopedic Articles**: English Wikipedia (FineWiki) compressed into an inverted SQLite FTS5 database with BM25 ranking and logarithmic pageview prestige.
+  - **Complete Ethereum & Crypto Specs**: All 1,208 EIPs and ERCs (including EIP-7702, ERC-4337, EIP-4844, Pectra fork specs) and NIST Post-Quantum standards (ML-KEM, ML-DSA, Falcon).
 - **Zero Hallucination Grounding**: All model outputs are cited with verified footnote chips (`[1]`, `[2]`), allowing users to tap and read the original offline source passage directly on their device.
-- **🌡️ Hardware Thermal Governor**: Actively interrogates `PowerManager.getThermalStatus()` and battery thermals to dynamically scale native CPU inference threads and protect mobile hardware longevity.
-- **📖 On-Disk N-Gram Language Model**: Zero-RAM flash-resident N-gram continuation engine (~100B parameter capability) directly fulfilling Vitalik's architectural suggestion for mobile phones.
-- **🛡️ Air-Gapped Cleanroom Exporter**: Generates publication-ready Markdown reports with SHA-256 integrity digests and air-gapped QR transfer envelopes for cleanroom inspection.
-- **🧭 Offline SpatialMath GNSS Engine**: Implements on-device Haversine distance and 8-point compass bearing calculations for 21.1M global POIs without internet.
-- **📚 Persistent Research Notebook**: Local SQLite session store enabling researchers to bookmark, inspect, and reload multi-hop investigations across app restarts.
-- **⚡ Brutalist & Circular UI (Zero Gradients)**:
+- **Hardware Thermal Governor**: Actively interrogates `PowerManager.getThermalStatus()` and battery thermals to dynamically scale native CPU inference threads and protect mobile hardware longevity.
+- **On-Disk N-Gram Language Model**: Zero-RAM flash-resident N-gram continuation engine (~100B parameter capability) directly fulfilling Vitalik's architectural suggestion for mobile phones.
+- **Air-Gapped Cleanroom Exporter**: Generates publication-ready Markdown reports with SHA-256 integrity digests and air-gapped QR transfer envelopes for cleanroom inspection.
+- **Offline SpatialMath GNSS Engine**: Implements on-device Haversine distance and 8-point compass bearing calculations for 21.1M global POIs without internet.
+- **Persistent Research Notebook**: Local SQLite session store enabling researchers to bookmark, inspect, and reload multi-hop investigations across app restarts.
+- **Brutalist & Circular UI (Zero Gradients)**:
   - **Zero Color Gradients**: Strictly flat, solid-color styling built on true OLED pitch black (`#000000`) for maximum battery efficiency on mobile screens.
   - **Circular Telemetry Dials**: Real-time circular gauges for token speed (t/s), memory allocation (MB), and storage quota (50GB limit).
   - **Circular Navigation & Chips**: Circular action controls (`CircleShape`), circular source citation pills `( 1 )`, and high-contrast monospace technical readouts.
 
 ---
 
-## 📊 Benchmark Scoreboard: 61 Evaluation Queries
+## Benchmark Scoreboard: 61 Evaluation Queries
 
 Evaluated against a 61-query evaluation suite using Claude Opus 5.5 + Live Web Search as the 100% frontier reference standard:
 
-| Benchmark Category | Baseline 1.7B Model | commonmsm (Fast SLM) | commonmsm (Deep MoE) | Frontier + Web Search |
+                      │   Fast SLM (30 t/s)   │
 |---|---|---|---|---|
 | **Travel & Places (20)** | 2.0 / 10 *(hallucinated fake names)* | **9.2 / 10** | **9.4 / 10** | 9.8 / 10 |
 | **Crypto & EIP Specs (15)** | 3.1 / 10 *(mixed up EIP rules)* | **8.8 / 10** | **9.5 / 10** | 9.9 / 10 |
@@ -56,7 +56,7 @@ Evaluated against a 61-query evaluation suite using Claude Opus 5.5 + Live Web S
 
 ---
 
-## 🔒 Offline Security by Construction
+## Offline Security by Construction
 
 - **Zero Network Permissions**: The `android.permission.INTERNET` permission is **deliberately absent** from [`AndroidManifest.xml`](app/src/main/AndroidManifest.xml).
 - **OS-Level Kernel Sandbox**: The Android Linux kernel and SELinux policies physically prohibit the application from opening sockets or sending/receiving data over Wi-Fi, cellular, or Bluetooth.
@@ -64,24 +64,24 @@ Evaluated against a 61-query evaluation suite using Claude Opus 5.5 + Live Web S
 
 ---
 
-## 💾 Storage and Hardware Budget
+## Storage and Hardware Budget
 
 Engineered to operate strictly within **12GB RAM** and **50GB Storage** constraints:
 
 | Asset | Size | Storage Budget (Max 50 GB) | Active RAM Footprint (Max 12 GB) |
 |---|---|---|---|
-| **commonmsm Android App (APK)** | 65 MB | ✅ Fits (<0.1%) | ~150 MB (Jetpack Compose UI) |
-| **Places Database (`places.db`)** | 2.9 GB | ✅ Fits (5.8%) | Paged into SQLite cache |
-| **Wikipedia Database (`wiki.db`)** | 21.3 GB | ✅ Fits (42.6%) | FTS5 B-Tree index |
-| **Crypto Specs (`crypto.db`)** | 19 MB | ✅ Fits (<0.1%) | In-memory query buffer |
-| **Fast SLM Weights (Qwen2.5-3B)** | 2.15 GB | ✅ Fits (4.3%) | ~2.0 GB in RAM |
-| **Extreme MoE Weights (35B-A3B)** | 12.3 GB | ✅ Fits (24.6%) | 2.0GB dense + 4.8GB LRU cache |
-| **Total (Fast SLM Tier)** | **26.4 GB** | **52.8% of 50GB Budget** | **~2.1 GB / 12 GB RAM** |
+| **commonmsm Android App (APK)** | 65 MB | [PASS] Fits (<0.1%) | ~150 MB (Jetpack Compose UI) |
+| **Places Database (`places.db`)** | 2.9 GB | [PASS] Fits (5.8%) | Paged into SQLite cache |
+| **Wikipedia Database (`wiki.db`)** | 21.3 GB | [PASS] Fits (42.6%) | FTS5 B-Tree index |
+| **Crypto Specs (`crypto.db`)** | 19 MB | [PASS] Fits (<0.1%) | In-memory query buffer |
+                      │   Fast SLM (30 t/s)   │
+| **Extreme MoE Weights (35B-A3B)** | 12.3 GB | [PASS] Fits (24.6%) | 2.0GB dense + 4.8GB LRU cache |
+                      │   Fast SLM (30 t/s)   │
 | **Total (Deep MoE Tier)** | **36.6 GB** | **73.2% of 50GB Budget** | **~7.8 GB / 12 GB RAM** |
 
 ---
 
-## 📱 Architecture Deep Dive
+## Architecture Deep Dive
 
 ```
                              User Query
@@ -112,8 +112,8 @@ Engineered to operate strictly within **12GB RAM** and **50GB Storage** constrai
                                  ▼
                      ┌───────────────────────┐
                      │ Dual-Engine Inference │
-                     │  ⚡ Fast SLM (30 t/s)  │
-                     │  🧠 MoE Flash Stream  │
+                      │   Fast SLM (30 t/s)   │
+                      │   MoE Flash Stream    │
                      └───────────┬───────────┘
                                  │
                                  ▼
@@ -125,7 +125,7 @@ Read the full technical specification in [**`docs/ARCHITECTURE.md`**](docs/ARCHI
 
 ---
 
-## 🚀 Quick Start & Reproduction
+## Quick Start & Reproduction
 
 You can test commonmsm on any Android or GrapheneOS device in just a few minutes:
 
@@ -174,7 +174,7 @@ See detailed instructions in [**`docs/REPRODUCIBILITY.md`**](docs/REPRODUCIBILIT
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```
 commonmsm/
