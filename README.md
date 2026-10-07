@@ -143,14 +143,27 @@ adb shell mkdir -p /sdcard/OfflineAI/
 adb push Qwen2.5-3B-Instruct-Q4_K_M.gguf /sdcard/OfflineAI/
 ```
 
-### 3. Verify in Airplane Mode
+### 3. Build & Test from Source
+```bash
+git clone https://github.com/Pranav00x/commonmsm.git
+cd commonmsm
+
+# Run automated Kotlin and pipeline unit tests
+./gradlew test
+python -m unittest discover tests
+
+# Build debug APK with native C++ JNI libraries
+./gradlew assembleDebug
+```
+
+### 4. Verify in Airplane Mode
 1. Enable **Airplane Mode** on your phone (disconnect Wi-Fi, Cellular, Bluetooth).
 2. Open **commonmsm**.
-3. Tap **"🌿 Vegan in Lisbon"** or ask:
+3. Tap **"LISBON VEGAN"** or ask:
    > *"Tell me the best vegan restaurants in Lisbon"*
    - Instant POI cards appear in **38ms** (*Ao 26*, *Kong*, *Organi Chiado*).
    - The neural engine streams detailed menu highlights and walking distances at **28 tokens/sec**.
-   - Tap `[1]` to inspect verified source data offline.
+   - Tap `( 1 )` to inspect verified source data offline.
 
 See detailed instructions in [**`docs/REPRODUCIBILITY.md`**](docs/REPRODUCIBILITY.md).
 

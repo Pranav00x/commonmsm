@@ -33,8 +33,11 @@ If you wish to install directly without compiling Android code:
 
 ### Build Steps
 ```bash
-git clone https://github.com/commonmsm/commonmsm.git
+git clone https://github.com/Pranav00x/commonmsm.git
 cd commonmsm
+
+# Run unit tests
+./gradlew test
 
 # Build the debug APK with native C++ JNI libraries
 ./gradlew assembleDebug

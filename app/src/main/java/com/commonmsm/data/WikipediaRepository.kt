@@ -5,14 +5,28 @@ import kotlin.math.ln
 
 class WikipediaRepository {
 
+    companion object {
+        private val STOP_WORDS = setOf(
+            "the", "is", "at", "which", "on", "a", "an", "and", "or", "in", "for",
+            "tell", "me", "what", "best", "of", "to", "are", "how", "why", "with", "about"
+        )
+
+        fun sanitizeFtsQuery(query: String): String {
+            val tokens = query.split(Regex("[^a-zA-Z0-9]+"))
+                .map { it.trim() }
+                .filter { it.length >= 3 && !STOP_WORDS.contains(it.lowercase()) }
+            if (tokens.isEmpty()) {
+                val fallbackTokens = query.split(Regex("[^a-zA-Z0-9]+")).filter { it.length >= 2 }
+                return fallbackTokens.joinToString(" OR ") { "\"$it\"*" }
+            }
+            return tokens.joinToString(" OR ") { "\"$it\"*" }
+        }
+    }
+
     fun searchBm25(query: String, limit: Int = 5): List<SearchResult> {
         val db = DatabaseManager.getWikiDatabase() ?: return emptyList()
 
-        val sanitizedQuery = query.replace("\"", "").replace("'", "")
-            .split(" ")
-            .filter { it.isNotBlank() && it.length > 2 }
-            .joinToString(" OR ") { "$it*" }
-
+        val sanitizedQuery = sanitizeFtsQuery(query)
         if (sanitizedQuery.isBlank()) return emptyList()
 
         val sql = """
@@ -60,8 +74,10 @@ class WikipediaRepository {
                 }
             }
         } catch (e: Exception) {
+            val tokens = query.split(Regex("[^a-zA-Z0-9]+")).filter { it.length >= 3 && !STOP_WORDS.contains(it.lowercase()) }
+            val searchTerm = tokens.firstOrNull() ?: query
             val fallbackSql = "SELECT id, title, lead_text, body_text, pageviews FROM wiki_articles WHERE title LIKE ? OR body_text LIKE ? LIMIT ?"
-            val wildcard = "%$query%"
+            val wildcard = "%$searchTerm%"
             val cursor = db.rawQuery(fallbackSql, arrayOf(wildcard, wildcard, limit.toString()))
             cursor.use {
                 while (it.moveToNext()) {

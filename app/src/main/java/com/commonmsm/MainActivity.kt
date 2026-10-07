@@ -58,7 +58,8 @@ class MainActivity : ComponentActivity() {
                                 isMoEActive = model.isMoE
                                 inferenceController.configureModel(model.file.absolutePath, model.isMoE)
                                 currentScreen = "chat"
-                            }
+                            },
+                            onBack = { currentScreen = "chat" }
                         )
                     }
                 }

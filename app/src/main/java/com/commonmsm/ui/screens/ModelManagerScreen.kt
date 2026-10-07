@@ -2,12 +2,14 @@ package com.commonmsm.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -29,7 +31,8 @@ fun ModelManagerScreen(
     discoveredModels: List<DiscoveredModel>,
     isMoEActive: Boolean,
     onToggleMoE: (Boolean) -> Unit,
-    onSelectModel: (DiscoveredModel) -> Unit
+    onSelectModel: (DiscoveredModel) -> Unit,
+    onBack: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -38,6 +41,41 @@ fun ModelManagerScreen(
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        // Brutalist Top Bar with Circular Back Button
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(BrutalDarkSurface)
+                    .border(2.dp, BrutalBorder, CircleShape)
+                    .clickable { onBack() },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = BrutalWhite,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            Text(
+                text = "CONFIG // ALLOCATION",
+                color = BrutalGray,
+                fontFamily = FontFamily.Monospace,
+                fontWeight = FontWeight.Black,
+                fontSize = 11.sp,
+                letterSpacing = 1.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(
             text = "STORAGE // ENGINE ALLOCATION",
             style = MaterialTheme.typography.titleLarge,

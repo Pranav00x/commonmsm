@@ -12,6 +12,8 @@
     <!-- Optional: Raw GNSS chip access for "near me" offline spatial queries (no network/Google Play Services used) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+    <uses-feature android:name="android.hardware.location" android:required="false" />
 
     <!-- File access to read models and database assets from external storage / USB OTG -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />

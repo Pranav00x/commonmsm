@@ -9,7 +9,8 @@ data class RoutingDecision(
     val isVeganRequest: Boolean = false,
     val placeCategory: String? = null,
     val targetEipNumber: Int? = null,
-    val searchTerms: List<String>
+    val targetEipNumbers: List<Int> = emptyList(),
+    val searchTerms: List<String> = emptyList()
 )
 
 class QueryRouter {
@@ -17,7 +18,8 @@ class QueryRouter {
     private val commonCities = listOf(
         "lisbon", "berlin", "buenos aires", "tokyo", "paris", "london", "bangkok",
         "chiang mai", "tbilisi", "medellin", "kyoto", "singapore", "mexico city",
-        "cape town", "istanbul", "seoul", "austin", "new york", "san francisco"
+        "cape town", "istanbul", "seoul", "austin", "new york", "san francisco",
+        "zurich", "amsterdam", "warsaw", "taipei", "dubai", "zug", "denver", "toronto"
     )
 
     fun route(query: String): RoutingDecision {
@@ -32,7 +34,7 @@ class QueryRouter {
         var detectedCity: String? = null
         for (city in commonCities) {
             if (qLower.contains(city)) {
-                detectedCity = city.replaceFirstChar { it.uppercase() }
+                detectedCity = city.split(" ").joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } }
                 break
             }
         }
@@ -55,20 +57,21 @@ class QueryRouter {
             )
         }
 
-        val eipRegex = Regex("""(?:eip|erc)[ -]?(\d+)""", RegexOption.IGNORE_CASE)
-        val match = eipRegex.find(qLower)
-        val eipNum = match?.groupValues?.get(1)?.toIntOrNull()
+        val eipRegex = Regex("""(?:eip|erc)[ -]?(\d{3,5})""", RegexOption.IGNORE_CASE)
+        val eipNums = eipRegex.findAll(qLower).mapNotNull { it.groupValues[1].toIntOrNull() }.distinct().toList()
 
-        val isCrypto = eipNum != null || qLower.contains("ethereum") || qLower.contains("post-quantum") ||
+        val isCrypto = eipNums.isNotEmpty() || qLower.contains("ethereum") || qLower.contains("post-quantum") ||
                 qLower.contains("pectra") || qLower.contains("account abstraction") ||
                 qLower.contains("falcon") || qLower.contains("dilithium") || qLower.contains("ml-dsa") ||
                 qLower.contains("kyber") || qLower.contains("ml-kem") || qLower.contains("proposer-builder") ||
-                qLower.contains("pbs") || qLower.contains("eip") || qLower.contains("erc")
+                qLower.contains("pbs") || qLower.contains("eip") || qLower.contains("erc") ||
+                qLower.contains("kzg") || qLower.contains("blob")
 
         if (isCrypto) {
             return RoutingDecision(
                 intent = QueryIntent.CRYPTO_EIP_SPECS,
-                targetEipNumber = eipNum,
+                targetEipNumber = eipNums.firstOrNull(),
+                targetEipNumbers = eipNums,
                 searchTerms = extractKeywords(query)
             )
         }

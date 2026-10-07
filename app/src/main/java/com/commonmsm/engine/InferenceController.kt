@@ -81,12 +81,18 @@ class InferenceController(private val context: Context) {
             }
 
             QueryIntent.CRYPTO_EIP_SPECS -> {
-                if (decision.targetEipNumber != null) {
-                    val eip = cryptoRepo.getEip(decision.targetEipNumber)
-                    if (eip != null) specs.add(eip)
+                for (num in decision.targetEipNumbers) {
+                    val eip = cryptoRepo.getEip(num)
+                    if (eip != null && specs.none { it.eipNumber == num }) {
+                        specs.add(eip)
+                    }
                 }
                 val specMatches = cryptoRepo.searchSpecs(query, limit = 4)
-                specs.addAll(specMatches.filter { it.eipNumber != decision.targetEipNumber })
+                for (match in specMatches) {
+                    if (specs.none { it.eipNumber == match.eipNumber }) {
+                        specs.add(match)
+                    }
+                }
                 sources.addAll(cryptoRepo.toSearchResults(specs))
 
                 val wikiResults = wikiRepo.searchBm25(query, limit = 2)
