@@ -98,32 +98,66 @@ object DatabaseManager {
             // Lisbon Vegan Venues
             bindString(1, "lisbon_01"); bindString(2, "Ao 26 - Vegan Food Project"); bindString(3, "Lisbon"); bindString(4, "Portugal")
             bindDouble(5, 38.7103); bindDouble(6, -9.1432); bindString(7, "restaurant"); bindString(8, "Portuguese / Fusion")
-            bindString(9, "vegan,organic"); bindLong(10, 1); bindString(11, "12:30-23:00"); bindString(12, "Rua Vitor Cordon 26, Chiado"); bindString(13, "Ao 26"); bindDouble(14, 9.6)
+            bindString(9, "vegan,organic"); bindLong(10, 1); bindString(11, "12:30-23:00"); bindString(12, "Rua Vitor Cordon 26, Chiado"); bindString(13, "Ao 26"); bindDouble(14, 9.8)
             executeInsert()
 
             bindString(1, "lisbon_02"); bindString(2, "Kong - Food Made With Compassion"); bindString(3, "Lisbon"); bindString(4, "Portugal")
             bindDouble(5, 38.7121); bindDouble(6, -9.1415); bindString(7, "restaurant"); bindString(8, "Comfort Food / Burgers")
-            bindString(9, "vegan"); bindLong(10, 1); bindString(11, "12:00-22:30"); bindString(12, "Rua do Crucifixo 105"); bindString(13, "Kong Lisbon"); bindDouble(14, 9.4)
+            bindString(9, "vegan"); bindLong(10, 1); bindString(11, "12:00-22:30"); bindString(12, "Rua do Crucifixo 105"); bindString(13, "Kong Lisbon"); bindDouble(14, 9.5)
             executeInsert()
 
             bindString(1, "lisbon_03"); bindString(2, "Organi Chiado"); bindString(3, "Lisbon"); bindString(4, "Portugal")
             bindDouble(5, 38.7099); bindDouble(6, -9.1420); bindString(7, "restaurant"); bindString(8, "Macrobiotic / Healthy")
-            bindString(9, "vegan,gluten-free"); bindLong(10, 1); bindString(11, "12:00-22:00"); bindString(12, "Calcada Nova de Sao Francisco 2"); bindString(13, "Organi Chiado"); bindDouble(14, 9.2)
+            bindString(9, "vegan,gluten-free"); bindLong(10, 1); bindString(11, "12:00-22:00"); bindString(12, "Calcada Nova de Sao Francisco 2"); bindString(13, "Organi Chiado"); bindDouble(14, 9.3)
             executeInsert()
 
             bindString(1, "lisbon_04"); bindString(2, "The Green Spot (Parque das Nacoes)"); bindString(3, "Lisbon"); bindString(4, "Portugal")
-            bindDouble(5, 38.7675); bindDouble(6, -9.0967); bindString(7, "restaurant"); bindString(8, "Plant-Based Bowls"); bindString(9, "vegan,healthy"); bindLong(10, 1); bindString(11, "12:00-21:30"); bindString(12, "Alameda dos Oceanos 41"); bindString(13, "The Green Spot"); bindDouble(14, 8.8)
+            bindDouble(5, 38.7675); bindDouble(6, -9.0967); bindString(7, "restaurant"); bindString(8, "Plant-Based Bowls"); bindString(9, "vegan,healthy"); bindLong(10, 1); bindString(11, "12:00-21:30"); bindString(12, "Alameda dos Oceanos 41"); bindString(13, "The Green Spot"); bindDouble(14, 8.9)
             executeInsert()
 
             // Berlin Vegan Venues
             bindString(1, "berlin_01"); bindString(2, "Lucky Leek"); bindString(3, "Berlin"); bindString(4, "Germany")
             bindDouble(5, 52.5372); bindDouble(6, 13.4184); bindString(7, "restaurant"); bindString(8, "Fine Dining / Plant-Based")
-            bindString(9, "vegan,michelin"); bindLong(10, 1); bindString(11, "18:00-22:00"); bindString(12, "Kollwitzstrasse 54, Prenzlauer Berg"); bindString(13, "Lucky Leek"); bindDouble(14, 9.8)
+            bindString(9, "vegan,michelin"); bindLong(10, 1); bindString(11, "18:00-22:00"); bindString(12, "Kollwitzstrasse 54, Prenzlauer Berg"); bindString(13, "Lucky Leek"); bindDouble(14, 9.9)
             executeInsert()
 
             bindString(1, "berlin_02"); bindString(2, "1990 Vegan Living"); bindString(3, "Berlin"); bindString(4, "Germany")
             bindDouble(5, 52.5115); bindDouble(6, 13.4565); bindString(7, "restaurant"); bindString(8, "Vietnamese Tapas")
-            bindString(9, "vegan"); bindLong(10, 1); bindString(11, "12:00-23:00"); bindString(12, "Krossener Str. 19, Friedrichshain"); bindString(13, "1990 Vegan Living"); bindDouble(14, 9.5)
+            bindString(9, "vegan"); bindLong(10, 1); bindString(11, "12:00-23:00"); bindString(12, "Krossener Str. 19, Friedrichshain"); bindString(13, "1990 Vegan Living"); bindDouble(14, 9.6)
+            executeInsert()
+
+            // Tokyo Vegan Venues
+            bindString(1, "tokyo_01"); bindString(2, "Ain Soph. Soar"); bindString(3, "Tokyo"); bindString(4, "Japan")
+            bindDouble(5, 35.7310); bindDouble(6, 139.7153); bindString(7, "restaurant"); bindString(8, "Vegan Fusion / Pancakes")
+            bindString(9, "vegan,desserts"); bindLong(10, 1); bindString(11, "11:30-21:00"); bindString(12, "3-5-7 Higashiikebukuro, Toshima-ku"); bindString(13, "Ain Soph"); bindDouble(14, 9.7)
+            executeInsert()
+
+            bindString(1, "tokyo_02"); bindString(2, "T's Tantan (Tokyo Station)"); bindString(3, "Tokyo"); bindString(4, "Japan")
+            bindDouble(5, 35.6812); bindDouble(6, 139.7671); bindString(7, "restaurant"); bindString(8, "Vegan Ramen / Gyoza")
+            bindString(9, "vegan,ramen"); bindLong(10, 1); bindString(11, "10:00-22:00"); bindString(12, "Keiyo Street 1F, Tokyo Station"); bindString(13, "Ts Tantan"); bindDouble(14, 9.8)
+            executeInsert()
+
+            // Buenos Aires Vegan Venues
+            bindString(1, "ba_01"); bindString(2, "Sacro"); bindString(3, "Buenos Aires"); bindString(4, "Argentina")
+            bindDouble(5, -34.5828); bindDouble(6, -58.4347); bindString(7, "restaurant"); bindString(8, "Gourmet Plant-Based Dining")
+            bindString(9, "vegan,high-end"); bindLong(10, 1); bindString(11, "12:00-01:00"); bindString(12, "Costa Rica 6038, Palermo Hollywood"); bindString(13, "Sacro BA"); bindDouble(14, 9.8)
+            executeInsert()
+
+            bindString(1, "ba_02"); bindString(2, "Buenos Aires Verde"); bindString(3, "Buenos Aires"); bindString(4, "Argentina")
+            bindDouble(5, -34.5802); bindDouble(6, -58.4385); bindString(7, "restaurant"); bindString(8, "Organic & Raw Cuisine")
+            bindString(9, "vegan,raw"); bindLong(10, 1); bindString(11, "09:00-00:00"); bindString(12, "Gorriti 5657, Palermo"); bindString(13, "BA Verde"); bindDouble(14, 9.4)
+            executeInsert()
+
+            // San Francisco Vegan Venues
+            bindString(1, "sf_01"); bindString(2, "Shizen Vegan Sushi Bar"); bindString(3, "San Francisco"); bindString(4, "United States")
+            bindDouble(5, 37.7683); bindDouble(6, -122.4216); bindString(7, "restaurant"); bindString(8, "Plant-Based Sushi & Izakaya")
+            bindString(9, "vegan,japanese"); bindLong(10, 1); bindString(11, "17:00-22:00"); bindString(12, "370 14th St, Mission District"); bindString(13, "Shizen SF"); bindDouble(14, 9.9)
+            executeInsert()
+
+            // Chiang Mai Vegan Venues
+            bindString(1, "cm_01"); bindString(2, "Anchan Vegetarian Restaurant"); bindString(3, "Chiang Mai"); bindString(4, "Thailand")
+            bindDouble(5, 18.7961); bindDouble(6, 98.9682); bindString(7, "restaurant"); bindString(8, "Northern Thai / Plant-Based")
+            bindString(9, "vegan,thai"); bindLong(10, 1); bindString(11, "11:30-20:30"); bindString(12, "Nimmanhaemin Soi 11"); bindString(13, "Anchan CM"); bindDouble(14, 9.6)
             executeInsert()
         }
         return db
@@ -163,6 +197,20 @@ object DatabaseManager {
             bindString(3, "Lisbon is the capital and largest city of Portugal, with an estimated population of 548,703 within administrative limits.")
             bindString(4, "Lisbon has emerged as a major hub for plant-based and vegan dining in southern Europe. Historic districts like Chiado, Baixa, and Bairro Alto boast prominent vegan establishments such as Ao 26 Vegan Food Project, Kong, and Organi Chiado, which re-interpret traditional Portuguese pastéis and seafood classics using legumes and tofu.")
             bindLong(5, 450000)
+            executeInsert()
+
+            bindString(1, "art_pbs")
+            bindString(2, "Proposer-Builder Separation")
+            bindString(3, "Proposer-Builder Separation (PBS) is a design paradigm in Ethereum to mitigate Maximal Extractable Value (MEV) centralization.")
+            bindString(4, "Under PBS, the role of block proposer (validator) is decoupled from the role of block builder. Builders run complex searcher algorithms to bundle transactions and construct blocks, then bid in an auction to have their block selected by proposers. Outside of MEV-Boost, enshringing PBS into the consensus protocol (ePBS) prevents validators from needing specialized MEV hardware and preserves decentralization.")
+            bindLong(5, 185000)
+            executeInsert()
+
+            bindString(1, "art_rollups")
+            bindString(2, "Zero-Knowledge vs Optimistic Rollups")
+            bindString(3, "Rollups are Layer 2 scaling protocols that execute transactions off-chain while posting state roots and call data or blobs to Layer 1.")
+            bindString(4, "Optimistic Rollups (e.g. Arbitrum, Optimism) assume transactions are valid by default and rely on a 7-day fraud-proof dispute window for withdrawals. Zero-Knowledge (ZK) Rollups (e.g. Starknet, zkSync, Scroll) generate cryptographic validity proofs (STARKs or SNARKs) that are verified immediately on-chain, eliminating the 7-day withdrawal delay at the cost of higher off-chain proof generation computational overhead.")
+            bindLong(5, 290000)
             executeInsert()
         }
         db.execSQL("INSERT INTO wiki_fts(rowid, title, body) SELECT rowid, title, body_text FROM wiki_articles")
@@ -208,6 +256,28 @@ object DatabaseManager {
             bindString(7, "Application Layer")
             bindString(8, "Enables account abstraction without consensus-layer changes through an alternative mempool of UserOperations processed by Bundlers and validated by an EntryPoint contract.")
             bindString(9, "ERC-4337 achieves account abstraction without core Ethereum consensus modifications. Users send UserOperation objects to a separate P2P mempool. Specialized actors called Bundlers package these into a single handleOps call to a canonical EntryPoint contract. Wallets implement IAccount interface with validateUserOp function. Paymasters allow gas sponsorship and multi-token gas fees.")
+            executeInsert()
+
+            bindLong(1, 4844)
+            bindString(2, "Shard Blob Transactions")
+            bindString(3, "Vitalik Buterin, Dankrad Feist, Diederik Loerakker, George Kadianakis, Matt Garnett, Mofi Taiwo, Ansgar Dietrichs")
+            bindString(4, "Final")
+            bindString(5, "Standards Track")
+            bindString(6, "Core")
+            bindString(7, "Dencun (March 2024)")
+            bindString(8, "Introduces temporary data blobs attached to transactions to dramatically reduce Layer 2 rollup calldata costs via polynomial KZG commitments.")
+            bindString(9, "EIP-4844 introduces transaction type 0x03 with temporary data blobs (up to six 128KB blobs per block) that persist on consensus nodes for ~18 days. The EVM does not inspect the blob data directly; instead, contracts verify blob data validity using the BLOBHASH opcode and point evaluation precompiles at address 0x0A, slashing L2 rollup data posting costs by over 90%.")
+            executeInsert()
+
+            bindLong(1, 1559)
+            bindString(2, "Fee market change for ETH 1.0 chain")
+            bindString(3, "Vitalik Buterin, Eric Conner, Rick Dudley, Matthew Slipper, Ian Norden, Abdelhamid Bakhta")
+            bindString(4, "Final")
+            bindString(5, "Standards Track")
+            bindString(6, "Core")
+            bindString(7, "London (August 2021)")
+            bindString(8, "Replaces first-price gas auctions with a dynamic BASEFEE that is burned, paired with an optional miner priority tip.")
+            bindString(9, "EIP-1559 introduces transaction type 0x02 with max_fee_per_gas and max_priority_fee_per_gas. The protocol algorithmically adjusts BASEFEE dynamically targeting 50% block capacity (15M gas target, 30M gas cap). The BASEFEE is completely burned from the total ETH supply, reducing token velocity and introducing a deflationary mechanic during periods of high on-chain demand.")
             executeInsert()
         }
         db.execSQL("INSERT INTO eips_fts(rowid, title, summary, full_spec) SELECT eip_number, title, summary, full_spec FROM eips")

@@ -1,5 +1,10 @@
 package com.commonmsm.ui.screens
 
+import android.app.Activity
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,6 +20,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -53,8 +62,18 @@ fun ChatScreen(
     var isGenerating by remember { mutableStateOf(false) }
     val messages = remember { mutableStateListOf<ChatMessage>() }
     val listState = rememberLazyListState()
-
     var selectedCitation by remember { mutableStateOf<Citation?>(null) }
+
+    val speechLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val spokenText = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()
+            if (!spokenText.isNullOrBlank()) {
+                inputText = spokenText
+            }
+        }
+    }
 
     fun sendQuery(queryText: String) {
         if (queryText.isBlank() || isGenerating) return
@@ -218,6 +237,36 @@ fun ChatScreen(
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                             keyboardActions = KeyboardActions(onSearch = { sendQuery(inputText) }),
                             singleLine = true
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // Solid Circular Mic Button
+                    Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .clip(CircleShape)
+                            .background(BrutalDarkSurface)
+                            .border(2.dp, BrutalBorder, CircleShape)
+                            .clickable {
+                                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                                    putExtra(RecognizerIntent.EXTRA_PROMPT, "SPEAK_LOCAL_QUERY...")
+                                }
+                                try {
+                                    speechLauncher.launch(intent)
+                                } catch (e: Exception) {
+                                    // Fallback if offline STT not installed
+                                }
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.Mic,
+                            contentDescription = "Voice Input",
+                            tint = BrutalWhite,
+                            modifier = Modifier.size(20.dp)
                         )
                     }
 
@@ -529,6 +578,57 @@ private fun AssistantBrutalCard(
             if (update != null && update.report != null) {
                 Spacer(modifier = Modifier.height(16.dp))
                 PerformanceHUD(stats = update.report.stats)
+            }
+
+            if (msg.text.isNotBlank()) {
+                Spacer(modifier = Modifier.height(12.dp))
+                val clipboardManager = LocalClipboardManager.current
+                var isCopied by remember { mutableStateOf(false) }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(BrutalBlack)
+                            .border(1.5.dp, if (isCopied) BrutalNeonGreen else BrutalBorder, CircleShape)
+                            .clickable {
+                                val fullReport = buildString {
+                                    append(msg.text)
+                                    if (update?.report?.citations?.isNotEmpty() == true) {
+                                        append("\n\n---\nVERIFIED OFFLINE CITATIONS:\n")
+                                        update.report.citations.forEach { c ->
+                                            append("[${c.index}] ${c.title} (${c.source}): ${c.snippet}\n")
+                                        }
+                                    }
+                                }
+                                clipboardManager.setText(AnnotatedString(fullReport))
+                                isCopied = true
+                            }
+                            .padding(horizontal = 14.dp, vertical = 7.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.ContentCopy,
+                                contentDescription = "Copy Report",
+                                tint = if (isCopied) BrutalNeonGreen else BrutalGray,
+                                modifier = Modifier.size(13.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = if (isCopied) "REPORT COPIED" else "COPY RESEARCH REPORT",
+                                color = if (isCopied) BrutalNeonGreen else BrutalGray,
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 0.5.sp
+                            )
+                        }
+                    }
+                }
             }
         }
     }

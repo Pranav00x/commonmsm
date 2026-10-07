@@ -35,3 +35,15 @@ target_link_libraries(
     ${log-lib}
     ${android-lib}
 )
+
+# Standalone Extreme MoE Disk Streaming CLI Benchmark
+add_executable(
+    moe_bench
+    moe_bench.cpp
+    moe_streamer.cpp
+)
+
+target_link_libraries(
+    moe_bench
+    ${log-lib}
+)

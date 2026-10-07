@@ -140,6 +140,49 @@ fun PlaceCard(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Action row: GPS coordinates & Navigate button
+            val context = androidx.compose.ui.platform.LocalContext.current
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "GPS: [${String.format("%.4f", place.latitude)}, ${String.format("%.4f", place.longitude)}]",
+                    color = BrutalGray,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(BrutalBlack)
+                        .border(1.5.dp, BrutalOrange, CircleShape)
+                        .androidx.compose.foundation.clickable {
+                            val uri = android.net.Uri.parse("geo:${place.latitude},${place.longitude}?q=${android.net.Uri.encode(place.name)}")
+                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
+                            try {
+                                context.startActivity(intent)
+                            } catch (e: Exception) {
+                                // Fallback if no map handler installed
+                            }
+                        }
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = "NAVIGATE ➔",
+                        color = BrutalOrange,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                }
+            }
         }
     }
 }
