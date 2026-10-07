@@ -102,4 +102,35 @@ object AirGapExporter {
             appendLine("=== END COMMONMSM AIR-GAP ENVELOPE ===")
         }
     }
+
+    /**
+     * Exports deterministic JSON representation with cryptographic payload digest for automated verification.
+     */
+    fun exportToJson(report: ResearchReport): String {
+        val sha = calculateSha256(report.synthesizedText)
+        return buildString {
+            appendLine("{")
+            appendLine("  \"protocol\": \"commonmsm_v1\",")
+            appendLine("  \"query\": \"${report.query.replace("\"", "\\\"")}\",")
+            appendLine("  \"intent\": \"${report.intent.name}\",")
+            appendLine("  \"sha256\": \"$sha\",")
+            appendLine("  \"citationsCount\": ${report.citations.size},")
+            appendLine("  \"placesCount\": ${report.instantPlaces.size},")
+            appendLine("  \"specsCount\": ${report.instantSpecs.size},")
+            appendLine("  \"telemetry\": {")
+            appendLine("    \"latencyMs\": ${report.stats.totalTimeMs},")
+            appendLine("    \"ttftMs\": ${report.stats.timeToFirstTokenMs},")
+            appendLine("    \"tps\": ${report.stats.tokensPerSecond},")
+            appendLine("    \"ramMb\": ${report.stats.memoryUsedMb}")
+            appendLine("  }")
+            appendLine("}")
+        }
+    }
+
+    /**
+     * Exports the complete Merkle audit trail certificate.
+     */
+    fun exportAuditTrail(): String {
+        return AuditLogger.exportAuditCertificate()
+    }
 }

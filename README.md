@@ -1,4 +1,4 @@
-﻿# commonmsm
+# commonmsm
 ### The Offline Information Lookup & Research Engine for Android
 
 [![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20GrapheneOS-blue.svg)](https://grapheneos.org)
@@ -29,6 +29,10 @@ commonmsm solves this through a **Dual-Engine Hybrid Intelligence Architecture**
 - **Zero Hallucination Grounding**: All model outputs are cited with verified footnote chips (`[1]`, `[2]`), allowing users to tap and read the original offline source passage directly on their device.
 - **Hardware Thermal Governor**: Actively interrogates `PowerManager.getThermalStatus()` and battery thermals to dynamically scale native CPU inference threads and protect mobile hardware longevity.
 - **On-Disk N-Gram Language Model**: Zero-RAM flash-resident N-gram continuation engine (~100B parameter capability) directly fulfilling Vitalik's architectural suggestion for mobile phones.
+- **EIP & Cryptographic Knowledge Graph**: Maps protocol dependencies, prerequisite standards, and supersessions across EIP-7702, ERC-4337, EIP-4844, and NIST PQC.
+- **Tactical GNSS Spatial Radar Scope**: Vector-rendered circular radar screen visualizing nearby venues, polar bearings, and concentric range rings on-device.
+- **Append-Only Merkle Cryptographic Audit Chain**: Cryptographic SHA-256 block-linked execution log ensuring untampered offline cleanroom verification and certificate export.
+- **Dynamic Query Autocomplete & Vocabulary Indexer**: Instant prefix suggestion chips for fast touch typing in offline field environments.
 - **Air-Gapped Cleanroom Exporter**: Generates publication-ready Markdown reports with SHA-256 integrity digests and air-gapped QR transfer envelopes for cleanroom inspection.
 - **Offline SpatialMath GNSS Engine**: Implements on-device Haversine distance and 8-point compass bearing calculations for 21.1M global POIs without internet.
 - **Persistent Research Notebook**: Local SQLite session store enabling researchers to bookmark, inspect, and reload multi-hop investigations across app restarts.

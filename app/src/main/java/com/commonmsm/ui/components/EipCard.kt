@@ -134,6 +134,39 @@ fun EipCard(
                 lineHeight = 17.sp
             )
 
+            // Cross-Spec Dependencies & Relations from EipKnowledgeGraph
+            val relations = remember(spec.eipNumber) { com.commonmsm.engine.EipKnowledgeGraph.getRelations(spec.eipNumber) }
+            if (relations.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = "SPEC DEPENDENCIES & CROSS-REFS:",
+                    color = BrutalGray,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 0.5.sp
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .androidx.compose.foundation.horizontalScroll(androidx.compose.foundation.rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    relations.forEach { rel ->
+                        BrutalCircularStamp(
+                            text = "${rel.relationship}: EIP-${rel.targetEip}",
+                            color = when (rel.relationship) {
+                                "SUPERSEDES", "SUPERSEDED_BY" -> BrutalYellow
+                                "REQUIRES" -> BrutalRed
+                                "EXTENDS" -> BrutalBlue
+                                else -> BrutalOrange
+                            }
+                        )
+                    }
+                }
+            }
+
             // Collapsible Full Technical Spec Section
             AnimatedVisibility(visible = isExpanded) {
                 Column(modifier = Modifier.padding(top = 10.dp)) {

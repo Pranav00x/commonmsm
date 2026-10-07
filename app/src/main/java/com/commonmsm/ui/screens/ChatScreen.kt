@@ -42,11 +42,13 @@ import com.commonmsm.data.models.Citation
 import com.commonmsm.data.models.ResearchSession
 import com.commonmsm.engine.AirGapExporter
 import com.commonmsm.engine.InferenceController
+import com.commonmsm.engine.QuerySuggestEngine
 import com.commonmsm.ui.components.CitationChip
 import com.commonmsm.ui.components.EipCard
 import com.commonmsm.ui.components.MarkdownRenderer
 import com.commonmsm.ui.components.PerformanceHUD
 import com.commonmsm.ui.components.PlaceCard
+import com.commonmsm.ui.components.SpatialRadarView
 import com.commonmsm.ui.screens.NotebookSheet
 import com.commonmsm.ui.theme.*
 import kotlinx.coroutines.launch
@@ -162,6 +164,32 @@ fun ChatScreen(
                                 letterSpacing = 1.sp
                             )
                         }
+
+                        Spacer(modifier = Modifier.width(6.dp))
+
+                        // Circular Engine Mode Toggle Pill
+                        var isMoEMode by remember { mutableStateOf(inferenceController.isMoEActive()) }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(BrutalDarkSurface)
+                                .border(1.5.dp, if (isMoEMode) BrutalOrange else BrutalBlue, CircleShape)
+                                .clickable {
+                                    isMoEMode = !isMoEMode
+                                    inferenceController.setMoEActive(isMoEMode)
+                                }
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = if (isMoEMode) "MoE: DEEP" else "SLM: FAST",
+                                color = if (isMoEMode) BrutalOrange else BrutalBlue,
+                                fontSize = 9.sp,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 0.5.sp
+                            )
+                        }
                     }
 
                     // Circular Action Buttons (Notebook + Settings)
@@ -231,6 +259,25 @@ fun ChatScreen(
                     CircularBrutalChip("EIP-4844 BLOBS") { sendQuery("How does EIP-4844 reduce Layer 2 rollup transaction costs?") }
                     CircularBrutalChip("PBS // ePBS") { sendQuery("What are the centralization trade-offs of Proposer-Builder Separation (PBS)?") }
                     CircularBrutalChip("TOKYO VEGAN") { sendQuery("Find the best vegan restaurants in Tokyo") }
+                }
+
+                // Real-time Dynamic Query Auto-Complete Suggestions
+                val suggestions = remember(inputText) { QuerySuggestEngine.getSuggestions(inputText) }
+                if (suggestions.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                            .padding(bottom = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        suggestions.forEach { sugg ->
+                            CircularBrutalChip(">> $sugg") {
+                                inputText = ""
+                                sendQuery(sugg)
+                            }
+                        }
+                    }
                 }
 
                 // Circular Pill Input Field
@@ -566,6 +613,8 @@ private fun AssistantBrutalCard(
                     fontSize = 13.sp
                 )
                 Spacer(modifier = Modifier.height(6.dp))
+                SpatialRadarView(places = update.instantPlaces)
+                Spacer(modifier = Modifier.height(10.dp))
                 update.instantPlaces.take(3).forEach { place ->
                     PlaceCard(place = place)
                 }

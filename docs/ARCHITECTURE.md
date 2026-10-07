@@ -125,3 +125,18 @@ For high-assurance research on air-gapped GrapheneOS hardware:
 
 ### 5.5. Persistent SQLite Research Notebook (`NotebookSheet.kt`)
 All multi-hop queries, grounded evidence snippets, and execution telemetry are recorded in an encrypted/private SQLite table (`research_sessions`), enabling instant session reloading and longitudinal research persistence.
+
+### 5.6. EIP & Cryptographic Knowledge Graph (`EipKnowledgeGraph.kt`)
+Structures inter-specification relationships across the Ethereum standards landscape:
+- Tracks `SUPERSEDES`, `COMPARES`, `REQUIRES`, and `EXTENDS` relations (e.g., EIP-7702 vs ERC-4337 vs EIP-3074).
+- Surface direct cross-spec dependencies as clickable interactive pills directly inside specification result cards.
+
+### 5.7. Append-Only Cryptographic Merkle Audit Trail (`AuditLogger.kt`)
+Maintains an unbroken SHA-256 hash chain of every inquiry processed by the engine:
+$$\text{Block}_n = \text{SHA256}(\text{Index} \parallel \text{Timestamp} \parallel \text{Query} \parallel \text{ResponseDigest} \parallel \text{RAM} \parallel \text{Block}_{n-1})$$
+Enables mathematical verification that device execution was untampered and strictly on-device, with 1-tap cryptographic certificate export.
+
+### 5.8. Tactical GNSS Spatial Radar Scope (`SpatialRadarView.kt`)
+Vector-rendered circular radar interface plotting nearby physical POIs in polar coordinates relative to the user's heading:
+- Visualizes concentric range circles (500m, 1km, 2km) and 8 cardinal axis bearings.
+- High-contrast OLED rendering with zero color gradients, designed for extreme low-light visibility and battery preservation.

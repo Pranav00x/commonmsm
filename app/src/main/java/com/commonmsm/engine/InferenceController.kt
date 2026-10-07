@@ -29,6 +29,12 @@ class InferenceController(private val context: Context) {
     private var activeModelPath: String? = null
     private var isMoEEnabled: Boolean = false
 
+    fun setMoEActive(enabled: Boolean) {
+        this.isMoEEnabled = enabled
+    }
+
+    fun isMoEActive(): Boolean = isMoEEnabled
+
     fun configureModel(modelPath: String, isMoE: Boolean) {
         this.activeModelPath = modelPath
         this.isMoEEnabled = isMoE
@@ -213,6 +219,9 @@ class InferenceController(private val context: Context) {
                 timestamp = System.currentTimeMillis()
             )
         )
+
+        // Record in cryptographic air-gapped Merkle audit chain
+        AuditLogger.recordEvent(query, fullAnswer, memoryUsedMb)
 
         emit(
             StreamUpdate(

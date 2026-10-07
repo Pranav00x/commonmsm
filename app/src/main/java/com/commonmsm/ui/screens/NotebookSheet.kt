@@ -11,15 +11,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.commonmsm.data.models.ResearchSession
+import com.commonmsm.engine.AuditLogger
 import com.commonmsm.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -82,6 +85,47 @@ fun NotebookSheet(
 
             Spacer(modifier = Modifier.height(14.dp))
             HorizontalDivider(color = BrutalBorder, thickness = 2.dp)
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Merkle Cryptographic Audit Verification Bar
+            var auditCopied by remember { mutableStateOf(false) }
+            val clipboard = LocalClipboardManager.current
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "MERKLE CHAIN: ${if (AuditLogger.verifyChainIntegrity()) "INTEGRITY [OK]" else "TAMPERED"}",
+                    color = BrutalNeonGreen,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(BrutalDarkSurface)
+                        .border(1.5.dp, if (auditCopied) BrutalNeonGreen else BrutalBorder, CircleShape)
+                        .clickable {
+                            clipboard.setText(AnnotatedString(AuditLogger.exportAuditCertificate()))
+                            auditCopied = true
+                        }
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = if (auditCopied) "CERT COPIED" else "EXPORT AUDIT TRAIL",
+                        color = if (auditCopied) BrutalNeonGreen else BrutalWhite,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+            HorizontalDivider(color = BrutalBorder, thickness = 1.dp)
             Spacer(modifier = Modifier.height(14.dp))
 
             if (sessions.isEmpty()) {
