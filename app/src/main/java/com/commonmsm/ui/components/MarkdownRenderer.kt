@@ -27,19 +27,21 @@ fun MarkdownRenderer(
             when {
                 trimmed.startsWith("### ") -> {
                     Text(
-                        text = trimmed.removePrefix("### "),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = CommonMsmAmber,
-                        fontWeight = FontWeight.Bold,
+                        text = trimmed.removePrefix("### ").uppercase(),
+                        color = BrutalOrange,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Black,
+                        fontSize = 15.sp,
                         modifier = Modifier.padding(top = 10.dp, bottom = 4.dp)
                     )
                 }
                 trimmed.startsWith("## ") -> {
                     Text(
-                        text = trimmed.removePrefix("## "),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = CommonMsmOrange,
-                        fontWeight = FontWeight.Bold,
+                        text = trimmed.removePrefix("## ").uppercase(),
+                        color = BrutalWhite,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Black,
+                        fontSize = 17.sp,
                         modifier = Modifier.padding(top = 14.dp, bottom = 6.dp)
                     )
                 }
@@ -48,16 +50,16 @@ fun MarkdownRenderer(
                     Text(
                         text = buildStyledMarkdown(content),
                         style = MaterialTheme.typography.bodyLarge,
-                        color = TextPrimary,
-                        modifier = Modifier.padding(start = 8.dp, top = 2.dp, bottom = 2.dp)
+                        color = BrutalWhite,
+                        modifier = Modifier.padding(start = 8.dp, top = 3.dp, bottom = 3.dp)
                     )
                 }
                 trimmed.isNotBlank() -> {
                     Text(
                         text = buildStyledMarkdown(trimmed),
                         style = MaterialTheme.typography.bodyLarge,
-                        color = TextPrimary,
-                        modifier = Modifier.padding(vertical = 3.dp)
+                        color = BrutalWhite,
+                        modifier = Modifier.padding(vertical = 4.dp)
                     )
                 }
             }
@@ -79,17 +81,17 @@ fun buildStyledMarkdown(text: String) = buildAnnotatedString {
         val raw = match.value
         when {
             raw.startsWith("**") && raw.endsWith("**") -> {
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = TextPrimary)) {
+                withStyle(SpanStyle(fontWeight = FontWeight.Black, color = BrutalWhite)) {
                     append(raw.removeSurrounding("**"))
                 }
             }
             raw.startsWith("[") && raw.endsWith("]") -> {
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = CommonMsmOrange)) {
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = BrutalOrange)) {
                     append(raw)
                 }
             }
             raw.startsWith("`") && raw.endsWith("`") -> {
-                withStyle(SpanStyle(fontFamily = FontFamily.Monospace, color = FlameYellow)) {
+                withStyle(SpanStyle(fontFamily = FontFamily.Monospace, color = BrutalYellow, fontWeight = FontWeight.Bold)) {
                     append(raw.removeSurrounding("`"))
                 }
             }

@@ -1,6 +1,7 @@
 package com.commonmsm.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -8,21 +9,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.commonmsm.data.models.Citation
-import com.commonmsm.data.models.ResearchReport
 import com.commonmsm.engine.InferenceController
 import com.commonmsm.ui.components.CitationChip
 import com.commonmsm.ui.components.MarkdownRenderer
@@ -85,7 +87,8 @@ fun ChatScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(DarkSurface)
+                    .background(BrutalBlack)
+                    .border(width = 0.dp, color = BrutalBlack)
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 Row(
@@ -95,38 +98,58 @@ fun ChatScreen(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "commonmsm",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = CommonMsmOrange,
-                            fontWeight = FontWeight.Bold
+                            text = "COMMONMSM",
+                            color = BrutalWhite,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Black,
+                            fontSize = 18.sp,
+                            letterSpacing = (-0.5).sp
                         )
                         Spacer(modifier = Modifier.width(10.dp))
-                        Box(
+
+                        // Circular Status Pill (No Gradients, Solid Border)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(AccentGreen.copy(alpha = 0.15f))
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                                .clip(CircleShape)
+                                .background(BrutalBlack)
+                                .border(1.5.dp, BrutalNeonGreen, CircleShape)
+                                .padding(horizontal = 10.dp, vertical = 4.dp)
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    Icons.Default.Shield,
-                                    contentDescription = "Offline",
-                                    tint = AccentGreen,
-                                    modifier = Modifier.size(12.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = "100% OFFLINE",
-                                    color = AccentGreen,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(BrutalNeonGreen)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "OFFLINE",
+                                color = BrutalNeonGreen,
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 1.sp
+                            )
                         }
                     }
 
-                    IconButton(onClick = onOpenSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Settings", tint = TextSecondary)
+                    // Circular Action Button
+                    Box(
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(BrutalDarkSurface)
+                            .border(2.dp, BrutalBorder, CircleShape)
+                            .clickable { onOpenSettings() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.Settings,
+                            contentDescription = "Config",
+                            tint = BrutalWhite,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 }
             }
@@ -135,56 +158,81 @@ fun ChatScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(DarkSurface)
+                    .background(BrutalBlack)
                     .padding(12.dp)
             ) {
+                // Brutalist Circular Quick Chips
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState())
-                        .padding(bottom = 8.dp),
+                        .padding(bottom = 10.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    QuickChip("🌿 Vegan in Lisbon") { sendQuery("Tell me the best vegan restaurants in Lisbon") }
-                    QuickChip("⚙️ EIP-7702 vs ERC-4337") { sendQuery("Compare EIP-7702 and ERC-4337 for account abstraction") }
-                    QuickChip("🛡️ Falcon vs ML-DSA") { sendQuery("Compare Falcon and ML-DSA post-quantum signature schemes for Ethereum") }
-                    QuickChip("🇩🇪 Vegan in Berlin") { sendQuery("What are the best vegan restaurants in Berlin?") }
+                    CircularBrutalChip("LISBON VEGAN") { sendQuery("Tell me the best vegan restaurants in Lisbon") }
+                    CircularBrutalChip("EIP-7702 // 4337") { sendQuery("Compare EIP-7702 and ERC-4337 for account abstraction") }
+                    CircularBrutalChip("FALCON VS ML-DSA") { sendQuery("Compare Falcon and ML-DSA post-quantum signature schemes for Ethereum") }
+                    CircularBrutalChip("BERLIN VEGAN") { sendQuery("What are the best vegan restaurants in Berlin?") }
                 }
 
+                // Circular Pill Input Field
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextField(
-                        value = inputText,
-                        onValueChange = { inputText = it },
-                        placeholder = { Text("Ask any research or travel query...", color = TextTertiary, fontSize = 14.sp) },
+                    Box(
                         modifier = Modifier
                             .weight(1f)
-                            .clip(RoundedCornerShape(24.dp)),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = DarkSurfaceVariant,
-                            unfocusedContainerColor = DarkSurfaceVariant,
-                            focusedTextColor = TextPrimary,
-                            unfocusedTextColor = TextPrimary,
-                            cursorColor = CommonMsmOrange,
-                            focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                            unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
-                        ),
-                        singleLine = true
-                    )
+                            .height(52.dp)
+                            .clip(CircleShape)
+                            .background(BrutalDarkSurface)
+                            .border(2.dp, if (inputText.isNotBlank()) BrutalOrange else BrutalBorder, CircleShape)
+                            .padding(horizontal = 20.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        TextField(
+                            value = inputText,
+                            onValueChange = { inputText = it },
+                            placeholder = {
+                                Text(
+                                    "QUERY_LOCAL_CORPUS...",
+                                    color = BrutalGray,
+                                    fontSize = 13.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedTextColor = BrutalWhite,
+                                unfocusedTextColor = BrutalWhite,
+                                cursorColor = BrutalOrange,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent
+                            ),
+                            singleLine = true
+                        )
+                    }
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    IconButton(
-                        onClick = { sendQuery(inputText) },
-                        enabled = inputText.isNotBlank() && !isGenerating,
+
+                    // Solid Circular Send Button
+                    Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(50))
-                            .background(if (inputText.isNotBlank() && !isGenerating) CommonMsmOrange else DarkSurfaceVariant)
+                            .size(52.dp)
+                            .clip(CircleShape)
+                            .background(if (inputText.isNotBlank() && !isGenerating) BrutalOrange else BrutalDarkSurface)
+                            .border(2.dp, if (inputText.isNotBlank() && !isGenerating) BrutalWhite else BrutalBorder, CircleShape)
+                            .clickable(enabled = inputText.isNotBlank() && !isGenerating) { sendQuery(inputText) },
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            Icons.Default.Send,
-                            contentDescription = "Send",
-                            tint = if (inputText.isNotBlank() && !isGenerating) DarkBackground else TextTertiary
+                            Icons.Default.ArrowForward,
+                            contentDescription = "Run",
+                            tint = if (inputText.isNotBlank() && !isGenerating) BrutalBlack else BrutalGray,
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 }
@@ -194,10 +242,11 @@ fun ChatScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(DarkBackground)
+                .background(BrutalBlack)
                 .padding(innerPadding)
         ) {
             if (messages.isEmpty()) {
+                // Brutalist Empty State
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -205,27 +254,63 @@ fun ChatScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // Circular Hero Core
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            .background(BrutalDarkSurface)
+                            .border(3.dp, BrutalOrange, CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "MSM",
+                            color = BrutalOrange,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Black,
+                            fontSize = 20.sp
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     Text(
-                        text = "commonmsm",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = CommonMsmOrange,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 26.sp
+                        text = "COMMONMSM // EDGE ENGINE",
+                        color = BrutalWhite,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Black,
+                        fontSize = 16.sp,
+                        letterSpacing = 1.sp
                     )
+
                     Spacer(modifier = Modifier.height(8.dp))
+
                     Text(
-                        text = "The Offline Information Lookup & Research Engine for Android",
-                        color = TextSecondary,
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        text = "100% AIR-GAPPED HARDWARE SYNTHESIS",
+                        color = BrutalGray,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.height(14.dp))
-                    Text(
-                        text = "• Operates entirely without internet or Google Play Services\n• 21M+ Places (OSM + Overture) with dietary tags\n• Full Wikipedia FTS5 Index & Ethereum/Crypto Specs\n• Extreme MoE weight streaming from flash storage",
-                        color = TextTertiary,
-                        style = MaterialTheme.typography.bodyMedium,
-                        lineHeight = 22.sp
-                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // Industrial Specs Card
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .border(2.dp, BrutalBorder, RoundedCornerShape(12.dp))
+                            .background(BrutalDarkSurface, RoundedCornerShape(12.dp))
+                            .padding(16.dp)
+                    ) {
+                        Column {
+                            BrutalSpecRow(tag = "CORPUS_PLACES", value = "21.1M POIs (OSM+OVERTURE)")
+                            BrutalSpecRow(tag = "CORPUS_WIKI", value = "2.0M FINEWIKI FTS5")
+                            BrutalSpecRow(tag = "CORPUS_SPECS", value = "1,208 EIPs / NIST PQC")
+                            BrutalSpecRow(tag = "NETWORK_PERMISSION", value = "NONE (KERNEL ENFORCED)")
+                            BrutalSpecRow(tag = "MAX_STORAGE", value = "50.0 GB HARD LIMIT")
+                        }
+                    }
                 }
             } else {
                 LazyColumn(
@@ -237,14 +322,14 @@ fun ChatScreen(
                 ) {
                     items(messages) { msg ->
                         if (msg.isUser) {
-                            UserMessageBubble(msg.text)
+                            UserBrutalBubble(msg.text)
                         } else {
-                            AssistantMessageCard(
+                            AssistantBrutalCard(
                                 msg = msg,
                                 onCitationClick = { selectedCitation = it }
                             )
                         }
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
                     }
                 }
             }
@@ -260,93 +345,174 @@ fun ChatScreen(
 }
 
 @Composable
-private fun QuickChip(text: String, onClick: () -> Unit) {
+private fun CircularBrutalChip(text: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(DarkSurfaceVariant)
+            .clip(CircleShape)
+            .background(BrutalDarkSurface)
+            .border(1.5.dp, BrutalBorder, CircleShape)
             .clickable { onClick() }
-            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .padding(horizontal = 14.dp, vertical = 7.dp)
     ) {
-        Text(text = text, color = TextSecondary, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+        Text(
+            text = text,
+            color = BrutalWhite,
+            fontFamily = FontFamily.Monospace,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Black,
+            letterSpacing = 0.5.sp
+        )
     }
 }
 
 @Composable
-private fun UserMessageBubble(text: String) {
+private fun BrutalSpecRow(tag: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 3.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = "• $tag", color = BrutalGray, fontFamily = FontFamily.Monospace, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+        Text(text = value, color = BrutalWhite, fontFamily = FontFamily.Monospace, fontSize = 10.sp, fontWeight = FontWeight.Black)
+    }
+}
+
+@Composable
+private fun UserBrutalBubble(text: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End
     ) {
         Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(16.dp, 16.dp, 4.dp, 16.dp))
-                .background(CommonMsmDarkOrange)
-                .padding(horizontal = 14.dp, vertical = 10.dp)
+                .fillMaxWidth(0.85f)
+                .clip(RoundedCornerShape(12.dp))
+                .background(BrutalDarkSurface)
+                .border(2.dp, BrutalOrange, RoundedCornerShape(12.dp))
+                .padding(14.dp)
         ) {
-            Text(text = text, color = TextPrimary, style = MaterialTheme.typography.bodyLarge)
+            Column {
+                Text(
+                    text = "USER_INPUT >>",
+                    color = BrutalOrange,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 10.sp,
+                    letterSpacing = 1.sp
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = text,
+                    color = BrutalWhite,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun AssistantMessageCard(
+private fun AssistantBrutalCard(
     msg: ChatMessage,
     onCitationClick: (Citation) -> Unit
 ) {
     val update = msg.update
 
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = DarkSurface),
-        shape = RoundedCornerShape(16.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(BrutalDarkSurface)
+            .border(2.dp, BrutalBorder, RoundedCornerShape(12.dp))
+            .padding(16.dp)
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "RESPONSE // GROUNDED ENGINE",
+                    color = BrutalGray,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 10.sp,
+                    letterSpacing = 1.sp
+                )
+
+                if (update?.isComplete == true) {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(BrutalNeonGreen)
+                            .size(6.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Instant Verified Places Section
             if (update != null && update.instantPlaces.isNotEmpty()) {
                 Text(
-                    text = "🗺️ Instant Verified Places (${update.instantPlaces.size} found in 42ms)",
-                    color = CommonMsmAmber,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    text = "🗺️ INSTANT_POI_MATCHES (${update.instantPlaces.size} FOUND)",
+                    color = BrutalOrange,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 13.sp
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 update.instantPlaces.take(3).forEach { place ->
                     PlaceCard(place = place)
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-                HorizontalDivider(color = DarkBorder)
-                Spacer(modifier = Modifier.height(10.dp))
             }
 
+            // Synthesized Body Text
             if (msg.text.isNotBlank()) {
                 MarkdownRenderer(text = msg.text)
             } else {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = 12.dp)
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(16.dp),
-                        color = CommonMsmOrange,
+                        color = BrutalOrange,
+                        trackColor = BrutalDarkGray,
                         strokeWidth = 2.dp
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        text = "Searching offline knowledge bases & synthesizing...",
-                        color = TextTertiary,
-                        fontSize = 12.sp
+                        text = "SYNTHESIZING_GROUNDED_EVIDENCE...",
+                        color = BrutalGray,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
 
+            // Verified Citation Pills
             if (update != null && update.report != null && update.report.citations.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = "VERIFIED SOURCES:", color = TextTertiary, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(14.dp))
+                Text(
+                    text = "VERIFIED CITATIONS:",
+                    color = BrutalGray,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 1.sp
+                )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState())
-                        .padding(top = 4.dp)
+                        .padding(top = 6.dp)
                 ) {
                     update.report.citations.forEach { citation ->
                         CitationChip(citation = citation, onClick = onCitationClick)
@@ -354,8 +520,9 @@ private fun AssistantMessageCard(
                 }
             }
 
+            // Brutalist Circular Performance HUD
             if (update != null && update.report != null) {
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 PerformanceHUD(stats = update.report.stats)
             }
         }

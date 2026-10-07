@@ -2,20 +2,20 @@ package com.commonmsm.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val CommonMsmOrange = Color(0xFFFF9100)
-val CommonMsmAmber = Color(0xFFFFAB40)
-val CommonMsmDarkOrange = Color(0xFFE65100)
-val FlameYellow = Color(0xFFFFD54F)
+// Pure Brutalist Solid Palette - ZERO GRADIENTS
+val BrutalBlack = Color(0xFF000000)        // Pure OLED Black
+val BrutalDarkSurface = Color(0xFF0A0A0A)  // Deep Charcoal
+val BrutalElevated = Color(0xFF141414)     // Card Surface
+val BrutalBorder = Color(0xFF2E2E2E)       // Stark Border
+val BrutalBorderBright = Color(0xFFFFFFFF) // Maximum Contrast White Border
 
-val DarkBackground = Color(0xFF101216)
-val DarkSurface = Color(0xFF1B1E24)
-val DarkSurfaceVariant = Color(0xFF262A33)
-val DarkBorder = Color(0xFF333842)
+val BrutalWhite = Color(0xFFFFFFFF)        // High-Contrast Primary Text
+val BrutalGray = Color(0xFF888888)         // Monospace Mid Gray
+val BrutalDarkGray = Color(0xFF444444)     // Low-Contrast Track
 
-val TextPrimary = Color(0xFFF1F3F5)
-val TextSecondary = Color(0xFFA0A6B2)
-val TextTertiary = Color(0xFF6C7280)
-
-val AccentGreen = Color(0xFF10B981)
-val AccentBlue = Color(0xFF3B82F6)
-val AccentPurple = Color(0xFF8B5CF6)
+// Solid High-Contrast Accents (NO GRADIENTS)
+val BrutalOrange = Color(0xFFFF4400)       // Safety / Industrial Orange
+val BrutalNeonGreen = Color(0xFF00FF66)    // Terminal Status Green
+val BrutalYellow = Color(0xFFFFDD00)       // Monospace Accent Yellow
+val BrutalBlue = Color(0xFF0066FF)         // Spec / Crypto Blue
+val BrutalRed = Color(0xFFFF1133)          // Error / Alert Red

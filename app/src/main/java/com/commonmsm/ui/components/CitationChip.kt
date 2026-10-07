@@ -1,14 +1,16 @@
 package com.commonmsm.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,32 +25,37 @@ fun CitationChip(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(end = 6.dp, top = 4.dp, bottom = 4.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(DarkSurfaceVariant)
+            .padding(end = 8.dp, top = 4.dp, bottom = 4.dp)
+            .clip(CircleShape)
+            .background(BrutalBlack)
+            .border(2.dp, BrutalBorder, CircleShape)
             .clickable { onClick(citation) }
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(horizontal = 10.dp, vertical = 6.dp)
     ) {
+        // Stark Circular Index Badge
         Box(
             modifier = Modifier
-                .size(16.dp)
-                .clip(RoundedCornerShape(4.dp))
-                .background(CommonMsmOrange.copy(alpha = 0.2f)),
+                .size(20.dp)
+                .clip(CircleShape)
+                .background(BrutalOrange)
+                .border(1.dp, BrutalBlack, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "${citation.index}",
-                color = CommonMsmOrange,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold
+                color = BrutalBlack,
+                fontSize = 11.sp,
+                fontFamily = FontFamily.Monospace,
+                fontWeight = FontWeight.Black
             )
         }
-        Spacer(modifier = Modifier.width(6.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = citation.title.take(24) + if (citation.title.length > 24) "..." else "",
-            color = TextSecondary,
+            color = BrutalWhite,
+            fontFamily = FontFamily.Monospace,
             fontSize = 11.sp,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Bold
         )
     }
 }

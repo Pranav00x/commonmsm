@@ -27,6 +27,10 @@ commonmsm solves this through a **Dual-Engine Hybrid Intelligence Architecture**
   - **📚 2.0 Million Encyclopedic Articles**: English Wikipedia (FineWiki) compressed into an inverted SQLite FTS5 database with BM25 ranking and logarithmic pageview prestige.
   - **⚙️ Complete Ethereum & Crypto Specs**: All 1,208 EIPs and ERCs (including EIP-7702, ERC-4337, EIP-4844, Pectra fork specs) and NIST Post-Quantum standards (ML-KEM, ML-DSA, Falcon).
 - **Zero Hallucination Grounding**: All model outputs are cited with verified footnote chips (`[1]`, `[2]`), allowing users to tap and read the original offline source passage directly on their device.
+- **⚡ Brutalist & Circular UI (Zero Gradients)**:
+  - **Zero Color Gradients**: Strictly flat, solid-color styling built on true OLED pitch black (`#000000`) for maximum battery efficiency on mobile screens.
+  - **Circular Telemetry Dials**: Real-time circular gauges for token speed (t/s), memory allocation (MB), and storage quota (50GB limit).
+  - **Circular Navigation & Chips**: Circular action controls (`CircleShape`), circular source citation pills `( 1 )`, and high-contrast monospace technical readouts.
 
 ---
 

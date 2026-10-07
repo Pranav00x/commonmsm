@@ -12,7 +12,7 @@ import com.commonmsm.engine.InferenceController
 import com.commonmsm.ui.screens.ChatScreen
 import com.commonmsm.ui.screens.ModelManagerScreen
 import com.commonmsm.ui.theme.CommonMsmTheme
-import com.commonmsm.ui.theme.DarkBackground
+import com.commonmsm.ui.theme.BrutalBlack
 
 class MainActivity : ComponentActivity() {
 
@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
             CommonMsmTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = DarkBackground
+                    color = BrutalBlack
                 ) {
                     var currentScreen by remember { mutableStateOf("chat") }
                     var isMoEActive by remember { mutableStateOf(false) }

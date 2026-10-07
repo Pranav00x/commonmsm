@@ -1,7 +1,9 @@
 package com.commonmsm.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -13,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,83 +27,96 @@ fun PlaceCard(
     place: PlaceEntity,
     onClick: () -> Unit = {}
 ) {
-    Card(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = DarkSurface),
-        shape = RoundedCornerShape(12.dp),
-        border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(DarkBorder))
+            .padding(vertical = 5.dp)
+            .border(2.dp, BrutalBorder, RoundedCornerShape(12.dp))
+            .background(BrutalElevated, RoundedCornerShape(12.dp))
+            .padding(14.dp)
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
+        Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = place.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = TextPrimary,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = place.name.uppercase(),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = BrutalWhite,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Black
+                    )
+                    Text(
+                        text = "${place.city.uppercase()}, ${place.country.uppercase()}",
+                        color = BrutalGray,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                // Stark Circular Score Badge
                 if (place.fameScore > 0) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                    Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(DarkSurfaceVariant)
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(BrutalBlack)
+                            .border(2.dp, BrutalYellow, CircleShape),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            Icons.Default.Star,
-                            contentDescription = "Rating",
-                            tint = FlameYellow,
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = String.format("%.1f", place.fameScore),
-                            color = FlameYellow,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
+                            color = BrutalYellow,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Black,
+                            fontSize = 13.sp
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
+            // Circular Badges & Diet Stamps
             Row(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (place.isStrictlyVegan) {
-                    BadgeChip(text = "🌱 100% Vegan", containerColor = AccentGreen.copy(alpha = 0.2f), textColor = AccentGreen)
+                    BrutalCircularStamp(text = "🌱 VEGAN: 100%", color = BrutalNeonGreen)
                 } else if (place.dietTags.contains("vegan")) {
-                    BadgeChip(text = "🥗 Vegan Options", containerColor = AccentGreen.copy(alpha = 0.15f), textColor = AccentGreen)
+                    BrutalCircularStamp(text = "🥗 VEGAN OPTIONS", color = BrutalNeonGreen)
                 }
 
                 if (!place.cuisine.isNullOrBlank()) {
-                    BadgeChip(text = place.cuisine, containerColor = DarkSurfaceVariant, textColor = TextSecondary)
+                    BrutalCircularStamp(text = place.cuisine.uppercase(), color = BrutalGray)
+                }
+
+                if (place.distanceMeters != null) {
+                    BrutalCircularStamp(text = "${place.distanceMeters.toInt()}M", color = BrutalBlue)
                 }
             }
 
             if (!place.address.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Default.LocationOn,
                         contentDescription = "Address",
-                        tint = TextTertiary,
+                        tint = BrutalOrange,
                         modifier = Modifier.size(14.dp)
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = place.address,
-                        color = TextSecondary,
-                        style = MaterialTheme.typography.bodyMedium
+                        color = BrutalWhite,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal
                     )
                 }
             }
@@ -111,14 +127,16 @@ fun PlaceCard(
                     Icon(
                         Icons.Default.Schedule,
                         contentDescription = "Hours",
-                        tint = TextTertiary,
+                        tint = BrutalGray,
                         modifier = Modifier.size(14.dp)
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = place.openingHours,
-                        color = TextTertiary,
-                        style = MaterialTheme.typography.labelSmall
+                        text = "HRS: ${place.openingHours}",
+                        color = BrutalGray,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
@@ -127,13 +145,21 @@ fun PlaceCard(
 }
 
 @Composable
-fun BadgeChip(text: String, containerColor: Color, textColor: Color) {
+fun BrutalCircularStamp(text: String, color: Color) {
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(6.dp))
-            .background(containerColor)
+            .clip(CircleShape)
+            .background(BrutalBlack)
+            .border(1.5.dp, color, CircleShape)
             .padding(horizontal = 8.dp, vertical = 3.dp)
     ) {
-        Text(text = text, color = textColor, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+        Text(
+            text = text,
+            color = color,
+            fontSize = 9.sp,
+            fontFamily = FontFamily.Monospace,
+            fontWeight = FontWeight.Black,
+            letterSpacing = 0.5.sp
+        )
     }
 }
