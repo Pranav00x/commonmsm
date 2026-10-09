@@ -14,8 +14,9 @@ import java.nio.channels.FileChannel
  * "He suggests extreme MoE might be the right architecture for phones (including newer variants like n-gram models):
  * something like ~100B params, most living on disk, with <1B activated per token."
  */
-class NgramDiskEngine(private val modelFile: File? = null) {
+class NgramDiskEngine(private val modelFile: File? = null) : AutoCloseable {
 
+    private var rafHandle: RandomAccessFile? = null
     private var memoryMappedBuffer: ByteBuffer? = null
     private var isInitialized = false
 
@@ -26,15 +27,28 @@ class NgramDiskEngine(private val modelFile: File? = null) {
     private fun initializeEngine() {
         if (modelFile != null && modelFile.exists() && modelFile.length() > 0) {
             try {
-                RandomAccessFile(modelFile, "r").use { raf ->
-                    val channel = raf.channel
-                    memoryMappedBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
-                    isInitialized = true
-                }
+                val raf = RandomAccessFile(modelFile, "r")
+                rafHandle = raf
+                val channel = raf.channel
+                memoryMappedBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
+                isInitialized = true
             } catch (e: Exception) {
                 isInitialized = false
+                try {
+                    rafHandle?.close()
+                } catch (_: Exception) {}
+                rafHandle = null
             }
         }
+    }
+
+    override fun close() {
+        try {
+            rafHandle?.close()
+        } catch (_: Exception) {}
+        rafHandle = null
+        memoryMappedBuffer = null
+        isInitialized = false
     }
 
     data class NgramMatch(
@@ -48,7 +62,8 @@ class NgramDiskEngine(private val modelFile: File? = null) {
      * Look up continuation tokens from disk using hash-indexed binary search or hash-table mapping.
      */
     fun predictContinuation(contextPhrase: String): NgramMatch? {
-        val words = contextPhrase.trim().split(Regex("\\s+"))
+        if (contextPhrase.isBlank()) return null
+        val words = contextPhrase.trim().split(Regex("\\s+")).filter { it.isNotBlank() }
         if (words.isEmpty()) return null
 
         // In absence of external 20GB n-gram file on device, compute from bundled transition table

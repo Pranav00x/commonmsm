@@ -48,6 +48,12 @@ bool MoeDiskStreamer::initialize() {
         return false;
     }
     file_size_ = sb.st_size;
+    if (file_size_ <= 0) {
+        LOGE("Invalid model file size: %zu", file_size_);
+        ::close(fd_);
+        fd_ = -1;
+        return false;
+    }
 
     // Memory map the file with MAP_SHARED and advise random access pattern
     mmap_base_ = mmap(nullptr, file_size_, PROT_READ, MAP_SHARED, fd_, 0);
@@ -94,7 +100,11 @@ void MoeDiskStreamer::evict_to_fit(size_t needed_bytes) {
     while (current_cache_bytes_ + needed_bytes > max_cache_bytes_ && !lru_list_.empty()) {
         auto& oldest = lru_list_.back();
         cache_map_.erase(oldest.key);
-        current_cache_bytes_ -= oldest.byte_size;
+        if (current_cache_bytes_ >= oldest.byte_size) {
+            current_cache_bytes_ -= oldest.byte_size;
+        } else {
+            current_cache_bytes_ = 0;
+        }
         if (oldest.buffer != nullptr) {
             free(oldest.buffer);
         }
@@ -128,9 +138,9 @@ const void* MoeDiskStreamer::get_expert_weights(uint32_t layer_idx, uint32_t exp
         return nullptr;
     }
 
-    if (mmap_base_ != MAP_FAILED) {
-        // Compute offset or slice from mmap_base
-        size_t offset = (layer_idx * 64 + expert_idx) * expert_byte_size % file_size_;
+    if (mmap_base_ != MAP_FAILED && file_size_ > 0) {
+        // Compute offset or slice from mmap_base safely
+        size_t offset = ((static_cast<size_t>(layer_idx) * 64ULL + expert_idx) * expert_byte_size) % file_size_;
         if (offset + expert_byte_size <= file_size_) {
             const uint8_t* src = static_cast<const uint8_t*>(mmap_base_) + offset;
             madvise((void*)src, expert_byte_size, MADV_WILLNEED);
@@ -153,13 +163,13 @@ const void* MoeDiskStreamer::get_expert_weights(uint32_t layer_idx, uint32_t exp
 
 void MoeDiskStreamer::prefetch_experts(const std::vector<std::pair<uint32_t, uint32_t>>& experts) {
     std::lock_guard<std::mutex> lock(mutex_);
-    if (mmap_base_ == MAP_FAILED) return;
+    if (mmap_base_ == MAP_FAILED || file_size_ == 0) return;
 
     size_t expert_byte_size = 4 * 1024 * 1024;
     for (const auto& p : experts) {
         uint32_t l = p.first;
         uint32_t e = p.second;
-        size_t offset = (l * 64 + e) * expert_byte_size % file_size_;
+        size_t offset = ((static_cast<size_t>(l) * 64ULL + e) * expert_byte_size) % file_size_;
         if (offset + expert_byte_size <= file_size_) {
             void* src = static_cast<uint8_t*>(mmap_base_) + offset;
             madvise(src, expert_byte_size, MADV_WILLNEED);

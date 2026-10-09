@@ -104,6 +104,32 @@ object AirGapExporter {
     }
 
     /**
+     * Safely escapes string characters for standard JSON compliance.
+     */
+    private fun escapeJson(str: String): String {
+        return buildString {
+            for (ch in str) {
+                when (ch) {
+                    '\\' -> append("\\\\")
+                    '"' -> append("\\\"")
+                    '\b' -> append("\\b")
+                    '\u000c' -> append("\\f")
+                    '\n' -> append("\\n")
+                    '\r' -> append("\\r")
+                    '\t' -> append("\\t")
+                    else -> {
+                        if (ch.code < 32) {
+                            append(String.format("\\u%04x", ch.code))
+                        } else {
+                            append(ch)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Exports deterministic JSON representation with cryptographic payload digest for automated verification.
      */
     fun exportToJson(report: ResearchReport): String {
@@ -111,7 +137,7 @@ object AirGapExporter {
         return buildString {
             appendLine("{")
             appendLine("  \"protocol\": \"commonmsm_v1\",")
-            appendLine("  \"query\": \"${report.query.replace("\"", "\\\"")}\",")
+            appendLine("  \"query\": \"${escapeJson(report.query)}\",")
             appendLine("  \"intent\": \"${report.intent.name}\",")
             appendLine("  \"sha256\": \"$sha\",")
             appendLine("  \"citationsCount\": ${report.citations.size},")

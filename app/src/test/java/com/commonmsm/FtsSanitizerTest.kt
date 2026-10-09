@@ -52,4 +52,31 @@ class FtsSanitizerTest {
         assertTrue(sanitized.contains("\"7702\"*"))
         assertTrue(sanitized.contains("\"4337\"*"))
     }
+
+    @Test
+    fun testReservedFtsOperatorsStripped() {
+        val rawQuery = "NEAR(account, abstraction) MATCH NOT AND OR"
+        val sanitized = com.commonmsm.data.FtsSanitizer.sanitizeFtsQuery(rawQuery)
+
+        assertFalse(sanitized.contains("NEAR"))
+        assertFalse(sanitized.contains("MATCH"))
+        assertFalse(sanitized.contains("NOT"))
+        assertTrue(sanitized.contains("\"account\"*"))
+        assertTrue(sanitized.contains("\"abstraction\"*"))
+    }
+
+    @Test
+    fun testLikePatternSanitization() {
+        val rawTerm = "test_user%100\\path"
+        val pattern = com.commonmsm.data.FtsSanitizer.sanitizeLikePattern(rawTerm)
+
+        assertEquals("%test\\_user\\%100\\\\path%", pattern)
+    }
+
+    @Test
+    fun testEmptyAndBlankQueries() {
+        assertEquals("", com.commonmsm.data.FtsSanitizer.sanitizeFtsQuery(""))
+        assertEquals("", com.commonmsm.data.FtsSanitizer.sanitizeFtsQuery("   "))
+        assertEquals("", com.commonmsm.data.FtsSanitizer.sanitizeFtsQuery("!@#$%^&*()_+"))
+    }
 }

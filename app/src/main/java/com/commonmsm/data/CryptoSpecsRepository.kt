@@ -30,12 +30,13 @@ class CryptoSpecsRepository {
 
     fun searchSpecs(query: String, limit: Int = 5): List<EipEntity> {
         val db = DatabaseManager.getCryptoDatabase() ?: return emptyList()
+        val safeLimit = limit.coerceIn(1, 50)
         val list = mutableListOf<EipEntity>()
         val seenNumbers = mutableSetOf<Int>()
 
         // 1. Extract any explicit EIP/ERC numbers in the query
         val numberRegex = Regex("""\b(?:eip|erc)?[ -]?(\d{3,5})\b""", RegexOption.IGNORE_CASE)
-        numberRegex.findAll(query).forEach { match ->
+        numberRegex.findAll(query.take(256)).forEach { match ->
             match.groupValues[1].toIntOrNull()?.let { num ->
                 if (!seenNumbers.contains(num)) {
                     getEip(num)?.let {
@@ -46,13 +47,10 @@ class CryptoSpecsRepository {
             }
         }
 
-        // 2. Full-text search on eips_fts
-        val tokens = query.split(Regex("[^a-zA-Z0-9]+"))
-            .filter { it.length >= 3 }
-            .filter { !listOf("the", "and", "for", "with", "what", "compare", "tell").contains(it.lowercase()) }
+        // 2. Full-text search on eips_fts using hardened sanitizer
+        val ftsQuery = FtsSanitizer.sanitizeFtsQuery(query)
 
-        if (tokens.isNotEmpty() && list.size < limit) {
-            val ftsQuery = tokens.joinToString(" OR ") { "\"$it\"*" }
+        if (ftsQuery.isNotBlank() && list.size < safeLimit) {
             try {
                 val ftsSql = """
                     SELECT e.eip_number, e.title, e.author, e.status, e.type, e.category, e.upgrade, e.summary, e.full_spec
@@ -61,7 +59,7 @@ class CryptoSpecsRepository {
                     WHERE eips_fts MATCH ?
                     LIMIT ?
                 """.trimIndent()
-                val cursor = db.rawQuery(ftsSql, arrayOf(ftsQuery, (limit - list.size).toString()))
+                val cursor = db.rawQuery(ftsSql, arrayOf(ftsQuery, (safeLimit - list.size).toString()))
                 cursor.use {
                     while (it.moveToNext()) {
                         val num = it.getInt(0)
@@ -84,13 +82,14 @@ class CryptoSpecsRepository {
                     }
                 }
             } catch (e: Exception) {
-                // 3. Fallback to token LIKE
+                // 3. Fallback to token LIKE with wildcard escaping
+                val tokens = query.split(Regex("[^a-zA-Z0-9]+")).filter { it.length >= 3 }
                 for (token in tokens.take(2)) {
-                    if (list.size >= limit) break
-                    val wildcard = "%$token%"
+                    if (list.size >= safeLimit) break
+                    val wildcard = FtsSanitizer.sanitizeLikePattern(token)
                     val cursor = db.rawQuery(
-                        "SELECT eip_number, title, author, status, type, category, upgrade, summary, full_spec FROM eips WHERE title LIKE ? OR summary LIKE ? LIMIT ?",
-                        arrayOf(wildcard, wildcard, (limit - list.size).toString())
+                        "SELECT eip_number, title, author, status, type, category, upgrade, summary, full_spec FROM eips WHERE title LIKE ? ESCAPE '\\' OR summary LIKE ? ESCAPE '\\' LIMIT ?",
+                        arrayOf(wildcard, wildcard, (safeLimit - list.size).toString())
                     )
                     cursor.use {
                         while (it.moveToNext()) {

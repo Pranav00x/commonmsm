@@ -64,4 +64,29 @@ class DataPackManagerTest {
             emptyFile.delete()
         }
     }
+
+    @Test
+    fun testSafeFilenameValidation() {
+        // Valid database and model pack names
+        assertTrue(DataPackManager.validateSafeFilename("places.db"))
+        assertTrue(DataPackManager.validateSafeFilename("wiki.db"))
+        assertTrue(DataPackManager.validateSafeFilename("crypto.db"))
+        assertTrue(DataPackManager.validateSafeFilename("Qwen2.5-3B-Instruct-Q4_K_M.gguf"))
+        assertTrue(DataPackManager.validateSafeFilename("custom_pack-v1.0.db"))
+
+        // Path traversal attempts must be rejected
+        assertFalse(DataPackManager.validateSafeFilename("../places.db"))
+        assertFalse(DataPackManager.validateSafeFilename("..\\wiki.db"))
+        assertFalse(DataPackManager.validateSafeFilename("/data/data/com.commonmsm/databases/places.db"))
+        assertFalse(DataPackManager.validateSafeFilename("sub/folder/places.db"))
+        assertFalse(DataPackManager.validateSafeFilename("C:\\evil.db"))
+        assertFalse(DataPackManager.validateSafeFilename("pack:stream.db"))
+
+        // Illegal extensions or blank names
+        assertFalse(DataPackManager.validateSafeFilename(""))
+        assertFalse(DataPackManager.validateSafeFilename("   "))
+        assertFalse(DataPackManager.validateSafeFilename("malicious.sh"))
+        assertFalse(DataPackManager.validateSafeFilename("exploit.apk"))
+        assertFalse(DataPackManager.validateSafeFilename("script.py"))
+    }
 }

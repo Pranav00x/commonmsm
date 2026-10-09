@@ -74,9 +74,23 @@ object GgufMetadataInspector {
                     )
                 }
 
-                // 3. Tensor count & KV count
+                // 3. Tensor count & KV count validation
                 val tensorCount = headerBuf.long
                 val kvCount = headerBuf.long
+
+                if (tensorCount < 0 || tensorCount > 10_000_000L) {
+                    return GgufInspectionResult(
+                        isValid = false,
+                        diagnosticMessage = "INVALID_TENSOR_COUNT: $tensorCount"
+                    )
+                }
+
+                if (kvCount < 0 || kvCount > 1_000_000L) {
+                    return GgufInspectionResult(
+                        isValid = false,
+                        diagnosticMessage = "INVALID_KV_COUNT: $kvCount"
+                    )
+                }
 
                 var architecture = "UNKNOWN"
                 var modelName = file.nameWithoutExtension
@@ -85,11 +99,12 @@ object GgufMetadataInspector {
                 var expertCount = 0
 
                 // Parse known metadata KV items up to available buffer
-                val maxKeys = kvCount.coerceAtMost(256).toInt()
+                val maxKeys = kvCount.coerceIn(0L, 256L).toInt()
                 for (i in 0 until maxKeys) {
                     if (headerBuf.remaining() < 8) break
-                    val keyLen = headerBuf.long.toInt()
-                    if (keyLen <= 0 || keyLen > headerBuf.remaining()) break
+                    val rawKeyLen = headerBuf.long
+                    if (rawKeyLen <= 0 || rawKeyLen > 1024 || rawKeyLen > headerBuf.remaining()) break
+                    val keyLen = rawKeyLen.toInt()
                     val keyBytes = ByteArray(keyLen)
                     headerBuf.get(keyBytes)
                     val key = String(keyBytes, Charsets.UTF_8)
@@ -116,9 +131,9 @@ object GgufMetadataInspector {
                                 if (key == "general.file_type") {
                                     fileTypeDesc = mapFileType(v)
                                 } else if (key.endsWith(".context_length")) {
-                                    contextLength = v
+                                    contextLength = v.coerceIn(256, 131072)
                                 } else if (key.endsWith(".expert_count")) {
-                                    expertCount = v
+                                    expertCount = v.coerceIn(0, 1024)
                                 }
                             }
                         }
@@ -128,9 +143,9 @@ object GgufMetadataInspector {
                                 if (key == "general.file_type") {
                                     fileTypeDesc = mapFileType(v)
                                 } else if (key.endsWith(".context_length")) {
-                                    contextLength = v
+                                    contextLength = v.coerceIn(256, 131072)
                                 } else if (key.endsWith(".expert_count")) {
-                                    expertCount = v
+                                    expertCount = v.coerceIn(0, 1024)
                                 }
                             }
                         }
@@ -142,15 +157,16 @@ object GgufMetadataInspector {
                         }
                         8 -> { // STRING
                             if (headerBuf.remaining() >= 8) {
-                                val sLen = headerBuf.long.toInt()
-                                if (sLen in 1..headerBuf.remaining()) {
+                                val rawSLen = headerBuf.long
+                                if (rawSLen in 1..headerBuf.remaining().coerceAtMost(65536).toLong()) {
+                                    val sLen = rawSLen.toInt()
                                     val sBytes = ByteArray(sLen)
                                     headerBuf.get(sBytes)
                                     val strVal = String(sBytes, Charsets.UTF_8)
                                     if (key == "general.architecture") {
-                                        architecture = strVal
+                                        architecture = strVal.take(64)
                                     } else if (key == "general.name") {
-                                        modelName = strVal
+                                        modelName = strVal.take(128)
                                     }
                                 }
                             }
@@ -159,15 +175,17 @@ object GgufMetadataInspector {
                             // Skip arrays in lightweight header scan
                             if (headerBuf.remaining() >= 12) {
                                 val elemType = headerBuf.int
-                                val arrLen = headerBuf.long.toInt()
-                                skipArray(headerBuf, elemType, arrLen)
+                                val arrLen = headerBuf.long
+                                if (arrLen in 0..1000000L) {
+                                    skipArray(headerBuf, elemType, arrLen.toInt())
+                                }
                             }
                         }
                         10, 11 -> { // UINT64, INT64
                             if (headerBuf.remaining() >= 8) {
                                 val v = headerBuf.long
                                 if (key.endsWith(".context_length")) {
-                                    contextLength = v.toInt()
+                                    contextLength = v.coerceIn(256L, 131072L).toInt()
                                 }
                             }
                         }
@@ -239,7 +257,7 @@ object GgufMetadataInspector {
     }
 
     private fun skipArray(buf: ByteBuffer, elemType: Int, count: Int) {
-        val safeCount = count.coerceAtMost(1024)
+        val safeCount = count.coerceIn(0, 1024)
         when (elemType) {
             0, 1, 7 -> {
                 val skip = minOf(safeCount, buf.remaining())
@@ -260,9 +278,9 @@ object GgufMetadataInspector {
             8 -> { // String array
                 for (j in 0 until safeCount) {
                     if (buf.remaining() < 8) break
-                    val len = buf.long.toInt()
-                    if (len in 0..buf.remaining()) {
-                        buf.position(buf.position() + len)
+                    val rawLen = buf.long
+                    if (rawLen in 0..minOf(buf.remaining(), 65536).toLong()) {
+                        buf.position(buf.position() + rawLen.toInt())
                     } else break
                 }
             }

@@ -328,11 +328,11 @@ object DatabaseManager {
                 )
             """.trimIndent())
             val stmt = db.compileStatement("INSERT OR REPLACE INTO research_sessions VALUES (?, ?, ?, ?, ?, ?)")
-            stmt.bindString(1, session.id)
-            stmt.bindString(2, session.query)
-            stmt.bindString(3, session.summary)
-            stmt.bindString(4, session.intent)
-            stmt.bindLong(5, session.sourcesCount.toLong())
+            stmt.bindString(1, session.id.take(64))
+            stmt.bindString(2, session.query.take(512))
+            stmt.bindString(3, session.summary.take(2048))
+            stmt.bindString(4, session.intent.take(64))
+            stmt.bindLong(5, session.sourcesCount.coerceIn(0, 1000).toLong())
             stmt.bindLong(6, session.timestamp)
             stmt.executeInsert()
         } catch (e: Exception) {
@@ -342,9 +342,10 @@ object DatabaseManager {
 
     fun getRecentSessions(limit: Int = 10): List<com.commonmsm.data.models.ResearchSession> {
         val db = cryptoDb ?: placesDb ?: return emptyList()
+        val safeLimit = limit.coerceIn(1, 100)
         val list = mutableListOf<com.commonmsm.data.models.ResearchSession>()
         try {
-            val cursor = db.rawQuery("SELECT id, query, summary, intent, sources_count, timestamp FROM research_sessions ORDER BY timestamp DESC LIMIT ?", arrayOf(limit.toString()))
+            val cursor = db.rawQuery("SELECT id, query, summary, intent, sources_count, timestamp FROM research_sessions ORDER BY timestamp DESC LIMIT ?", arrayOf(safeLimit.toString()))
             cursor.use {
                 while (it.moveToNext()) {
                     list.add(

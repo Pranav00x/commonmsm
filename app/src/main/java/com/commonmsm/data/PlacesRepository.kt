@@ -13,9 +13,11 @@ class PlacesRepository {
         limit: Int = 10
     ): List<PlaceEntity> {
         val db = DatabaseManager.getPlacesDatabase() ?: return emptyList()
+        val safeCity = city.trim().take(64)
+        val safeLimit = limit.coerceIn(1, 100)
 
         val selection = StringBuilder("LOWER(city) = LOWER(?)")
-        val selectionArgs = mutableListOf(city)
+        val selectionArgs = mutableListOf(safeCity)
 
         if (isVeganOnly) {
             selection.append(" AND (is_vegan = 1 OR diet_tags LIKE '%vegan%')")
@@ -23,7 +25,7 @@ class PlacesRepository {
 
         if (!category.isNullOrBlank()) {
             selection.append(" AND category = ?")
-            selectionArgs.add(category)
+            selectionArgs.add(category.trim().take(32))
         }
 
         val cursor = db.query(
@@ -34,7 +36,7 @@ class PlacesRepository {
             null,
             null,
             "fame_score DESC, is_vegan DESC",
-            limit.toString()
+            safeLimit.toString()
         )
 
         return cursor.use { extractPlaces(it) }
@@ -49,15 +51,20 @@ class PlacesRepository {
     ): List<PlaceEntity> {
         val db = DatabaseManager.getPlacesDatabase() ?: return emptyList()
 
-        val latDelta = radiusKm / 111.0
-        val lonDelta = radiusKm / (111.0 * cos(Math.toRadians(lat)).coerceAtLeast(0.01))
+        val safeLat = lat.coerceIn(-90.0, 90.0)
+        val safeLon = lon.coerceIn(-180.0, 180.0)
+        val safeRadiusKm = radiusKm.coerceIn(0.1, 500.0)
+        val safeLimit = limit.coerceIn(1, 100)
+
+        val latDelta = safeRadiusKm / 111.0
+        val lonDelta = safeRadiusKm / (111.0 * cos(Math.toRadians(safeLat)).coerceAtLeast(0.01))
 
         val selection = StringBuilder("latitude BETWEEN ? AND ? AND longitude BETWEEN ? AND ?")
         val selectionArgs = mutableListOf(
-            (lat - latDelta).toString(),
-            (lat + latDelta).toString(),
-            (lon - lonDelta).toString(),
-            (lon + lonDelta).toString()
+            (safeLat - latDelta).toString(),
+            (safeLat + latDelta).toString(),
+            (safeLon - lonDelta).toString(),
+            (safeLon + lonDelta).toString()
         )
 
         if (isVeganOnly) {
@@ -72,18 +79,18 @@ class PlacesRepository {
             null,
             null,
             "fame_score DESC",
-            (limit * 3).toString()
+            (safeLimit * 3).toString()
         )
 
         val rawPlaces = cursor.use { extractPlaces(it) }
 
         return rawPlaces.mapNotNull { place ->
-            val distMeters = haversineMeters(lat, lon, place.latitude, place.longitude)
-            if (distMeters <= radiusKm * 1000.0) {
+            val distMeters = haversineMeters(safeLat, safeLon, place.latitude, place.longitude)
+            if (distMeters <= safeRadiusKm * 1000.0) {
                 place.copy(distanceMeters = distMeters)
             } else null
         }.sortedBy { it.distanceMeters ?: Double.MAX_VALUE }
-         .take(limit)
+         .take(safeLimit)
     }
 
     private fun extractPlaces(cursor: Cursor): List<PlaceEntity> {

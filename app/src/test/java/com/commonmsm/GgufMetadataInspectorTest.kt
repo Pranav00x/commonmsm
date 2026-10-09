@@ -83,4 +83,34 @@ class GgufMetadataInspectorTest {
         assertTrue(result.fitsInRamBudget)
         assertTrue(result.diagnosticMessage.contains("VALID_GGUF_V3"))
     }
+
+    @Test
+    fun testNegativeTensorCountRejected() {
+        val corruptedFile = tempFolder.newFile("bad_tensors.gguf")
+        val buf = ByteBuffer.allocate(64).order(ByteOrder.LITTLE_ENDIAN)
+        buf.putInt(0x46554747) // GGUF magic
+        buf.putInt(3) // Version 3
+        buf.putLong(-1L) // Negative tensor count
+        buf.putLong(10L) // KV count
+        corruptedFile.writeBytes(buf.array())
+
+        val result = GgufMetadataInspector.inspectFile(corruptedFile)
+        assertFalse(result.isValid)
+        assertTrue(result.diagnosticMessage.contains("INVALID_TENSOR_COUNT"))
+    }
+
+    @Test
+    fun testNegativeKvCountRejected() {
+        val corruptedFile = tempFolder.newFile("bad_kv.gguf")
+        val buf = ByteBuffer.allocate(64).order(ByteOrder.LITTLE_ENDIAN)
+        buf.putInt(0x46554747) // GGUF magic
+        buf.putInt(3) // Version 3
+        buf.putLong(100L) // Tensor count
+        buf.putLong(-5L) // Negative KV count
+        corruptedFile.writeBytes(buf.array())
+
+        val result = GgufMetadataInspector.inspectFile(corruptedFile)
+        assertFalse(result.isValid)
+        assertTrue(result.diagnosticMessage.contains("INVALID_KV_COUNT"))
+    }
 }

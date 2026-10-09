@@ -6,25 +6,14 @@ import kotlin.math.ln
 class WikipediaRepository {
 
     companion object {
-        private val STOP_WORDS = setOf(
-            "the", "is", "at", "which", "on", "a", "an", "and", "or", "in", "for",
-            "tell", "me", "what", "best", "of", "to", "are", "how", "why", "with", "about"
-        )
-
         fun sanitizeFtsQuery(query: String): String {
-            val tokens = query.split(Regex("[^a-zA-Z0-9]+"))
-                .map { it.trim() }
-                .filter { it.length >= 3 && !STOP_WORDS.contains(it.lowercase()) }
-            if (tokens.isEmpty()) {
-                val fallbackTokens = query.split(Regex("[^a-zA-Z0-9]+")).filter { it.length >= 2 }
-                return fallbackTokens.joinToString(" OR ") { "\"$it\"*" }
-            }
-            return tokens.joinToString(" OR ") { "\"$it\"*" }
+            return FtsSanitizer.sanitizeFtsQuery(query)
         }
     }
 
     fun searchBm25(query: String, limit: Int = 5): List<SearchResult> {
         val db = DatabaseManager.getWikiDatabase() ?: return emptyList()
+        val safeLimit = limit.coerceIn(1, 50)
 
         val sanitizedQuery = sanitizeFtsQuery(query)
         if (sanitizedQuery.isBlank()) return emptyList()
@@ -40,7 +29,7 @@ class WikipediaRepository {
 
         val results = mutableListOf<SearchResult>()
         try {
-            val cursor = db.rawQuery(sql, arrayOf(sanitizedQuery, limit.toString()))
+            val cursor = db.rawQuery(sql, arrayOf(sanitizedQuery, safeLimit.toString()))
             cursor.use {
                 val idCol = it.getColumnIndex("id")
                 val titleCol = it.getColumnIndex("title")
@@ -74,11 +63,11 @@ class WikipediaRepository {
                 }
             }
         } catch (e: Exception) {
-            val tokens = query.split(Regex("[^a-zA-Z0-9]+")).filter { it.length >= 3 && !STOP_WORDS.contains(it.lowercase()) }
-            val searchTerm = tokens.firstOrNull() ?: query
-            val fallbackSql = "SELECT id, title, lead_text, body_text, pageviews FROM wiki_articles WHERE title LIKE ? OR body_text LIKE ? LIMIT ?"
-            val wildcard = "%$searchTerm%"
-            val cursor = db.rawQuery(fallbackSql, arrayOf(wildcard, wildcard, limit.toString()))
+            val tokens = query.split(Regex("[^a-zA-Z0-9]+")).filter { it.length >= 3 }
+            val searchTerm = tokens.firstOrNull() ?: query.take(32)
+            val fallbackSql = "SELECT id, title, lead_text, body_text, pageviews FROM wiki_articles WHERE title LIKE ? ESCAPE '\\' OR body_text LIKE ? ESCAPE '\\' LIMIT ?"
+            val wildcard = FtsSanitizer.sanitizeLikePattern(searchTerm)
+            val cursor = db.rawQuery(fallbackSql, arrayOf(wildcard, wildcard, safeLimit.toString()))
             cursor.use {
                 while (it.moveToNext()) {
                     results.add(

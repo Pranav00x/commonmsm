@@ -71,4 +71,26 @@ class AirGapExporterTest {
         assertTrue(envelope.contains("=== END COMMONMSM AIR-GAP ENVELOPE ==="))
         assertTrue(envelope.contains("SHA256:"))
     }
+
+    @Test
+    fun testExportToJsonEscaping() {
+        val report = ResearchReport(
+            query = "What is \"EIP-7702\"?\nSecond line with \\backslashes\\ and \ttabs.",
+            intent = QueryIntent.CRYPTO_EIP_SPECS,
+            synthesizedText = "Delegates code execution.",
+            stats = ExecutionStats(
+                retrievalTimeMs = 15L,
+                timeToFirstTokenMs = 50L,
+                totalTimeMs = 300L,
+                tokensGenerated = 40,
+                tokensPerSecond = 35f,
+                memoryUsedMb = 200L
+            )
+        )
+
+        val json = AirGapExporter.exportToJson(report)
+        assertTrue(json.contains("\"query\": \"What is \\\"EIP-7702\\\"?\\nSecond line with \\\\backslashes\\\\ and \\ttabs.\""))
+        assertTrue(json.contains("\"protocol\": \"commonmsm_v1\""))
+        assertTrue(json.contains("\"sha256\":"))
+    }
 }
