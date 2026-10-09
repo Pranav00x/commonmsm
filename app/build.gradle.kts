@@ -7,6 +7,7 @@ plugins {
 android {
     namespace = "com.commonmsm"
     compileSdk = 34
+    ndkVersion = "26.1.10909125"
 
     defaultConfig {
         applicationId = "com.commonmsm"
@@ -42,6 +43,7 @@ android {
                         "-Wall"
                     )
                 )
+                targets.add("commonmsm_native")
             }
         }
     }

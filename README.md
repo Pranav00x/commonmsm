@@ -436,31 +436,43 @@ commonmsm uses a strict neo-brutalist, circular design system built on true OLED
 
 ## 8. Quick Start and Reproduction Guide
 
-You can build, test, and run commonmsm on an Android device or emulator in a few minutes:
+You can install and run commonmsm on an Android device or emulator in a few minutes:
 
-### 8.1. Immediate 2-Minute Quickstart (Bundled Starter Database)
+### 8.1. Immediate 2-Minute Quickstart (Pre-Compiled APK & Bundled Starter Database)
 The app includes an out-of-the-box bundled starter database with verified places, Wikipedia articles, and EIP specs. You do **not** need to download multi-gigabyte databases to test the core functionality:
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Pranav00x/commonmsm.git
-   cd commonmsm
-   ```
+#### Option A: Direct Pre-Compiled APK Installation
+Download the latest pre-compiled signed APK directly from GitHub Releases:
+- **Latest Release**: [https://github.com/Pranav00x/commonmsm/releases/latest](https://github.com/Pranav00x/commonmsm/releases/latest)
+- **Direct Asset**: `commonmsm-v1.0.0-release.apk`
+- **Integrity Manifest**: `SHA256SUMS.txt`
 
-2. **Build and install the APK**:
-   ```bash
-   # Assemble debug APK
-   ./gradlew assembleDebug
+```bash
+# Verify downloaded APK integrity
+sha256sum -c SHA256SUMS.txt
 
-   # Install on connected device or emulator via adb
-   adb install -r app/build/outputs/apk/debug/app-debug.apk
-   ```
+# Install directly on device via adb
+adb install -r commonmsm-v1.0.0-release.apk
+```
 
-3. **Verify in Airplane Mode**:
-   - Turn on **Airplane Mode** (disable Wi-Fi and Cellular).
-   - Launch **commonmsm**.
-   - Tap any preset query chip (e.g. `LISBON VEGAN`, `EIP-7702 // 4337`, or `CRISPR VS PRIME EDITING`).
-   - Observe instant offline retrieval, grounded synthesis, and verified citations.
+#### Option B: Building from Source
+```bash
+# Clone the repository
+git clone https://github.com/Pranav00x/commonmsm.git
+cd commonmsm
+
+# Assemble release or debug APK
+./gradlew assembleRelease
+
+# Install on connected device or emulator via adb
+adb install -r app/build/outputs/apk/release/app-release.apk
+```
+
+#### Verification in Airplane Mode
+1. Turn on **Airplane Mode** on the device (disable Wi-Fi and Cellular).
+2. Launch **commonmsm**.
+3. Tap any preset query chip (e.g. `LISBON VEGAN`, `EIP-7702 // 4337`, or `CRISPR VS PRIME EDITING`).
+4. Observe instant offline retrieval, grounded synthesis, and verified citations.
 
 ---
 
