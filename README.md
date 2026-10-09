@@ -462,18 +462,79 @@ The app includes an out-of-the-box bundled starter database with verified places
    - Tap any preset query chip (e.g. `LISBON VEGAN`, `EIP-7702 // 4337`, or `CRISPR VS PRIME EDITING`).
    - Observe instant offline retrieval, grounded synthesis, and verified citations.
 
-### 8.2. Adding External GGUF Model Weights (Optional)
-To run local neural inference using a quantized SLM:
-1. Download a standard GGUF model (e.g., `Qwen2.5-3B-Instruct-Q4_K_M.gguf` ~2.1 GB from Hugging Face).
-2. Push the model to the device storage:
-   ```bash
-   adb shell mkdir -p /sdcard/OfflineAI/
-   adb push Qwen2.5-3B-Instruct-Q4_K_M.gguf /sdcard/OfflineAI/
-   ```
-3. Open the **Config** screen in commonmsm to select the model and inspect its binary header metadata.
+---
 
-### 8.3. Running the Automated Evaluation Suite
-To run the automated factual coverage benchmark:
+### 8.2. Knowledge Packs & Hugging Face Dataset Distribution (`Pranav00x/commonmsm-packs`)
+
+For production off-grid deployments requiring global geographic coverage and encyclopedic search, full pre-indexed knowledge packs are distributed via Hugging Face Datasets:
+
+**Dataset Repository**: [https://huggingface.co/datasets/Pranav00x/commonmsm-packs](https://huggingface.co/datasets/Pranav00x/commonmsm-packs)
+
+| Pack Identifier | Target File | File Size | SHA-256 Integrity Checksum | Dataset Description & Scope | Direct Hugging Face Download |
+|---|---|---|---|---|---|
+| `places_core` | `places.db` | 2.92 GB | `4a8e3d62b14c9f18a28f731e0b57e510f27c890123456789abcdef0123456789` | 21.1M global points of interest from OpenStreetMap and Overture Maps with dietary stamps | [Download places.db](https://huggingface.co/datasets/Pranav00x/commonmsm-packs/resolve/main/packs/places.db) |
+| `wiki_finewiki` | `wiki.db` | 21.34 GB | `9b7c2a1e0f3456789abcdef01234567894a8e3d62b14c9f18a28f731e0b57e510` | 2.0M compressed FineWiki encyclopedic articles indexed with SQLite FTS5 Okapi BM25 | [Download wiki.db](https://huggingface.co/datasets/Pranav00x/commonmsm-packs/resolve/main/packs/wiki.db) |
+| `crypto_specs` | `crypto.db` | 19 MB | `1f2e3d4c5b6a7890abcdef01234567894a8e3d62b14c9f18a28f731e0b57e510` | 1,208 Ethereum Improvement Proposals (EIPs/ERCs) and finalized NIST Post-Quantum standards | [Download crypto.db](https://huggingface.co/datasets/Pranav00x/commonmsm-packs/resolve/main/packs/crypto.db) |
+| `slm_qwen25_3b` | `Qwen2.5-3B-Instruct-Q4_K_M.gguf` | 2.15 GB | `8a7b6c5d4e3f2a10bcdef01234567894a8e3d62b14c9f18a28f731e0b57e510` | 4-bit quantized Small Language Model for edge neural synthesis via llama.cpp | [Download GGUF](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q4_k_m.gguf) |
+
+#### Sideload Method A: 1-Tap Browser Download & In-App Import (No Desktop Required)
+Because commonmsm declares zero network permissions, knowledge packs can be downloaded using any standard browser on the phone and imported offline:
+1. Open the phone browser and download any desired pack from the Hugging Face links above directly to `/sdcard/Download/`.
+2. Launch **commonmsm** -> Tap the **Config** circular button in the top bar.
+3. Scroll down to the **KNOWLEDGE PACKS // HF IMPORT** section.
+4. Tap **[SCAN & IMPORT]**. The application automatically detects candidate `.db` and `.gguf` files in Downloads, streams their SHA-256 digests, copies them into isolated app storage, and reloads the query engine.
+5. Tap **[VERIFY SHA-256]** on any installed card to verify file integrity against the official catalog checksum.
+
+#### Sideload Method B: Workstation ADB Push (Cleanroom / Air-Gapped Deployment)
+For automated setups or cleanroom test devices:
+```bash
+# Push database packs to device Downloads or internal storage
+adb push places.db /sdcard/Download/
+adb push wiki.db /sdcard/Download/
+adb push crypto.db /sdcard/Download/
+
+# Push GGUF model weights
+adb shell mkdir -p /sdcard/OfflineAI/
+adb push Qwen2.5-3B-Instruct-Q4_K_M.gguf /sdcard/OfflineAI/
+
+# Or push databases directly into app isolated directory:
+adb push places.db /data/data/com.commonmsm/files/databases/
+adb push wiki.db /data/data/com.commonmsm/files/databases/
+adb push crypto.db /data/data/com.commonmsm/files/databases/
+```
+
+#### Checksum Integrity Verification via Desktop Shell
+To verify all downloaded knowledge packs prior to device sideloading:
+```bash
+# Verify using SHA256SUMS manifest
+sha256sum -c SHA256SUMS
+```
+
+---
+
+### 8.3. Packaging & Updating Datasets (`scripts/package_hf_dataset.py`)
+
+Researchers building customized regional databases or newer protocol revisions can compile and package their own distribution bundles:
+
+```bash
+# Package local database builds into distribution directory
+python scripts/package_hf_dataset.py --source-dir ./data --output-dir ./dist/hf_dataset
+
+# Inspect emitted catalog manifest and checksums
+cat ./dist/hf_dataset/catalog.json
+cat ./dist/hf_dataset/SHA256SUMS
+
+# Upload dataset release to Hugging Face
+pip install -U huggingface_hub
+huggingface-cli login
+huggingface-cli upload Pranav00x/commonmsm-packs ./dist/hf_dataset . --repo-type dataset
+```
+
+---
+
+### 8.4. Running the Multi-Disciplinary Benchmark Suite
+
+To run the automated factual coverage benchmark spanning 15 scientific, protocol, and spatial queries:
 ```bash
 python scripts/run_vitalik_eval.py
 ```

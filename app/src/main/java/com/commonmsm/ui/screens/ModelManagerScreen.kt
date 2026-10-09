@@ -16,16 +16,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.commonmsm.data.DiscoveredModel
-import com.commonmsm.data.StorageReport
+import com.commonmsm.data.*
 import com.commonmsm.engine.GgufMetadataInspector
 import com.commonmsm.ui.components.BrutalCircularStamp
 import com.commonmsm.ui.theme.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun ModelManagerScreen(
@@ -36,6 +38,14 @@ fun ModelManagerScreen(
     onSelectModel: (DiscoveredModel) -> Unit,
     onBack: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    var packStatuses by remember { mutableStateOf(DataPackManager.checkPackStatuses(context)) }
+    var statusMessage by remember { mutableStateOf<String?>(null) }
+    var isScanning by remember { mutableStateOf(false) }
+    var verifyingPackId by remember { mutableStateOf<String?>(null) }
+    var verifiedResults by remember { mutableStateOf<Map<String, Boolean>>(emptyMap()) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -230,20 +240,266 @@ fun ModelManagerScreen(
 
         Spacer(modifier = Modifier.height(18.dp))
 
-        Text(
-            text = "OFFLINE KNOWLEDGE STATUS",
-            color = BrutalGray,
-            fontFamily = FontFamily.Monospace,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Black,
-            letterSpacing = 1.sp
-        )
+        Spacer(modifier = Modifier.height(18.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "KNOWLEDGE PACKS // HF IMPORT",
+                    color = BrutalWhite,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 1.sp
+                )
+                Text(
+                    text = "AIR-GAPPED SIDELOAD // SHA-256 VERIFICATION",
+                    color = BrutalGray,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
-        BrutalKnowledgeRow(title = "PLACES.DB", detail = "21.1M POIs (OSM+Overture)", tag = "ONLINE")
-        BrutalKnowledgeRow(title = "WIKI.DB", detail = "2.0M FineWiki Articles FTS5", tag = "ONLINE")
-        BrutalKnowledgeRow(title = "CRYPTO.DB", detail = "1,208 EIPs / NIST PQC", tag = "ONLINE")
+            Button(
+                onClick = {
+                    if (!isScanning) {
+                        isScanning = true
+                        statusMessage = "SCANNING /sdcard/Download..."
+                        coroutineScope.launch(Dispatchers.IO) {
+                            val downloads = DataPackManager.findPacksInDownloads()
+                            var importedCount = 0
+                            DataPackManager.CATALOG.forEach { pack ->
+                                val candidate = downloads.find { it.name.equals(pack.targetFileName, ignoreCase = true) }
+                                if (candidate != null) {
+                                    val ok = DataPackManager.importPack(context, candidate, pack)
+                                    if (ok) importedCount++
+                                }
+                            }
+                            if (importedCount > 0) {
+                                DatabaseManager.reload(context)
+                            }
+                            val updated = DataPackManager.checkPackStatuses(context)
+                            withContext(Dispatchers.Main) {
+                                packStatuses = updated
+                                isScanning = false
+                                statusMessage = if (importedCount > 0) {
+                                    "IMPORTED $importedCount PACK(S) INTO ISOLATED STORAGE"
+                                } else if (downloads.isNotEmpty()) {
+                                    "FOUND ${downloads.size} FILE(S) IN DOWNLOADS BUT NONE MATCHED CATALOG"
+                                } else {
+                                    "NO CANDIDATE PACKS FOUND IN /sdcard/Download"
+                                }
+                            }
+                        }
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isScanning) BrutalDarkGray else BrutalNeonGreen,
+                    contentColor = BrutalBlack
+                ),
+                shape = CircleShape,
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+            ) {
+                Text(
+                    text = if (isScanning) "SCANNING..." else "SCAN & IMPORT",
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 10.sp
+                )
+            }
+        }
+
+        if (statusMessage != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, BrutalBorder, RoundedCornerShape(8.dp))
+                    .background(BrutalDarkSurface, RoundedCornerShape(8.dp))
+                    .padding(10.dp)
+            ) {
+                Text(
+                    text = statusMessage!!,
+                    color = BrutalYellow,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 10.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Air-Gapped Instructions Box
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(2.dp, BrutalBorder, RoundedCornerShape(8.dp))
+                .background(BrutalBlack, RoundedCornerShape(8.dp))
+                .padding(12.dp)
+        ) {
+            Column {
+                Text(
+                    text = "AIR-GAP SIDELOAD PROTOCOL (ZERO INTERNET PERMISSION):",
+                    color = BrutalWhite,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 10.sp
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "1. Download pack from huggingface.co/datasets/Pranav00x/commonmsm-packs via PC or phone browser.\n" +
+                            "2. Place in /sdcard/Download/ or execute:\n" +
+                            "   adb push <file> /sdcard/Download/\n" +
+                            "3. Tap [SCAN & IMPORT] above to copy and verify checksum.",
+                    color = BrutalGray,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 9.sp,
+                    lineHeight = 14.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Pack Catalog Cards
+        packStatuses.forEach { status ->
+            val pack = status.packInfo
+            val isVerifying = verifyingPackId == pack.packId
+            val isHashMatch = verifiedResults[pack.packId]
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+                    .border(2.dp, BrutalBorder, RoundedCornerShape(10.dp))
+                    .background(BrutalDarkSurface, RoundedCornerShape(10.dp))
+                    .padding(12.dp)
+            ) {
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = pack.displayName,
+                            color = BrutalWhite,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Black,
+                            fontSize = 11.sp
+                        )
+
+                        val badgeText: String
+                        val badgeColor: androidx.compose.ui.graphics.Color
+                        when {
+                            isHashMatch == true -> {
+                                badgeText = "SHA-256 OK"
+                                badgeColor = BrutalNeonGreen
+                            }
+                            isHashMatch == false -> {
+                                badgeText = "HASH MISMATCH"
+                                badgeColor = BrutalRed
+                            }
+                            status.isInstalled -> {
+                                badgeText = "INSTALLED (DISK)"
+                                badgeColor = BrutalNeonGreen
+                            }
+                            pack.targetFileName.endsWith(".gguf") -> {
+                                badgeText = "SIDELOAD PENDING"
+                                badgeColor = BrutalGray
+                            }
+                            else -> {
+                                badgeText = "BUILT-IN RAM (ACTIVE)"
+                                badgeColor = BrutalYellow
+                            }
+                        }
+
+                        BrutalCircularStamp(text = badgeText, color = badgeColor)
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    val sizeMb = pack.sizeBytes / (1024 * 1024)
+                    val sizeDisplay = if (sizeMb >= 1024) String.format("%.2f GB", sizeMb.toDouble() / 1024.0) else "$sizeMb MB"
+                    Text(
+                        text = "FILE: ${pack.targetFileName} // SIZE: $sizeDisplay",
+                        color = BrutalGray,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 10.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = pack.description,
+                        color = BrutalWhite,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 10.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = "HF: ${pack.downloadUrl}",
+                        color = BrutalBlue,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 9.sp
+                    )
+
+                    if (status.isInstalled && status.localFile != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "EXPECTED: ${pack.sha256Checksum.take(12)}...",
+                                color = BrutalGray,
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = 9.sp
+                            )
+
+                            Button(
+                                onClick = {
+                                    if (!isVerifying) {
+                                        verifyingPackId = pack.packId
+                                        coroutineScope.launch(Dispatchers.IO) {
+                                            val file = status.localFile
+                                            val valid = DataPackManager.verifyChecksum(file, pack.sha256Checksum)
+                                            withContext(Dispatchers.Main) {
+                                                verifyingPackId = null
+                                                verifiedResults = verifiedResults + (pack.packId to valid)
+                                            }
+                                        }
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isVerifying) BrutalDarkGray else BrutalOrange,
+                                    contentColor = BrutalBlack
+                                ),
+                                shape = CircleShape,
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Text(
+                                    text = if (isVerifying) "HASHING..." else "VERIFY SHA-256",
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 9.sp
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(18.dp))
 
@@ -346,38 +602,5 @@ private fun MiniStorageStat(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = label, color = BrutalGray, fontFamily = FontFamily.Monospace, fontSize = 9.sp, fontWeight = FontWeight.Bold)
         Text(text = value, color = BrutalWhite, fontFamily = FontFamily.Monospace, fontSize = 12.sp, fontWeight = FontWeight.Black)
-    }
-}
-
-@Composable
-private fun BrutalKnowledgeRow(title: String, detail: String, tag: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 3.dp)
-            .border(2.dp, BrutalBorder, RoundedCornerShape(8.dp))
-            .background(BrutalDarkSurface, RoundedCornerShape(8.dp))
-            .padding(12.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(text = title, color = BrutalWhite, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Black, fontSize = 12.sp)
-                Text(text = detail, color = BrutalGray, fontFamily = FontFamily.Monospace, fontSize = 10.sp)
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(BrutalBlack)
-                    .border(1.dp, BrutalNeonGreen, CircleShape)
-                    .padding(horizontal = 8.dp, vertical = 2.dp)
-            ) {
-                Text(text = tag, color = BrutalNeonGreen, fontFamily = FontFamily.Monospace, fontSize = 9.sp, fontWeight = FontWeight.Black)
-            }
-        }
     }
 }

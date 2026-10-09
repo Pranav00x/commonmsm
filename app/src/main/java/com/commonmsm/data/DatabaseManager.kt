@@ -22,6 +22,15 @@ object DatabaseManager {
         openDatabases(dbDir, context)
     }
 
+    fun reload(context: Context) {
+        try {
+            placesDb?.close()
+            wikiDb?.close()
+            cryptoDb?.close()
+        } catch (_: Exception) {}
+        initialize(context)
+    }
+
     private fun openDatabases(dbDir: File, context: Context) {
         val placesFile = File(dbDir, "places.db")
         val wikiFile = File(dbDir, "wiki.db")
