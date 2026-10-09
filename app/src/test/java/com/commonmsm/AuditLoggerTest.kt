@@ -34,4 +34,17 @@ class AuditLoggerTest {
         assertTrue(cert.contains("CHAIN_INTEGRITY: VERIFIED [VALID]"))
         assertTrue(cert.contains("=== END AUDIT CERTIFICATE ==="))
     }
+
+    @Test
+    fun testMerkleProofExport() {
+        AuditLogger.recordEvent("Proof query test", "Synthesized text", 1800L)
+        val proof = AuditLogger.exportMerkleProof(0)
+        assertNotNull(proof)
+        assertTrue(proof!!.contains("=== MERKLE AUDIT PROOF // BLOCK #0 ==="))
+        assertTrue(proof.contains("ROOT_HASH:"))
+        assertTrue(proof.contains("CHAIN_INTEGRITY: VERIFIED [VALID]"))
+
+        val nonExistentProof = AuditLogger.exportMerkleProof(999999L)
+        assertNull(nonExistentProof)
+    }
 }

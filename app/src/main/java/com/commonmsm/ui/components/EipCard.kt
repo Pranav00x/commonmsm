@@ -170,6 +170,10 @@ fun EipCard(
             // Collapsible Full Technical Spec Section
             AnimatedVisibility(visible = isExpanded) {
                 Column(modifier = Modifier.padding(top = 10.dp)) {
+                    // Vector Directed Graph Visualization
+                    SpecDependencyGraphView(eipNumber = spec.eipNumber)
+                    Spacer(modifier = Modifier.height(10.dp))
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()

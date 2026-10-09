@@ -43,8 +43,10 @@ import com.commonmsm.data.models.ResearchSession
 import com.commonmsm.engine.AirGapExporter
 import com.commonmsm.engine.InferenceController
 import com.commonmsm.engine.QuerySuggestEngine
+import com.commonmsm.engine.ResearchFlashcardEngine
 import com.commonmsm.ui.components.CitationChip
 import com.commonmsm.ui.components.EipCard
+import com.commonmsm.ui.components.FlashcardView
 import com.commonmsm.ui.components.MarkdownRenderer
 import com.commonmsm.ui.components.PerformanceHUD
 import com.commonmsm.ui.components.PlaceCard
@@ -72,6 +74,7 @@ fun ChatScreen(
     val listState = rememberLazyListState()
     var selectedCitation by remember { mutableStateOf<Citation?>(null) }
     var showNotebook by remember { mutableStateOf(false) }
+    var showFlashcards by remember { mutableStateOf(false) }
     var savedSessions by remember { mutableStateOf<List<ResearchSession>>(emptyList()) }
 
     val speechLauncher = rememberLauncherForActivityResult(
@@ -192,11 +195,31 @@ fun ChatScreen(
                         }
                     }
 
-                    // Circular Action Buttons (Notebook + Settings)
+                    // Circular Action Buttons (Flashcards + Notebook + Settings)
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
+                        Box(
+                            modifier = Modifier
+                                .size(38.dp)
+                                .clip(CircleShape)
+                                .background(BrutalDarkSurface)
+                                .border(2.dp, BrutalBorder, CircleShape)
+                                .clickable {
+                                    showFlashcards = true
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "SM2",
+                                color = BrutalNeonGreen,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Black,
+                                fontSize = 11.sp
+                            )
+                        }
+
                         Box(
                             modifier = Modifier
                                 .size(38.dp)
@@ -253,6 +276,9 @@ fun ChatScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     CircularBrutalChip("NEAR ME (GNSS)") { sendQuery("Find the best vegan places near me using offline GNSS") }
+                    CircularBrutalChip("CRISPR VS PRIME") { sendQuery("Compare CRISPR-Cas9 and Prime Editing for targeted genetic modification") }
+                    CircularBrutalChip("ROMAN CONCRETE") { sendQuery("Why did ancient Roman maritime concrete exhibit greater longevity in seawater than modern Portland cement?") }
+                    CircularBrutalChip("BRONZE AGE COLLAPSE") { sendQuery("What were the primary hypotheses explaining the Late Bronze Age Collapse around 1200 BCE?") }
                     CircularBrutalChip("LISBON VEGAN") { sendQuery("Tell me the best vegan restaurants in Lisbon") }
                     CircularBrutalChip("EIP-7702 // 4337") { sendQuery("Compare EIP-7702 and ERC-4337 for account abstraction") }
                     CircularBrutalChip("FALCON VS ML-DSA") { sendQuery("Compare Falcon and ML-DSA post-quantum signature schemes for Ethereum") }
@@ -463,7 +489,11 @@ fun ChatScreen(
                         } else {
                             AssistantBrutalCard(
                                 msg = msg,
-                                onCitationClick = { selectedCitation = it }
+                                onCitationClick = { selectedCitation = it },
+                                onGenerateFlashcards = { q, text ->
+                                    ResearchFlashcardEngine.generateFromReport(q, text)
+                                    showFlashcards = true
+                                }
                             )
                         }
                         Spacer(modifier = Modifier.height(14.dp))
@@ -485,6 +515,12 @@ fun ChatScreen(
                         sendQuery(session.query)
                     },
                     onDismiss = { showNotebook = false }
+                )
+            }
+
+            if (showFlashcards) {
+                FlashcardView(
+                    onDismiss = { showFlashcards = false }
                 )
             }
         }
@@ -564,7 +600,8 @@ private fun UserBrutalBubble(text: String) {
 @Composable
 private fun AssistantBrutalCard(
     msg: ChatMessage,
-    onCitationClick: (Citation) -> Unit
+    onCitationClick: (Citation) -> Unit,
+    onGenerateFlashcards: (String, String) -> Unit = { _, _ -> }
 ) {
     val update = msg.update
 
@@ -701,6 +738,29 @@ private fun AssistantBrutalCard(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(BrutalBlack)
+                            .border(1.5.dp, BrutalBlue, CircleShape)
+                            .clickable {
+                                val query = update?.report?.query ?: "Research Topic"
+                                onGenerateFlashcards(query, msg.text)
+                            }
+                            .padding(horizontal = 12.dp, vertical = 7.dp)
+                    ) {
+                        Text(
+                            text = "+ FLASHCARDS",
+                            color = BrutalBlue,
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 0.5.sp
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
                     Box(
                         modifier = Modifier
                             .clip(CircleShape)

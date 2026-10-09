@@ -212,6 +212,27 @@ object DatabaseManager {
             bindString(4, "Optimistic Rollups (e.g. Arbitrum, Optimism) assume transactions are valid by default and rely on a 7-day fraud-proof dispute window for withdrawals. Zero-Knowledge (ZK) Rollups (e.g. Starknet, zkSync, Scroll) generate cryptographic validity proofs (STARKs or SNARKs) that are verified immediately on-chain, eliminating the 7-day withdrawal delay at the cost of higher off-chain proof generation computational overhead.")
             bindLong(5, 290000)
             executeInsert()
+
+            bindString(1, "art_crispr")
+            bindString(2, "CRISPR-Cas9 and Prime Editing")
+            bindString(3, "CRISPR-Cas9 and Prime Editing are targeted molecular gene editing technologies.")
+            bindString(4, "CRISPR-Cas9 introduces double-strand breaks (DSBs) at loci directed by a single guide RNA (sgRNA), relying on cell repair mechanisms (NHEJ or HDR) that frequently induce uncontrolled indels. In contrast, Prime Editing couples a Cas9 nickase with an engineered reverse transcriptase guided by a pegRNA (prime editing guide RNA). Prime editing writes genetic modifications directly into the target DNA strand without creating double-strand breaks, dramatically reducing unintended insertion/deletion artifacts.")
+            bindLong(5, 340000)
+            executeInsert()
+
+            bindString(1, "art_roman_concrete")
+            bindString(2, "Roman Maritime Concrete and Pozzolanic Chemistry")
+            bindString(3, "Ancient Roman maritime concrete exhibits extreme longevity compared to modern Portland cement in seawater environments.")
+            bindString(4, "Roman builders mixed volcanic pozzolana ash with quicklime and seawater. When submerged in marine environments, percolating seawater dissolves components of the volcanic glass and lime clasts, triggering the autogenous crystallization of aluminum tobermorite and phillipsite. These interlocking mineral crystals grow over centuries to interlock pores and self-heal microcracks, whereas modern Portland cement degrades under marine sulfate and chloride attack.")
+            bindLong(5, 220000)
+            executeInsert()
+
+            bindString(1, "art_bronze_age")
+            bindString(2, "Late Bronze Age Collapse")
+            bindString(3, "The Late Bronze Age Collapse was a period of widespread societal collapse across the Eastern Mediterranean around 1200 BCE.")
+            bindString(4, "Around 1200 BCE, palatial civilizations including Mycenaean Greece, the Hittite Empire, and the New Kingdom of Egypt experienced catastrophic decline. Modern archaeological consensus attributes the collapse to a combination of factors: maritime invasions by the Sea Peoples disrupting trade corridors, multi-decade megadroughts documented in Mediterranean pollen cores, and the systemic failure of the international tin and copper supply chains required to produce bronze tools and weapons.")
+            bindLong(5, 310000)
+            executeInsert()
         }
         db.execSQL("INSERT INTO wiki_fts(rowid, title, body) SELECT rowid, title, body_text FROM wiki_articles")
         return db

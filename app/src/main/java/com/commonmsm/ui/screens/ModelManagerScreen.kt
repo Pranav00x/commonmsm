@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.commonmsm.data.DiscoveredModel
 import com.commonmsm.data.StorageReport
+import com.commonmsm.engine.GgufMetadataInspector
+import com.commonmsm.ui.components.BrutalCircularStamp
 import com.commonmsm.ui.theme.*
 
 @Composable
@@ -273,6 +275,7 @@ fun ModelManagerScreen(
             }
         } else {
             discoveredModels.forEach { model ->
+                val inspectResult = remember(model.file.absolutePath) { GgufMetadataInspector.inspectFile(model.file) }
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -281,33 +284,55 @@ fun ModelManagerScreen(
                         .background(BrutalDarkSurface, RoundedCornerShape(12.dp))
                         .padding(14.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            Text(
-                                text = model.name.uppercase(),
-                                color = BrutalWhite,
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Black,
-                                fontSize = 12.sp
-                            )
-                            Text(
-                                text = "${model.sizeBytes / (1024 * 1024 * 1024)} GB // ${if (model.isMoE) "MOE FLASH" else "DENSE RAM"}",
-                                color = BrutalGray,
-                                fontFamily = FontFamily.Monospace,
-                                fontSize = 10.sp
-                            )
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = model.name.uppercase(),
+                                    color = BrutalWhite,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 12.sp
+                                )
+                                Text(
+                                    text = "${String.format("%.2f", model.sizeBytes.toDouble() / (1024 * 1024 * 1024))} GB // ${if (model.isMoE) "MOE FLASH" else "DENSE RAM"}",
+                                    color = BrutalGray,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 10.sp
+                                )
+                            }
+
+                            Button(
+                                onClick = { onSelectModel(model) },
+                                colors = ButtonDefaults.buttonColors(containerColor = BrutalOrange, contentColor = BrutalBlack),
+                                shape = CircleShape
+                            ) {
+                                Text("SELECT", fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Black, fontSize = 11.sp)
+                            }
                         }
 
-                        Button(
-                            onClick = { onSelectModel(model) },
-                            colors = ButtonDefaults.buttonColors(containerColor = BrutalOrange, contentColor = BrutalBlack),
-                            shape = CircleShape
-                        ) {
-                            Text("SELECT", fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Black, fontSize = 11.sp)
+                        if (inspectResult.isValid) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                BrutalCircularStamp(text = "GGUF v${inspectResult.version}", color = BrutalNeonGreen)
+                                BrutalCircularStamp(text = inspectResult.architecture.uppercase(), color = BrutalBlue)
+                                BrutalCircularStamp(text = inspectResult.fileTypeDescription, color = BrutalYellow)
+                                BrutalCircularStamp(
+                                    text = if (inspectResult.fitsInRamBudget) "RAM OK" else "EXCEEDS 12GB",
+                                    color = if (inspectResult.fitsInRamBudget) BrutalNeonGreen else BrutalRed
+                                )
+                            }
+                        } else if (model.file.exists()) {
+                            Spacer(modifier = Modifier.height(6.dp))
+                            BrutalCircularStamp(text = inspectResult.diagnosticMessage, color = BrutalRed)
                         }
                     }
                 }

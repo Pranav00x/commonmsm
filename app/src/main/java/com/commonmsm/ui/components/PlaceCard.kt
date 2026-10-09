@@ -1,5 +1,6 @@
 package com.commonmsm.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -10,16 +11,19 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.commonmsm.data.models.PlaceEntity
+import com.commonmsm.engine.OfflineGlossaryEngine
 import com.commonmsm.ui.theme.*
 
 @Composable
@@ -27,6 +31,7 @@ fun PlaceCard(
     place: PlaceEntity,
     onClick: () -> Unit = {}
 ) {
+    var showDietCard by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -158,29 +163,142 @@ fun PlaceCard(
                     fontWeight = FontWeight.Bold
                 )
 
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(BrutalBlack)
-                        .border(1.5.dp, BrutalOrange, CircleShape)
-                        .androidx.compose.foundation.clickable {
-                            val uri = android.net.Uri.parse("geo:${place.latitude},${place.longitude}?q=${android.net.Uri.encode(place.name)}")
-                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
-                            try {
-                                context.startActivity(intent)
-                            } catch (e: Exception) {
-                                // Fallback if no map handler installed
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val dietCard = remember(place.country) { OfflineGlossaryEngine.getDietaryCard(place.country) }
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(if (showDietCard) BrutalNeonGreen else BrutalBlack)
+                            .border(1.5.dp, BrutalNeonGreen, CircleShape)
+                            .clickable { showDietCard = !showDietCard }
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = if (showDietCard) "HIDE PHRASE" else "DIET PHRASE: ${dietCard.languageCode.uppercase()}",
+                            color = if (showDietCard) BrutalBlack else BrutalNeonGreen,
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Black
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(BrutalBlack)
+                            .border(1.5.dp, BrutalOrange, CircleShape)
+                            .clickable {
+                                val uri = android.net.Uri.parse("geo:${place.latitude},${place.longitude}?q=${android.net.Uri.encode(place.name)}")
+                                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
+                                try {
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    // Fallback if no map handler installed
+                                }
                             }
-                        }
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "NAVIGATE ->",
+                            color = BrutalOrange,
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Black
+                        )
+                    }
+                }
+            }
+
+            AnimatedVisibility(visible = showDietCard) {
+                val dietCard = remember(place.country) { OfflineGlossaryEngine.getDietaryCard(place.country) }
+                val clipboardManager = LocalClipboardManager.current
+                var copied by remember { mutableStateOf(false) }
+
+                Column(
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                        .fillMaxWidth()
+                        .border(1.5.dp, BrutalNeonGreen, RoundedCornerShape(8.dp))
+                        .background(BrutalDarkSurface, RoundedCornerShape(8.dp))
+                        .padding(12.dp)
                 ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "FIELD PHRASEBOOK // ${dietCard.languageName}",
+                            color = BrutalNeonGreen,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Black,
+                            fontSize = 10.sp
+                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(BrutalBlack)
+                                .border(1.dp, BrutalWhite, CircleShape)
+                                .clickable {
+                                    val fullPhrase = "${dietCard.headlinePhrase}\n${dietCard.detailedExplanation}"
+                                    clipboardManager.setText(AnnotatedString(fullPhrase))
+                                    copied = true
+                                }
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = if (copied) "COPIED" else "COPY",
+                                color = BrutalWhite,
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Black
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Text(
-                        text = "NAVIGATE ->",
+                        text = dietCard.headlinePhrase,
+                        color = BrutalWhite,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Black,
+                        fontSize = 13.sp,
+                        lineHeight = 18.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = dietCard.detailedExplanation,
+                        color = BrutalGray,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 11.sp,
+                        lineHeight = 16.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = "ALLERGENS & RESTRICTIONS TO DECLARE:",
                         color = BrutalOrange,
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Black
+                        fontWeight = FontWeight.Black,
+                        fontSize = 9.sp
                     )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .androidx.compose.foundation.horizontalScroll(androidx.compose.foundation.rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        dietCard.allergensToAvoid.forEach { allergen ->
+                            BrutalCircularStamp(text = allergen, color = BrutalRed)
+                        }
+                    }
                 }
             }
         }

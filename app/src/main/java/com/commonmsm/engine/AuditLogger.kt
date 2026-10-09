@@ -84,4 +84,20 @@ object AuditLogger {
             appendLine("=== END AUDIT CERTIFICATE ===")
         }
     }
+
+    @Synchronized
+    fun exportMerkleProof(index: Long): String? {
+        val block = chain.find { it.index == index } ?: return null
+        return buildString {
+            appendLine("=== MERKLE AUDIT PROOF // BLOCK #${block.index} ===")
+            appendLine("TIMESTAMP: ${block.timestamp}")
+            appendLine("QUERY: \"${block.query}\"")
+            appendLine("DIGEST: ${block.responseDigest}")
+            appendLine("PARENT_HASH: ${block.parentHash}")
+            appendLine("BLOCK_HASH:  ${block.blockHash}")
+            appendLine("ROOT_HASH:   ${chain.lastOrNull()?.blockHash}")
+            appendLine("CHAIN_INTEGRITY: ${if (verifyChainIntegrity()) "VERIFIED [VALID]" else "TAMPERED"}")
+            appendLine("=== END PROOF ===")
+        }
+    }
 }

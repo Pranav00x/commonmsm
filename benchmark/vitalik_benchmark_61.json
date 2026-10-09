@@ -1,99 +1,154 @@
 {
-  "benchmark_name": "Vitalik-Style 61 Offline Research Evaluation Suite",
-  "version": "1.0.0",
+  "benchmark_name": "General Offline Research & Information Retrieval Evaluation Suite",
+  "version": "2.0.0",
   "categories": {
-    "travel_and_places": [
+    "scientific_and_biological_systems": [
       {
-        "id": "travel_01",
-        "query": "Tell me the best vegan restaurants in Lisbon",
-        "gold_entities": ["Ao 26 - Vegan Food Project", "Kong", "Organi Chiado", "The Green Spot"],
-        "min_expected_places": 3
+        "id": "sci_01",
+        "query": "Compare CRISPR-Cas9 and Prime Editing for targeted genetic modification",
+        "key_facts": [
+          "CRISPR-Cas9 creates double-strand breaks (DSBs) repaired by NHEJ or HDR",
+          "Prime editing uses an engineered reverse transcriptase fused to a Cas9 nickase",
+          "Prime editing uses a prime editing guide RNA (pegRNA) to write edits directly without DSBs",
+          "Prime editing significantly reduces unintended indels compared to standard CRISPR-Cas9"
+        ]
       },
       {
-        "id": "travel_02",
-        "query": "What are the best vegan restaurants in Berlin?",
-        "gold_entities": ["Lucky Leek", "1990 Vegan Living", "Brammibal's Donuts"],
-        "min_expected_places": 2
+        "id": "sci_02",
+        "query": "Explain how mRNA vaccines stimulate immunity compared to inactivated viral vaccines",
+        "key_facts": [
+          "mRNA vaccines deliver lipid nanoparticle (LNP) encapsulated genetic code for spike protein",
+          "Host ribosomes synthesize the viral antigen endogenously",
+          "Triggers both MHC Class I (cytotoxic CD8+ T cells) and MHC Class II (CD4+ helper T cells) responses",
+          "Inactivated vaccines use chemically killed whole virions stimulating primarily humoral antibody responses"
+        ]
       },
       {
-        "id": "travel_03",
-        "query": "Find plant-based restaurants in Buenos Aires Palermo",
-        "gold_entities": ["Sacro", "Buenos Aires Verde"],
-        "min_expected_places": 2
-      },
-      {
-        "id": "travel_04",
-        "query": "Best vegan ramen or dining in Tokyo",
-        "gold_entities": ["Ain Soph. Soar", "T's Tantan"],
-        "min_expected_places": 2
-      },
-      {
-        "id": "travel_05",
-        "query": "Where can I find a pharmacy near Chiado in Lisbon?",
-        "gold_entities": ["Farmacia Chiado", "Farmacia Barreto"],
-        "min_expected_places": 1
+        "id": "sci_03",
+        "query": "How did the Haber-Bosch process transform global agriculture and what are its environmental impacts?",
+        "key_facts": [
+          "Synthesizes ammonia (NH3) from atmospheric nitrogen (N2) and hydrogen (H2)",
+          "Requires high temperatures (400-500 C) and high pressures (15-25 MPa) over an iron catalyst",
+          "Sustains global synthetic fertilizer production feeding approximately half of the human population",
+          "Consumes 1-2% of global energy and drives significant greenhouse gas emissions and aquatic eutrophication"
+        ]
       }
     ],
-    "crypto_and_eips": [
+    "historical_and_economic_analysis": [
+      {
+        "id": "hist_01",
+        "query": "What are the primary hypotheses explaining the Late Bronze Age Collapse around 1200 BCE?",
+        "key_facts": [
+          "Destruction of Mycenaean, Hittite, and Levantine civilizations in the Eastern Mediterranean",
+          "Invasions and raids by seafaring confederations collectively termed the Sea Peoples",
+          "Evidence of prolonged regional megadroughts and agricultural failure",
+          "Systemic collapse of interconnected diplomatic trade routes and tin/copper bronze supply chains"
+        ]
+      },
+      {
+        "id": "hist_02",
+        "query": "Why did ancient Roman maritime concrete exhibit greater longevity than modern Portland cement?",
+        "key_facts": [
+          "Formulated with volcanic ash (pozzolana), quicklime, and seawater",
+          "Seawater reaction dissolves volcanic elements and precipitates aluminum tobermorite and phillipsite crystals",
+          "Post-curing mineral growth self-heals microcracks rather than eroding",
+          "Modern Portland cement lacks this reactive mineral growth and degrades under sulfate and chloride attack"
+        ]
+      },
+      {
+        "id": "hist_03",
+        "query": "Compare the systemic causes of the 1929 Great Depression with the 2008 Global Financial Crisis",
+        "key_facts": [
+          "1929 driven by stock market speculation, deflation, wave of unregulated commercial bank runs, and gold standard rigidity",
+          "2008 triggered by subprime mortgage securitization, credit default swaps, and shadow banking liquidity freeze",
+          "1930s exacerbated by Federal Reserve monetary contraction and Smoot-Hawley protectionist tariffs",
+          "2008 mitigated by coordinated central bank quantitative easing, zero-interest-rate policy, and bank recapitalizations"
+        ]
+      }
+    ],
+    "cryptographic_protocols": [
       {
         "id": "crypto_01",
-        "query": "Compare EIP-7702 and ERC-4337 for account abstraction",
+        "query": "Compare EIP-7702 and ERC-4337 for Ethereum account abstraction",
         "key_facts": [
-          "EIP-7702 sets temporary contract code on EOA for a single transaction",
-          "ERC-4337 uses alternative mempool and EntryPoint contract without consensus changes",
-          "EIP-7702 introduces transaction type 0x04 with authorization list",
-          "ERC-4337 uses UserOperations bundled by Bundlers"
+          "EIP-7702 introduces transaction type 0x04 allowing EOAs to temporarily designate contract code per transaction",
+          "ERC-4337 operates via an alternative mempool with UserOperations and an EntryPoint contract without consensus changes",
+          "EIP-7702 preserves existing EOA addresses and private keys while enabling transaction batching and sponsorship",
+          "ERC-4337 requires deploying distinct smart contract wallet instances (e.g., Safe)"
         ]
       },
       {
         "id": "crypto_02",
-        "query": "Compare Falcon and ML-DSA post-quantum signature schemes for Ethereum",
+        "query": "Compare Falcon and ML-DSA post-quantum signature schemes for blockchain execution",
         "key_facts": [
-          "Falcon signatures are compact (~666 bytes)",
-          "ML-DSA (Dilithium) signatures are ~2420 bytes",
-          "Falcon requires floating-point arithmetic (FFT-based trapdoor sampling)",
-          "ML-DSA relies on modular integer lattice arithmetic",
-          "Smaller signature size of Falcon is critical for EVM calldata savings"
+          "Falcon produces compact signatures (~666 bytes for Falcon-512) minimizing on-chain calldata costs",
+          "ML-DSA produces larger signatures (~2420 bytes for ML-DSA-44)",
+          "Falcon requires floating-point arithmetic with FFT-based trapdoor Gaussian sampling over NTRU lattices",
+          "ML-DSA uses strictly modular integer polynomial arithmetic (NTT) over module lattices"
         ]
       },
       {
         "id": "crypto_03",
-        "query": "Explain Proposer-Builder Separation (PBS) in Ethereum consensus",
+        "query": "Explain KZG polynomial commitments versus FRI for data availability and zero-knowledge proofs",
         "key_facts": [
-          "Separates block building from block proposing",
-          "Mitigates MEV centralization",
-          "Validators auction off block building rights to specialized builders",
-          "Implemented via MEV-Boost or in-protocol ePBS"
+          "KZG provides O(1) constant-size proofs (48 bytes on BN254) and O(1) elliptic curve pairing verification",
+          "KZG requires a trusted setup ceremony (Powers-of-Tau) and relies on discrete logarithm assumptions",
+          "FRI (used in STARKs) is transparent without trusted setup and relies strictly on collision-resistant hash functions",
+          "FRI proofs are significantly larger (tens of kilobytes) than KZG commitments"
         ]
       },
       {
         "id": "crypto_04",
-        "query": "What are blob transactions in EIP-4844?",
+        "query": "Explain Proposer-Builder Separation (PBS) and its role in MEV mitigation",
         "key_facts": [
-          "Introduced transaction type 0x03",
-          "Carries data blobs up to 128KB",
-          "Data pruned after ~18 days on consensus layer",
-          "Uses KZG polynomial commitments and BLOBHASH opcode"
+          "Decouples the block proposer (validator) role from the transaction ordering and block building role",
+          "Prevents home validators from needing sophisticated algorithmic MEV extraction pipelines",
+          "Currently executed out-of-protocol via MEV-Boost relays with builder auctions",
+          "Long-term Ethereum roadmap targets in-protocol ePBS to remove centralized relay dependencies"
         ]
       }
     ],
-    "obscure_entities_and_science": [
+    "distributed_systems": [
       {
-        "id": "science_01",
-        "query": "Compare Verkle trees and binary state trees for Ethereum statelessness",
+        "id": "dist_01",
+        "query": "Compare PBFT and Tendermint consensus protocols in Byzantine fault-tolerant networks",
         "key_facts": [
-          "Verkle trees use vector commitments (KZG) for small proof sizes (~1KB)",
-          "Binary Merkle trees have simpler cryptographic assumptions (hashes) but larger proofs (~100KB)",
-          "Binary trees avoid trusted setup and elliptic curve cryptography"
+          "Both tolerate up to f Byzantine faults out of 3f + 1 nodes (under partial synchrony)",
+          "PBFT uses three phases: pre-prepare, prepare, and commit with view changes",
+          "Tendermint simplifies the round-based flow with propose, prevote, and precommit",
+          "Tendermint locks validators to specific blocks across rounds to streamline view transitions"
         ]
       },
       {
-        "id": "science_02",
-        "query": "How does recursive proof composition work in Halo2 without a trusted setup?",
+        "id": "dist_02",
+        "query": "Compare Zero-Knowledge Rollups and Optimistic Rollups in finality, proof generation, and capital efficiency",
         "key_facts": [
-          "Uses pasta curves (Pallas and Vesta) in cycle",
-          "Employs bulletproofs-style inner product argument (IPA)",
-          "Accumulation scheme defers expensive verification checks"
+          "ZK-Rollups offer cryptographic validity proofs (SNARKs/STARKs) with immediate L1 state finality upon proof verification",
+          "Optimistic Rollups assume valid execution and require a 7-day challenge window for fraud proofs",
+          "ZK-Rollups require high computational overhead for prover generation but provide instant asset withdrawal",
+          "Optimistic Rollups have cheap execution but delay bridge capital liquidity unless using third-party liquidity providers"
+        ]
+      }
+    ],
+    "geospatial_and_field_lookup": [
+      {
+        "id": "geo_01",
+        "query": "Find strictly vegan restaurants in Lisbon with verified locations and cuisine details",
+        "key_facts": [
+          "Ao 26 - Vegan Food Project located in Chiado (Rua Vitor Cordon 26)",
+          "Kong - Food Made With Compassion located in Baixa (Rua do Crucifixo 105)",
+          "Organi Chiado offering organic, seasonal macrobiotic dishes at Calcada Nova de Sao Francisco",
+          "Strict plant-based preparation avoiding meat, fish, dairy, eggs, and lard (banha)"
+        ]
+      },
+      {
+        "id": "geo_02",
+        "query": "How does offline GNSS trilateration compute device position without cell towers or network access?",
+        "key_facts": [
+          "Receives one-way radio time-of-arrival signals from at least 4 GPS/Galileo/GLONASS satellites",
+          "Calculates pseudoranges by multiplying propagation delay by the speed of light (c)",
+          "Uses 4 satellites to solve for 4 unknowns: three-dimensional spatial coordinates (X, Y, Z) and receiver clock bias (t)",
+          "Operates completely passively with zero outbound radio transmission"
         ]
       }
     ]

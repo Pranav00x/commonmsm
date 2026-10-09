@@ -1,36 +1,60 @@
 {
-  "system": "commonmsm (Dual-Engine: 3B Fast SLM / 35B MoE Disk-Streamed + 21M Places + FTS5 Wikipedia + EIP Specs)",
-  "hardware": "Pixel 8 Pro / Galaxy S24 (Android 14+, 12GB RAM, GrapheneOS)",
-  "overall_score_out_of_10": 7.8,
-  "frontier_parity_percentage": "76.4% of Frontier (Claude Opus 5.5 + Web Search)",
-  "generation_speed_tps_fast_slm": 28.6,
-  "generation_speed_tps_deep_moe": 5.4,
-  "instant_retrieval_latency_ms": 42,
+  "system": "commonmsm (Local Air-Gapped RAG Engine with SQLite FTS5 Knowledge Base & Grounded Synthesizer)",
+  "environment": "Air-gapped mobile execution target (<=12GB RAM, <=50GB flash storage budget, 0 network permissions)",
   "results": [
     {
-      "id": "travel_01",
-      "query": "Tell me the best vegan restaurants in Lisbon",
-      "model_output": "Based on verified offline OpenStreetMap and Overture spatial data [1], the top-rated vegan restaurants in Lisbon are:\n• Ao 26 - Vegan Food Project [1]: 100% Dedicated Plant-Based. High-end Portuguese fusion at Rua Vitor Cordon 26, Chiado. Open 12:30-23:00.\n• Kong - Food Made With Compassion [1]: Plant-based comfort food and artisan burgers at Rua do Crucifixo 105. Open 12:00-22:30.\n• Organi Chiado [1]: Macrobiotic, sugar-free, and gluten-free dining at Calcada Nova de Sao Francisco 2. Open 12:00-22:00.\n• The Green Spot [1]: Contemporary plant-based bowls and brunches at Alameda dos Oceanos 41.\nAll venues are physically mapped with offline GPS coordinates, verified opening hours, and dietary tags.",
-      "score": 9.2,
-      "instant_poi_cards_rendered": true,
-      "citations_verified": 4,
-      "latency_to_instant_results_ms": 38
+      "id": "sci_01",
+      "query": "Compare CRISPR-Cas9 and Prime Editing for targeted genetic modification",
+      "model_output": "Based on retrieved molecular biology specifications [1][2]:\n\n1. Cleavage Mechanism and Double-Strand Breaks:\n   - Standard CRISPR-Cas9 uses Cas9 endonuclease to introduce targeted double-strand breaks (DSBs) at the target locus [1]. Cellular repair pathways (NHEJ or HDR) then introduce insertions/deletions or incorporate donor templates.\n   - Prime editing avoids DSBs entirely. It utilizes a catalytically impaired Cas9 nickase (H840A) fused to an engineered reverse transcriptase [2].\n\n2. Targeting and Guide RNAs:\n   - CRISPR-Cas9 requires a single guide RNA (sgRNA) complementary to the 20-nucleotide target adjacent to a protospacer adjacent motif (PAM) [1].\n   - Prime editing uses an extended prime editing guide RNA (pegRNA) that specifies the target genomic site and carries the desired edit sequence in an extension template [2].\n\n3. Precision and Off-Target Artifacts:\n   - Standard Cas9 frequently causes uncontrolled random indel mutations due to error-prone non-homologous end joining (NHEJ).\n   - Prime editing substantially reduces unintended indel rates and off-target editing, enabling precise transitions, transversions, and small insertions/deletions without exogenous donor DNA [2].",
+      "citations": ["CRISPR-Cas9 Gene Editing [1]", "Prime Editing Architecture [2]"]
+    },
+    {
+      "id": "sci_02",
+      "query": "Explain how mRNA vaccines stimulate immunity compared to inactivated viral vaccines",
+      "model_output": "mRNA vaccines and inactivated whole-virus vaccines stimulate the immune system through fundamentally different pathways [1][2]:\n\n1. Antigen Delivery and Cellular Production:\n   - mRNA vaccines package messenger RNA encoding a specific viral antigen (e.g., the SARS-CoV-2 spike glycoprotein) inside lipid nanoparticles (LNPs) [1]. Upon cellular uptake, host ribosomes translate the mRNA in the cytoplasm, producing the antigen endogenously.\n   - Inactivated vaccines introduce chemically killed whole viral particles produced in cell culture, presenting intact viral structural proteins directly to circulating immune cells [2].\n\n2. Immune Response Induction:\n   - Endogenous translation of mRNA antigen enables presentation via both MHC Class I molecules (activating cytotoxic CD8+ T cells) and MHC Class II molecules (activating CD4+ helper T cells), eliciting robust cellular and humoral immunity [1].\n   - Inactivated vaccines present exogenous antigens predominantly via MHC Class II pathways, generating strong humoral antibody titers but typically weaker cellular CD8+ cytotoxic T-cell responses without specialized adjuvants [2].",
+      "citations": ["mRNA Vaccine Mechanisms [1]", "Inactivated Viral Vaccines [2]"]
+    },
+    {
+      "id": "hist_01",
+      "query": "What are the primary hypotheses explaining the Late Bronze Age Collapse around 1200 BCE?",
+      "model_output": "The Late Bronze Age Collapse (c. 1200–1150 BCE) saw the sudden decline and destruction of palace-based civilizations across the Eastern Mediterranean (including Mycenaean Greece, the Hittite Empire, and Levantine states) [1]. Historians and archaeologists point to multiple mutually reinforcing factors rather than a single monocausal event:\n\n1. Invasions and the 'Sea Peoples':\n   - Contemporary Egyptian and Ugaritic inscriptions record maritime confederations (the 'Sea Peoples') conducting coordinated raids across coastal Anatolia, the Levant, and the Nile Delta, destabilizing trade corridors and sacking coastal cities [1].\n\n2. Environmental Stress and Megadroughts:\n   - Paleoclimatological data (pollen cores and speleothems) indicate a prolonged multi-decade drought across the Mediterranean, causing systemic agricultural failures, famine, and displacement.\n\n3. Systems Collapse and Supply Chain Disruption:\n   - Bronze production required tin (imported from as far as Afghanistan or Iberia) and copper (Cyprus). When trade routes broke down, the centralized palatial redistribution economies could no longer sustain their administrative hierarchies, chariot armies, or artisan workshops [1].",
+      "citations": ["Late Bronze Age Collapse [1]", "Eastern Mediterranean Archaeology [2]"]
+    },
+    {
+      "id": "hist_02",
+      "query": "Why did ancient Roman maritime concrete exhibit greater longevity than modern Portland cement?",
+      "model_output": "Ancient Roman maritime concrete (opus caementicium) survived over two millennia submerged in seawater due to reactive mineral chemistry [1]:\n\n1. Pozzolanic Formulation:\n   - Roman builders blended volcanic ash (pozzolana, rich in reactive silica and alumina) with quicklime (calcium oxide) and seawater [1].\n   - Modern Portland cement relies on calcium silicate hydrate (C-S-H) phases that suffer sulfate and chloride attack in marine environments, causing expansion, cracking, and rebar corrosion.\n\n2. Autogenous Mineral Precipitation and Self-Healing:\n   - As seawater percolates through the porous Roman concrete, it dissolves residual volcanic pumice and lime clasts, precipitating rare interlocking crystals of aluminum tobermorite (Al-tobermorite) and phillipsite [1].\n   - This continuous mineral growth reinforces the matrix over centuries, interlocking pores and arresting crack propagation.",
+      "citations": ["Roman Maritime Concrete Science [1]"]
     },
     {
       "id": "crypto_01",
-      "query": "Compare EIP-7702 and ERC-4337 for account abstraction",
-      "model_output": "EIP-7702 and ERC-4337 represent complementary account abstraction architectures on Ethereum [1][2]:\n\n1. Protocol Layer vs. Alt-Mempool:\n   - EIP-7702 (Core, Pectra fork) modifies protocol transaction semantics by adding Type 0x04 transactions with authorization lists. It temporarily sets the code of an existing EOA for the duration of a single transaction [1].\n   - ERC-4337 operates entirely at the application layer without hard forks, utilizing a separate user operation mempool, Bundlers, and a central EntryPoint contract [2].\n\n2. Key Differences:\n   - Address Persistence: EIP-7702 lets users retain their original EOA address and ECDSA private key while obtaining smart contract abilities (gas sponsorship, batching) [1]. ERC-4337 requires deploying dedicated smart contract wallets (e.g., Safe, Biconomy).\n   - Calldata & Overhead: EIP-7702 avoids Bundler priority fee overhead and EntryPoint validation loops.",
-      "score": 9.5,
-      "citations_verified": 2,
-      "latency_to_first_token_ms": 780
+      "query": "Compare EIP-7702 and ERC-4337 for Ethereum account abstraction",
+      "model_output": "EIP-7702 and ERC-4337 address account abstraction on Ethereum through complementary approaches [1][2]:\n\n1. Protocol Level vs Application Layer:\n   - EIP-7702 (part of the Pectra hard fork) modifies core protocol transaction semantics. It introduces transaction type 0x04, allowing an Externally Owned Account (EOA) to temporarily set its code hash to an in-protocol smart contract address for the duration of a transaction [1].\n   - ERC-4337 operates strictly at the application layer without consensus hard forks. It relies on an alternative mempool, UserOperations, and a central EntryPoint contract [2].\n\n2. Key Architectural Differences:\n   - Address Persistence: EIP-7702 enables existing EOAs to retain their address, private key, and reputation while gaining smart account capabilities (gas sponsorship, batch execution). ERC-4337 requires deploying new smart contract wallets (e.g., Safe, Biconomy).\n   - Execution Overhead: EIP-7702 avoids Bundler priority fee overhead and complex UserOperation validation loops [1].",
+      "citations": ["EIP-7702 Specification [1]", "ERC-4337 Account Abstraction [2]"]
     },
     {
       "id": "crypto_02",
-      "query": "Compare Falcon and ML-DSA post-quantum signature schemes for Ethereum",
-      "model_output": "In post-quantum cryptography (FIPS 204 vs FN-DSA) [1]:\n\n1. Signature Size (EVM Calldata Impact):\n   - Falcon-512 produces ~666-byte signatures, whereas ML-DSA-44 (Dilithium) produces ~2,420-byte signatures [1]. For Ethereum, where calldata gas costs dominate L1/L2 rollup costs, Falcon's 3.6x smaller signature is significantly more efficient.\n\n2. Verification Complexity:\n   - ML-DSA relies strictly on modular polynomial integer arithmetic (Number Theoretic Transform - NTT), which is constant-time and easily implemented in EVM byte code without precision leakage.\n   - Falcon requires high-precision floating-point arithmetic (FFT-based trapdoor Gaussian sampling), making side-channel-resistant implementation and EVM verification computationally intensive unless accelerated by an EVM precompile [1].",
-      "score": 9.6,
-      "citations_verified": 2,
-      "latency_to_first_token_ms": 820
+      "query": "Compare Falcon and ML-DSA post-quantum signature schemes for blockchain execution",
+      "model_output": "In post-quantum cryptography (FIPS 204 vs FN-DSA) [1]:\n\n1. Signature Size and Calldata Overhead:\n   - Falcon-512 produces ~666-byte signatures, whereas ML-DSA-44 (Dilithium) produces ~2,420-byte signatures [1]. For Ethereum L1 and rollups where calldata gas costs dominate transaction fees, Falcon's 3.6x smaller signature offers substantial economic advantages.\n\n2. Verification Complexity:\n   - ML-DSA uses strictly modular integer polynomial arithmetic (Number Theoretic Transform - NTT), which is constant-time and straightforward to implement in EVM bytecode without floating-point side-channel hazards.\n   - Falcon requires high-precision floating-point arithmetic (FFT-based trapdoor Gaussian sampling over NTRU lattices), making side-channel-resistant implementation and EVM verification computationally expensive unless supported by a dedicated precompile [1].",
+      "citations": ["NIST Post-Quantum Cryptography [1]"]
+    },
+    {
+      "id": "crypto_03",
+      "query": "Explain KZG polynomial commitments versus FRI for data availability and zero-knowledge proofs",
+      "model_output": "KZG (Kate-Zaverucha-Goldberg) commitments and FRI (Fast Reed-Solomon Interactive Oracle Proof of Proximity) are two prominent polynomial commitment schemes with contrasting trade-offs [1]:\n\n1. Proof Size and Verification Complexity:\n   - KZG provides O(1) constant-size proofs (48 bytes on BN254) and constant O(1) verification time via elliptic curve pairings [1]. This makes KZG the standard choice for EIP-4844 blob verification where Ethereum consensus validators must verify thousands of proofs rapidly.\n   - FRI produces proofs that are tens of kilobytes in size with O(log^2 d) verification complexity.\n\n2. Cryptographic Assumptions and Setup:\n   - KZG requires a trusted setup ceremony (Powers-of-Tau) and depends on the hardness of discrete logarithm / pairing assumptions.\n   - FRI requires no trusted setup (it is transparent) and relies solely on collision-resistant hash functions, providing post-quantum security [1].",
+      "citations": ["Polynomial Commitment Schemes [1]"]
+    },
+    {
+      "id": "geo_01",
+      "query": "Find strictly vegan restaurants in Lisbon with verified locations and cuisine details",
+      "model_output": "Based on verified offline OpenStreetMap and Overture spatial data [1], the top dedicated vegan restaurants in Lisbon are:\n• Ao 26 - Vegan Food Project [1]: 100% Dedicated Plant-Based. High-end Portuguese fusion at Rua Vitor Cordon 26, Chiado.\n• Kong - Food Made With Compassion [1]: Plant-based comfort food and artisan dishes at Rua do Crucifixo 105, Baixa.\n• Organi Chiado [1]: Macrobiotic, sugar-free, and seasonal dishes at Calcada Nova de Sao Francisco 2, Chiado.\nAll venues operate without animal products, avoiding meat, fish, dairy, eggs, and lard (banha).",
+      "citations": ["OpenStreetMap Planet Extract [1]"]
+    },
+    {
+      "id": "geo_02",
+      "query": "How does offline GNSS trilateration compute device position without cell towers or network access?",
+      "model_output": "GNSS (Global Navigation Satellite System) devices compute position entirely passively through geometric trilateration using satellite radio broadcast signals [1]:\n\n1. One-Way Time-of-Arrival (ToA):\n   - Satellites (GPS, Galileo, GLONASS) continuously transmit time-stamped radio signals containing ephemeris data (orbital parameters) [1].\n   - The mobile receiver notes the arrival time of each signal. Multiplying the propagation delay by the speed of light (c = 299,792,458 m/s) yields the pseudorange to each satellite.\n\n2. Solving Four Unknowns:\n   - A smartphone receiver does not have an atomic clock, meaning its internal clock has an unknown time bias (t).\n   - By acquiring signals from at least 4 satellites, the receiver solves a system of four non-linear pseudorange equations for four unknowns: three-dimensional spatial coordinates (X, Y, Z) and receiver clock offset (t) [1].\n   - This process requires zero cellular, WiFi, or network communication.",
+      "citations": ["GNSS Principles and Applications [1]"]
     }
   ]
 }
