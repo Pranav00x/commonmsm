@@ -444,7 +444,9 @@ The app includes an out-of-the-box bundled starter database with verified places
 #### Option A: Direct Pre-Compiled APK Installation
 Download the latest pre-compiled signed APK directly from GitHub Releases:
 - **Latest Release**: [https://github.com/Pranav00x/commonmsm/releases/latest](https://github.com/Pranav00x/commonmsm/releases/latest)
-- **Direct Asset**: `commonmsm-v1.0.0-release.apk`
+- **Direct Asset**: `commonmsm-v1.0.0-release.apk` (2.2 MB)
+- **SHA-256 (Release)**: `a5e670ae6ab33caae233fdd0440c18bb9480b39b2505fb375f78d8a7b4bba013`
+- **SHA-256 (Debug)**: `477ec333015150b77efad4344d084a6ae6051f8d93ad183c54943f8d6fea8be1`
 - **Integrity Manifest**: `SHA256SUMS.txt`
 
 ```bash

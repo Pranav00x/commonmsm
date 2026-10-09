@@ -14,3 +14,5 @@
 *.bin
 *.iso
 models/
+.kotlin/
+/release_dist/

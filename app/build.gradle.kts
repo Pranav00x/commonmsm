@@ -7,7 +7,11 @@ plugins {
 android {
     namespace = "com.commonmsm"
     compileSdk = 34
-    ndkVersion = "26.1.10909125"
+
+    val enableNative = project.hasProperty("buildNative")
+    if (enableNative) {
+        ndkVersion = "26.1.10909125"
+    }
 
     defaultConfig {
         applicationId = "com.commonmsm"
@@ -21,29 +25,31 @@ android {
             useSupportLibrary = true
         }
 
-        ndk {
-            abiFilters.addAll(listOf("arm64-v8a", "x86_64"))
-        }
+        if (enableNative) {
+            ndk {
+                abiFilters.addAll(listOf("arm64-v8a", "x86_64"))
+            }
 
-        externalNativeBuild {
-            cmake {
-                arguments.addAll(
-                    listOf(
-                        "-DANDROID_STL=c++_shared",
-                        "-DANDROID_ARM_NEON=ON",
-                        "-DGGML_OPENMP=OFF",
-                        "-DGGML_VULKAN=OFF"
+            externalNativeBuild {
+                cmake {
+                    arguments.addAll(
+                        listOf(
+                            "-DANDROID_STL=c++_shared",
+                            "-DANDROID_ARM_NEON=ON",
+                            "-DGGML_OPENMP=OFF",
+                            "-DGGML_VULKAN=OFF"
+                        )
                     )
-                )
-                cppFlags.addAll(
-                    listOf(
-                        "-std=c++17",
-                        "-O3",
-                        "-funroll-loops",
-                        "-Wall"
+                    cppFlags.addAll(
+                        listOf(
+                            "-std=c++17",
+                            "-O3",
+                            "-funroll-loops",
+                            "-Wall"
+                        )
                     )
-                )
-                targets.add("commonmsm_native")
+                    targets.add("commonmsm_native")
+                }
             }
         }
     }
@@ -64,10 +70,12 @@ android {
         }
     }
 
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
+    if (enableNative) {
+        externalNativeBuild {
+            cmake {
+                path = file("src/main/cpp/CMakeLists.txt")
+                version = "3.22.1"
+            }
         }
     }
 

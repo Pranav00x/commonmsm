@@ -770,15 +770,7 @@ private fun AssistantBrutalCard(
                                 val fullReport = if (update?.report != null) {
                                     AirGapExporter.exportToMarkdown(update.report)
                                 } else {
-                                    buildString {
-                                        append(msg.text)
-                                        if (update?.report?.citations?.isNotEmpty() == true) {
-                                            append("\n\n---\nVERIFIED OFFLINE CITATIONS:\n")
-                                            update.report.citations.forEach { c ->
-                                                append("[${c.index}] ${c.title} (${c.source}): ${c.snippet}\n")
-                                            }
-                                        }
-                                    }
+                                    msg.text
                                 }
                                 clipboardManager.setText(AnnotatedString(fullReport))
                                 isCopied = true
