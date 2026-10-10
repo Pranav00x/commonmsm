@@ -81,15 +81,19 @@ class CryptoSpecsRepository {
                         }
                     }
                 }
-            } catch (e: Exception) {
-                // 3. Fallback to token LIKE with wildcard escaping
-                val tokens = query.split(Regex("[^a-zA-Z0-9]+")).filter { it.length >= 3 }
-                for (token in tokens.take(2)) {
-                    if (list.size >= safeLimit) break
-                    val wildcard = FtsSanitizer.sanitizeLikePattern(token)
+            } catch (_: Exception) {}
+        }
+
+        // 3. Fallback: Token LIKE search whenever results are below limit
+        if (list.size < safeLimit) {
+            val tokens = query.split(Regex("[^a-zA-Z0-9]+")).filter { it.length >= 3 }
+            for (token in tokens.take(4)) {
+                if (list.size >= safeLimit) break
+                val wildcard = FtsSanitizer.sanitizeLikePattern(token)
+                try {
                     val cursor = db.rawQuery(
-                        "SELECT eip_number, title, author, status, type, category, upgrade, summary, full_spec FROM eips WHERE title LIKE ? ESCAPE '\\' OR summary LIKE ? ESCAPE '\\' LIMIT ?",
-                        arrayOf(wildcard, wildcard, (safeLimit - list.size).toString())
+                        "SELECT eip_number, title, author, status, type, category, upgrade, summary, full_spec FROM eips WHERE title LIKE ? ESCAPE '\\' OR summary LIKE ? ESCAPE '\\' OR full_spec LIKE ? ESCAPE '\\' LIMIT ?",
+                        arrayOf(wildcard, wildcard, wildcard, (safeLimit - list.size).toString())
                     )
                     cursor.use {
                         while (it.moveToNext()) {
@@ -112,7 +116,7 @@ class CryptoSpecsRepository {
                             }
                         }
                     }
-                }
+                } catch (_: Exception) {}
             }
         }
         return list

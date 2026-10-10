@@ -39,7 +39,36 @@ class PlacesRepository {
             safeLimit.toString()
         )
 
-        return cursor.use { extractPlaces(it) }
+        val places = cursor.use { extractPlaces(it) }
+        if (places.isNotEmpty()) return places
+
+        // Fallback 1: Broad search across city, name, cuisine, diet
+        val fallbackPattern = "%$safeCity%"
+        val fallbackCursor = db.query(
+            "places",
+            null,
+            "city LIKE ? OR name LIKE ? OR cuisine LIKE ? OR diet_tags LIKE ?",
+            arrayOf(fallbackPattern, fallbackPattern, fallbackPattern, fallbackPattern),
+            null,
+            null,
+            "fame_score DESC, is_vegan DESC",
+            safeLimit.toString()
+        )
+        val fallbackPlaces = fallbackCursor.use { extractPlaces(it) }
+        if (fallbackPlaces.isNotEmpty()) return fallbackPlaces
+
+        // Fallback 2: Global top-rated recommendations
+        val globalCursor = db.query(
+            "places",
+            null,
+            if (isVeganOnly) "is_vegan = 1" else null,
+            null,
+            null,
+            null,
+            "fame_score DESC, is_vegan DESC",
+            safeLimit.toString()
+        )
+        return globalCursor.use { extractPlaces(it) }
     }
 
     fun searchNearCoordinates(
