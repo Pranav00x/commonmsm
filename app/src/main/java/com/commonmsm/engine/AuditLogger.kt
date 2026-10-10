@@ -41,6 +41,9 @@ object AuditLogger {
             parentHash = parentHash,
             blockHash = blockHash
         )
+        if (chain.size >= 1000) {
+            chain.removeAt(0)
+        }
         chain.add(block)
         return block
     }

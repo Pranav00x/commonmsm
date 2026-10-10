@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.commonmsm.data.models.ResearchSession
 import com.commonmsm.engine.AuditLogger
+import com.commonmsm.ui.components.ModernBadge
 import com.commonmsm.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -38,8 +39,8 @@ fun NotebookSheet(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.85f)
-            .border(2.dp, BrutalBorder, RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
-        color = BrutalBlack,
+            .border(1.dp, DeepSeekBorder, RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+        color = DeepSeekBg,
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
     ) {
         Column(
@@ -56,38 +57,42 @@ fun NotebookSheet(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         modifier = Modifier
-                            .size(10.dp)
+                            .size(8.dp)
                             .clip(CircleShape)
-                            .background(BrutalNeonGreen)
+                            .background(DeepSeekGreen)
                     )
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "NOTEBOOK // SAVED SESSIONS",
-                        color = BrutalWhite,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Black,
-                        fontSize = 14.sp
+                        text = "Research History",
+                        color = DeepSeekTextPrimary,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
                     )
                 }
 
                 Box(
                     modifier = Modifier
-                        .size(36.dp)
+                        .size(32.dp)
                         .clip(CircleShape)
-                        .background(BrutalDarkSurface)
-                        .border(1.5.dp, BrutalBorder, CircleShape)
+                        .background(DeepSeekSurface)
+                        .border(1.dp, DeepSeekBorder, CircleShape)
                         .clickable { onDismiss() },
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Close, contentDescription = "Close", tint = BrutalWhite, modifier = Modifier.size(18.dp))
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = "Close",
+                        tint = DeepSeekTextSecondary,
+                        modifier = Modifier.size(16.dp)
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
-            HorizontalDivider(color = BrutalBorder, thickness = 2.dp)
             Spacer(modifier = Modifier.height(12.dp))
+            HorizontalDivider(color = DeepSeekBorder, thickness = 1.dp)
+            Spacer(modifier = Modifier.height(10.dp))
 
-            // Merkle Cryptographic Audit Verification Bar
+            // Audit Verification Bar
             var auditCopied by remember { mutableStateOf(false) }
             val clipboard = LocalClipboardManager.current
             Row(
@@ -96,37 +101,35 @@ fun NotebookSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "MERKLE CHAIN: ${if (AuditLogger.verifyChainIntegrity()) "INTEGRITY [OK]" else "TAMPERED"}",
-                    color = BrutalNeonGreen,
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold
+                    text = "Audit Trail: ${if (AuditLogger.verifyChainIntegrity()) "Verified" else "Modified"}",
+                    color = DeepSeekGreen,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium
                 )
 
                 Box(
                     modifier = Modifier
-                        .clip(CircleShape)
-                        .background(BrutalDarkSurface)
-                        .border(1.5.dp, if (auditCopied) BrutalNeonGreen else BrutalBorder, CircleShape)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(DeepSeekSurface)
+                        .border(1.dp, DeepSeekBorder, RoundedCornerShape(6.dp))
                         .clickable {
                             clipboard.setText(AnnotatedString(AuditLogger.exportAuditCertificate()))
                             auditCopied = true
                         }
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = if (auditCopied) "CERT COPIED" else "EXPORT AUDIT TRAIL",
-                        color = if (auditCopied) BrutalNeonGreen else BrutalWhite,
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Black
+                        text = if (auditCopied) "Copied" else "Export Certificate",
+                        color = DeepSeekTextSecondary,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
 
+            Spacer(modifier = Modifier.height(10.dp))
+            HorizontalDivider(color = DeepSeekBorder, thickness = 1.dp)
             Spacer(modifier = Modifier.height(12.dp))
-            HorizontalDivider(color = BrutalBorder, thickness = 1.dp)
-            Spacer(modifier = Modifier.height(14.dp))
 
             if (sessions.isEmpty()) {
                 Box(
@@ -136,30 +139,29 @@ fun NotebookSheet(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "NO LOCAL RESEARCH SESSIONS RECORDED YET.",
-                        color = BrutalGray,
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
+                        text = "No saved research sessions yet.",
+                        color = DeepSeekTextMuted,
+                        fontSize = 13.sp
                     )
                 }
             } else {
-                val dateFormat = SimpleDateFormat("HH:mm:ss • MMM dd", Locale.US)
+                val dateFormat = SimpleDateFormat("MMM dd, HH:mm", Locale.US)
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(sessions) { s ->
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .border(2.dp, BrutalBorder, RoundedCornerShape(10.dp))
-                                .background(BrutalDarkSurface, RoundedCornerShape(10.dp))
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(DeepSeekSurface)
+                                .border(1.dp, DeepSeekBorder, RoundedCornerShape(10.dp))
                                 .clickable {
                                     onSelectSession(s)
                                     onDismiss()
                                 }
-                                .padding(14.dp)
+                                .padding(12.dp)
                         ) {
                             Column {
                                 Row(
@@ -167,18 +169,11 @@ fun NotebookSheet(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(
-                                        text = s.intent,
-                                        color = BrutalOrange,
-                                        fontFamily = FontFamily.Monospace,
-                                        fontWeight = FontWeight.Black,
-                                        fontSize = 10.sp
-                                    )
+                                    ModernBadge(text = s.intent, color = DeepSeekBlueLight)
                                     Text(
                                         text = dateFormat.format(Date(s.timestamp)),
-                                        color = BrutalGray,
-                                        fontFamily = FontFamily.Monospace,
-                                        fontSize = 9.sp
+                                        color = DeepSeekTextMuted,
+                                        fontSize = 11.sp
                                     )
                                 }
 
@@ -186,18 +181,16 @@ fun NotebookSheet(
 
                                 Text(
                                     text = s.query,
-                                    color = BrutalWhite,
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold,
+                                    color = DeepSeekTextPrimary,
+                                    fontWeight = FontWeight.SemiBold,
                                     fontSize = 13.sp
                                 )
 
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(3.dp))
 
                                 Text(
                                     text = s.summary,
-                                    color = BrutalGray,
-                                    fontFamily = FontFamily.Default,
+                                    color = DeepSeekTextSecondary,
                                     fontSize = 12.sp,
                                     lineHeight = 16.sp,
                                     maxLines = 2

@@ -22,12 +22,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Protect screen contents from Android Recents switcher snapshot leakage and memory scraping
-        window.setFlags(
-            android.view.WindowManager.LayoutParams.FLAG_SECURE,
-            android.view.WindowManager.LayoutParams.FLAG_SECURE
-        )
-
         inferenceController = InferenceController(this)
         storageManager = ModelStorageManager(this)
 

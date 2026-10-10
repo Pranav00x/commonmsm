@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.commonmsm">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- 
       OFFLINE BY CONSTRUCTION:
@@ -25,8 +24,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CommonMsm"
-        android:extractNativeLibs="true">
+        android:theme="@style/Theme.CommonMsm">
         <activity
             android:name=".MainActivity"
             android:exported="true"

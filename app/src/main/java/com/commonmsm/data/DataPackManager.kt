@@ -102,24 +102,35 @@ object DataPackManager {
     fun checkPackStatuses(context: Context): List<PackStatus> {
         val dbDir = getDatabaseDir(context)
         val modelDir = getModelDir(context)
-        val externalAiDir = File(Environment.getExternalStorageDirectory(), "OfflineAI")
 
         return CATALOG.map { pack ->
             val candidateFile = when {
                 pack.targetFileName.endsWith(".gguf") -> {
                     val inModelDir = File(modelDir, pack.targetFileName)
-                    val inExternal = File(externalAiDir, pack.targetFileName)
-                    if (inModelDir.exists()) inModelDir else if (inExternal.exists()) inExternal else null
+                    val modelExists = try { inModelDir.exists() } catch (_: Exception) { false }
+                    if (modelExists) {
+                        inModelDir
+                    } else {
+                        try {
+                            val externalAiDir = File(Environment.getExternalStorageDirectory(), "OfflineAI")
+                            val inExternal = File(externalAiDir, pack.targetFileName)
+                            if (inExternal.exists()) inExternal else null
+                        } catch (_: Exception) {
+                            null
+                        }
+                    }
                 }
                 else -> {
                     val inDbDir = File(dbDir, pack.targetFileName)
-                    if (inDbDir.exists()) inDbDir else null
+                    val dbExists = try { inDbDir.exists() } catch (_: Exception) { false }
+                    if (dbExists) inDbDir else null
                 }
             }
 
+            val installed = try { candidateFile != null && candidateFile.length() > 0 } catch (_: Exception) { false }
             PackStatus(
                 packInfo = pack,
-                isInstalled = candidateFile != null && candidateFile.length() > 0,
+                isInstalled = installed,
                 localFile = candidateFile
             )
         }
@@ -164,21 +175,25 @@ object DataPackManager {
      * Scans user Downloads directory for matching database or GGUF packs.
      */
     fun findPacksInDownloads(): List<File> {
-        val downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        if (!downloads.exists() || !downloads.isDirectory) return emptyList()
+        return try {
+            val downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            if (!downloads.exists() || !downloads.isDirectory) return emptyList()
 
-        val validNames = CATALOG.map { it.targetFileName.lowercase() }.toSet()
-        val files = downloads.listFiles { f ->
-            f.isFile && (validNames.contains(f.name.lowercase()) || f.name.endsWith(".db") || f.name.endsWith(".gguf"))
-        } ?: return emptyList()
+            val validNames = CATALOG.map { it.targetFileName.lowercase() }.toSet()
+            val files = downloads.listFiles { f ->
+                f.isFile && (validNames.contains(f.name.lowercase()) || f.name.endsWith(".db") || f.name.endsWith(".gguf"))
+            } ?: return emptyList()
 
-        val downloadsCanonical = downloads.canonicalPath
-        return files.filter { f ->
-            try {
-                f.canonicalPath.startsWith(downloadsCanonical) && validateSafeFilename(f.name)
-            } catch (e: Exception) {
-                false
+            val downloadsCanonical = downloads.canonicalPath
+            files.filter { f ->
+                try {
+                    f.canonicalPath.startsWith(downloadsCanonical) && validateSafeFilename(f.name)
+                } catch (e: Exception) {
+                    false
+                }
             }
+        } catch (_: Exception) {
+            emptyList()
         }
     }
 

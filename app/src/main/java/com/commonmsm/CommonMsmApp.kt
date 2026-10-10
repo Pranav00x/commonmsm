@@ -6,7 +6,11 @@ import com.commonmsm.data.DatabaseManager
 class CommonMsmApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        // Initialize offline SQLite databases and indices
-        DatabaseManager.initialize(this)
+        // Initialize offline SQLite databases and indices safely
+        try {
+            DatabaseManager.initialize(this)
+        } catch (_: Throwable) {
+            // Fallback gracefully without terminating app process
+        }
     }
 }

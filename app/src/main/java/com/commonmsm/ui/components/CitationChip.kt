@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,36 +26,33 @@ fun CitationChip(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(end = 8.dp, top = 4.dp, bottom = 4.dp)
-            .clip(CircleShape)
-            .background(BrutalBlack)
-            .border(2.dp, BrutalBorder, CircleShape)
+            .clip(RoundedCornerShape(8.dp))
+            .background(DeepSeekSurface)
+            .border(1.dp, DeepSeekBorder, RoundedCornerShape(8.dp))
             .clickable { onClick(citation) }
             .padding(horizontal = 10.dp, vertical = 6.dp)
     ) {
-        // Stark Circular Index Badge
+        // Number Badge
         Box(
             modifier = Modifier
-                .size(20.dp)
-                .clip(CircleShape)
-                .background(BrutalOrange)
-                .border(1.dp, BrutalBlack, CircleShape),
+                .clip(RoundedCornerShape(4.dp))
+                .background(DeepSeekBlue.copy(alpha = 0.2f))
+                .padding(horizontal = 6.dp, vertical = 2.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "${citation.index}",
-                color = BrutalBlack,
+                text = "[${citation.index}]",
+                color = DeepSeekBlueLight,
                 fontSize = 11.sp,
-                fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Black
+                fontWeight = FontWeight.SemiBold
             )
         }
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(6.dp))
         Text(
-            text = citation.title.take(24) + if (citation.title.length > 24) "..." else "",
-            color = BrutalWhite,
-            fontFamily = FontFamily.Monospace,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold
+            text = citation.title.take(28) + if (citation.title.length > 28) "..." else "",
+            color = DeepSeekTextPrimary,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium
         )
     }
 }

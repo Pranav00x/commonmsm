@@ -6,13 +6,8 @@ import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 
 /**
- * High-performance on-disk N-gram engine for extreme parameter capacity with zero RAM overhead.
- * Represents an on-disk N-gram language model (~100B parameter scale capability)
- * storing millions of 3-gram, 5-gram, and 7-gram phrase transitions.
- *
- * Designed to address Vitalik Buterin's suggestion:
- * "He suggests extreme MoE might be the right architecture for phones (including newer variants like n-gram models):
- * something like ~100B params, most living on disk, with <1B activated per token."
+ * Local on-disk n-gram transition table lookup utility.
+ * Evaluates phrase transitions directly against memory-mapped tables without loading full vocabularies into RAM.
  */
 class NgramDiskEngine(private val modelFile: File? = null) : AutoCloseable {
 

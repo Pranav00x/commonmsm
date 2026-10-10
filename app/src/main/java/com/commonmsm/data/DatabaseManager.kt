@@ -45,7 +45,7 @@ object DatabaseManager {
             }
         } catch (e: Exception) {
             Log.w(TAG, "Falling back to bundled places database: ${e.message}")
-            createInMemoryPlacesDb(context)
+            try { createInMemoryPlacesDb(context) } catch (t: Throwable) { null }
         }
 
         // 2. Wiki DB
@@ -57,7 +57,7 @@ object DatabaseManager {
             }
         } catch (e: Exception) {
             Log.w(TAG, "Falling back to bundled wiki database: ${e.message}")
-            createInMemoryWikiDb(context)
+            try { createInMemoryWikiDb(context) } catch (t: Throwable) { null }
         }
 
         // 3. Crypto Specs DB
@@ -69,7 +69,7 @@ object DatabaseManager {
             }
         } catch (e: Exception) {
             Log.w(TAG, "Falling back to bundled crypto database: ${e.message}")
-            createInMemoryCryptoDb(context)
+            try { createInMemoryCryptoDb(context) } catch (t: Throwable) { null }
         }
     }
 
@@ -183,15 +183,6 @@ object DatabaseManager {
                 pageviews INTEGER DEFAULT 0
             )
         """.trimIndent())
-        db.execSQL("""
-            CREATE VIRTUAL TABLE wiki_fts USING fts5(
-                title,
-                body,
-                content='wiki_articles',
-                content_rowid='rowid'
-            )
-        """.trimIndent())
-
         val insert = "INSERT INTO wiki_articles (id, title, lead_text, body_text, pageviews) VALUES (?, ?, ?, ?, ?)"
         db.compileStatement(insert).apply {
             bindString(1, "art_pqc")
@@ -243,7 +234,13 @@ object DatabaseManager {
             bindLong(5, 310000)
             executeInsert()
         }
-        db.execSQL("INSERT INTO wiki_fts(rowid, title, body) SELECT rowid, title, body_text FROM wiki_articles")
+
+        try {
+            db.execSQL("CREATE VIRTUAL TABLE wiki_fts USING fts5(title, body)")
+            db.execSQL("INSERT INTO wiki_fts(rowid, title, body) SELECT rowid, title, body_text FROM wiki_articles")
+        } catch (e: Exception) {
+            Log.w(TAG, "FTS5 initialization skipped for in-memory wiki: ${e.message}")
+        }
         return db
     }
 
@@ -262,7 +259,6 @@ object DatabaseManager {
                 full_spec TEXT
             )
         """.trimIndent())
-        db.execSQL("CREATE VIRTUAL TABLE eips_fts USING fts5(title, summary, full_spec)")
 
         val insert = "INSERT INTO eips VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
         db.compileStatement(insert).apply {
@@ -310,7 +306,13 @@ object DatabaseManager {
             bindString(9, "EIP-1559 introduces transaction type 0x02 with max_fee_per_gas and max_priority_fee_per_gas. The protocol algorithmically adjusts BASEFEE dynamically targeting 50% block capacity (15M gas target, 30M gas cap). The BASEFEE is completely burned from the total ETH supply, reducing token velocity and introducing a deflationary mechanic during periods of high on-chain demand.")
             executeInsert()
         }
-        db.execSQL("INSERT INTO eips_fts(rowid, title, summary, full_spec) SELECT eip_number, title, summary, full_spec FROM eips")
+
+        try {
+            db.execSQL("CREATE VIRTUAL TABLE eips_fts USING fts5(title, summary, full_spec)")
+            db.execSQL("INSERT INTO eips_fts(rowid, title, summary, full_spec) SELECT eip_number, title, summary, full_spec FROM eips")
+        } catch (e: Exception) {
+            Log.w(TAG, "FTS5 initialization skipped for in-memory crypto: ${e.message}")
+        }
         return db
     }
 

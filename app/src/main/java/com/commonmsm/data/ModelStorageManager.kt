@@ -31,17 +31,21 @@ class ModelStorageManager(private val context: Context) {
     fun scanAvailableModels(): List<DiscoveredModel> {
         val candidates = mutableListOf<File>()
 
-        // 1. App-specific storage
-        val appModelDir = File(context.getExternalFilesDir(null) ?: context.filesDir, "models")
-        if (appModelDir.exists()) {
-            candidates.addAll(appModelDir.listFiles { f -> f.extension.equals("gguf", ignoreCase = true) }?.toList() ?: emptyList())
-        }
+        try {
+            // 1. App-specific storage
+            val appModelDir = File(context.getExternalFilesDir(null) ?: context.filesDir, "models")
+            if (appModelDir.exists()) {
+                candidates.addAll(appModelDir.listFiles { f -> f.extension.equals("gguf", ignoreCase = true) }?.toList() ?: emptyList())
+            }
+        } catch (_: Exception) {}
 
-        // 2. Common external storage paths (e.g., /sdcard/OfflineAI or /sdcard/Download)
-        val publicDir = File(Environment.getExternalStorageDirectory(), "OfflineAI")
-        if (publicDir.exists()) {
-            candidates.addAll(publicDir.listFiles { f -> f.extension.equals("gguf", ignoreCase = true) }?.toList() ?: emptyList())
-        }
+        try {
+            // 2. Common external storage paths (e.g., /sdcard/OfflineAI)
+            val publicDir = File(Environment.getExternalStorageDirectory(), "OfflineAI")
+            if (publicDir.exists()) {
+                candidates.addAll(publicDir.listFiles { f -> f.extension.equals("gguf", ignoreCase = true) }?.toList() ?: emptyList())
+            }
+        } catch (_: Exception) {}
 
         return candidates.map { f ->
             val name = f.nameWithoutExtension
@@ -49,7 +53,7 @@ class ModelStorageManager(private val context: Context) {
             DiscoveredModel(
                 name = name,
                 file = f,
-                sizeBytes = f.length(),
+                sizeBytes = try { f.length() } catch (_: Exception) { 0L },
                 isMoE = isMoE,
                 recommendedThreads = if (isMoE) 6 else 4
             )
@@ -57,29 +61,42 @@ class ModelStorageManager(private val context: Context) {
     }
 
     fun getStorageReport(): StorageReport {
-        val baseDir = context.getExternalFilesDir(null) ?: context.filesDir
-        val dbDir = File(baseDir, "databases")
-        val modelDir = File(baseDir, "models")
+        return try {
+            val baseDir = context.getExternalFilesDir(null) ?: context.filesDir
+            val dbDir = File(baseDir, "databases")
+            val modelDir = File(baseDir, "models")
 
-        val dbBytes = getFolderSize(dbDir)
-        val modelBytes = getFolderSize(modelDir)
-        val privateBytes = getFolderSize(context.filesDir)
-        val total = dbBytes + modelBytes + privateBytes
+            val dbBytes = getFolderSize(dbDir)
+            val modelBytes = getFolderSize(modelDir)
+            val privateBytes = getFolderSize(context.filesDir)
+            val total = dbBytes + modelBytes + privateBytes
 
-        return StorageReport(
-            totalAllocatedBytes = total,
-            modelsBytes = modelBytes,
-            databasesBytes = dbBytes,
-            appPrivateBytes = privateBytes
-        )
+            StorageReport(
+                totalAllocatedBytes = total,
+                modelsBytes = modelBytes,
+                databasesBytes = dbBytes,
+                appPrivateBytes = privateBytes
+            )
+        } catch (_: Exception) {
+            StorageReport(
+                totalAllocatedBytes = 0L,
+                modelsBytes = 0L,
+                databasesBytes = 0L,
+                appPrivateBytes = 0L
+            )
+        }
     }
 
     private fun getFolderSize(dir: File): Long {
-        if (!dir.exists()) return 0L
-        var size = 0L
-        dir.listFiles()?.forEach { file ->
-            size += if (file.isDirectory) getFolderSize(file) else file.length()
+        return try {
+            if (!dir.exists()) return 0L
+            var size = 0L
+            dir.listFiles()?.forEach { file ->
+                size += if (file.isDirectory) getFolderSize(file) else file.length()
+            }
+            size
+        } catch (_: Exception) {
+            0L
         }
-        return size
     }
 }

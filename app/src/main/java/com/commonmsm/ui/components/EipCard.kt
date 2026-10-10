@@ -36,13 +36,14 @@ fun EipCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 5.dp)
-            .border(2.dp, BrutalBorder, RoundedCornerShape(12.dp))
-            .background(BrutalElevated, RoundedCornerShape(12.dp))
+            .padding(vertical = 4.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(DeepSeekSurface)
+            .border(1.dp, DeepSeekBorder, RoundedCornerShape(12.dp))
             .padding(14.dp)
     ) {
         Column {
-            // Header Row: EIP Number Pill + Upgrade Badge
+            // Header Row: EIP Number Badge + Status + Expand
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -52,34 +53,30 @@ fun EipCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Circular EIP Pill
                     Box(
                         modifier = Modifier
-                            .clip(CircleShape)
-                            .background(BrutalBlack)
-                            .border(2.dp, BrutalOrange, CircleShape)
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(DeepSeekBlue.copy(alpha = 0.15f))
+                            .border(1.dp, DeepSeekBlue.copy(alpha = 0.3f), RoundedCornerShape(6.dp))
+                            .padding(horizontal = 8.dp, vertical = 3.dp)
                     ) {
                         Text(
                             text = "EIP-${spec.eipNumber}",
-                            color = BrutalOrange,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Black,
+                            color = DeepSeekBlueLight,
+                            fontWeight = FontWeight.SemiBold,
                             fontSize = 12.sp
                         )
                     }
 
-                    // Status Stamp
-                    BrutalCircularStamp(
-                        text = spec.status.uppercase(),
-                        color = if (spec.status.equals("Final", ignoreCase = true)) BrutalNeonGreen else BrutalYellow
+                    ModernBadge(
+                        text = spec.status,
+                        color = if (spec.status.equals("Final", ignoreCase = true)) DeepSeekGreen else DeepSeekAmber
                     )
 
-                    // Upgrade Stamp if available
                     if (!spec.networkUpgrade.isNullOrBlank()) {
-                        BrutalCircularStamp(
-                            text = spec.networkUpgrade.uppercase(),
-                            color = BrutalBlue
+                        ModernBadge(
+                            text = spec.networkUpgrade,
+                            color = DeepSeekBlueLight
                         )
                     }
                 }
@@ -87,68 +84,62 @@ fun EipCard(
                 // Expand/Collapse Toggle
                 Box(
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(30.dp)
                         .clip(CircleShape)
-                        .background(BrutalDarkSurface)
-                        .border(1.5.dp, BrutalBorder, CircleShape)
+                        .background(DeepSeekCard)
+                        .border(1.dp, DeepSeekBorder, CircleShape)
                         .clickable { isExpanded = !isExpanded },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                         contentDescription = "Toggle Spec",
-                        tint = BrutalWhite,
+                        tint = DeepSeekTextSecondary,
                         modifier = Modifier.size(16.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Title
             Text(
                 text = spec.title,
-                color = BrutalWhite,
-                fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Black,
+                color = DeepSeekTextPrimary,
+                fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(3.dp))
 
             // Author
             Text(
-                text = "AUTHORS: ${spec.author}",
-                color = BrutalGray,
-                fontFamily = FontFamily.Monospace,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold
+                text = "Authors: ${spec.author}",
+                color = DeepSeekTextMuted,
+                fontSize = 11.sp
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             // Summary
             Text(
                 text = spec.summary,
-                color = BrutalWhite,
-                fontFamily = FontFamily.Monospace,
-                fontSize = 12.sp,
-                lineHeight = 17.sp
+                color = DeepSeekTextSecondary,
+                fontSize = 13.sp,
+                lineHeight = 18.sp
             )
 
             // Cross-Spec Dependencies & Relations from EipKnowledgeGraph
             val relations = remember(spec.eipNumber) { com.commonmsm.engine.EipKnowledgeGraph.getRelations(spec.eipNumber) }
             if (relations.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "SPEC DEPENDENCIES & CROSS-REFS:",
-                    color = BrutalGray,
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Black,
-                    letterSpacing = 0.5.sp
+                    text = "Dependencies & Cross-References",
+                    color = DeepSeekTextMuted,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -156,13 +147,13 @@ fun EipCard(
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     relations.forEach { rel ->
-                        BrutalCircularStamp(
+                        ModernBadge(
                             text = "${rel.relationship}: EIP-${rel.targetEip}",
                             color = when (rel.relationship) {
-                                "SUPERSEDES", "SUPERSEDED_BY" -> BrutalYellow
-                                "REQUIRES" -> BrutalRed
-                                "EXTENDS" -> BrutalBlue
-                                else -> BrutalOrange
+                                "SUPERSEDES", "SUPERSEDED_BY" -> DeepSeekAmber
+                                "REQUIRES" -> DeepSeekRed
+                                "EXTENDS" -> DeepSeekBlueLight
+                                else -> DeepSeekBlue
                             }
                         )
                     }
@@ -172,15 +163,15 @@ fun EipCard(
             // Collapsible Full Technical Spec Section
             AnimatedVisibility(visible = isExpanded) {
                 Column(modifier = Modifier.padding(top = 10.dp)) {
-                    // Vector Directed Graph Visualization
                     SpecDependencyGraphView(eipNumber = spec.eipNumber)
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .border(1.5.dp, BrutalBorder, RoundedCornerShape(8.dp))
-                            .background(BrutalBlack, RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(DeepSeekCard)
+                            .border(1.dp, DeepSeekBorder, RoundedCornerShape(8.dp))
                             .padding(12.dp)
                     ) {
                         Column {
@@ -191,24 +182,22 @@ fun EipCard(
                                 Icon(
                                     Icons.Default.Code,
                                     contentDescription = "Spec",
-                                    tint = BrutalNeonGreen,
+                                    tint = DeepSeekGreen,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Text(
-                                    text = "FORMAL SPECIFICATION // VERIFIED:",
-                                    color = BrutalNeonGreen,
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Black,
-                                    fontSize = 10.sp
+                                    text = "Technical Specification",
+                                    color = DeepSeekGreen,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 11.sp
                                 )
                             }
                             Spacer(modifier = Modifier.height(6.dp))
                             Text(
                                 text = spec.fullSpec,
-                                color = BrutalWhite,
-                                fontFamily = FontFamily.Monospace,
-                                fontSize = 11.sp,
-                                lineHeight = 16.sp
+                                color = DeepSeekTextPrimary,
+                                fontSize = 12.sp,
+                                lineHeight = 17.sp
                             )
                         }
                     }

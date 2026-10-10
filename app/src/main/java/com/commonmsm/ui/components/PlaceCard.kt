@@ -35,12 +35,14 @@ fun PlaceCard(
     onClick: () -> Unit = {}
 ) {
     var showDietCard by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 5.dp)
-            .border(2.dp, BrutalBorder, RoundedCornerShape(12.dp))
-            .background(BrutalElevated, RoundedCornerShape(12.dp))
+            .padding(vertical = 4.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(DeepSeekSurface)
+            .border(1.dp, DeepSeekBorder, RoundedCornerShape(12.dp))
             .padding(14.dp)
     ) {
         Column {
@@ -51,107 +53,109 @@ fun PlaceCard(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = place.name.uppercase(),
+                        text = place.name,
                         style = MaterialTheme.typography.titleMedium,
-                        color = BrutalWhite,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Black
+                        color = DeepSeekTextPrimary,
+                        fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "${place.city.uppercase()}, ${place.country.uppercase()}",
-                        color = BrutalGray,
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold
+                        text = "${place.city}, ${place.country}",
+                        color = DeepSeekTextSecondary,
+                        fontSize = 12.sp
                     )
                 }
 
-                // Stark Circular Score Badge
+                // Rating Badge
                 if (place.fameScore > 0) {
-                    Box(
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .size(38.dp)
-                            .clip(CircleShape)
-                            .background(BrutalBlack)
-                            .border(2.dp, BrutalYellow, CircleShape),
-                        contentAlignment = Alignment.Center
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(DeepSeekAmber.copy(alpha = 0.15f))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
+                        Icon(
+                            Icons.Default.Star,
+                            contentDescription = "Rating",
+                            tint = DeepSeekAmber,
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = String.format("%.1f", place.fameScore),
-                            color = BrutalYellow,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 13.sp
+                            color = DeepSeekAmber,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Circular Badges & Diet Stamps
+            // Dietary & Cuisine Badges
             Row(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.horizontalScroll(rememberScrollState())
             ) {
                 if (place.isStrictlyVegan) {
-                    BrutalCircularStamp(text = "VEGAN: 100%", color = BrutalNeonGreen)
+                    ModernBadge(text = "Dedicated Vegan", color = DeepSeekGreen)
                 } else if (place.dietTags.contains("vegan")) {
-                    BrutalCircularStamp(text = "VEGAN OPTIONS", color = BrutalNeonGreen)
+                    ModernBadge(text = "Vegan Options", color = DeepSeekGreen)
                 }
 
                 if (!place.cuisine.isNullOrBlank()) {
-                    BrutalCircularStamp(text = place.cuisine.uppercase(), color = BrutalGray)
+                    ModernBadge(text = place.cuisine, color = DeepSeekTextSecondary)
                 }
 
                 if (place.distanceMeters != null) {
-                    BrutalCircularStamp(text = com.commonmsm.engine.SpatialMath.formatDistance(place.distanceMeters.toDouble()), color = BrutalBlue)
+                    ModernBadge(
+                        text = com.commonmsm.engine.SpatialMath.formatDistance(place.distanceMeters.toDouble()),
+                        color = DeepSeekBlueLight
+                    )
                 }
             }
 
             if (!place.address.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Default.LocationOn,
                         contentDescription = "Address",
-                        tint = BrutalOrange,
-                        modifier = Modifier.size(14.dp)
+                        tint = DeepSeekBlueLight,
+                        modifier = Modifier.size(13.dp)
                     )
-                    Spacer(modifier = Modifier.width(6.dp))
+                    Spacer(modifier = Modifier.width(5.dp))
                     Text(
                         text = place.address,
-                        color = BrutalWhite,
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal
+                        color = DeepSeekTextSecondary,
+                        fontSize = 12.sp
                     )
                 }
             }
 
             if (!place.openingHours.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(3.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Default.Schedule,
                         contentDescription = "Hours",
-                        tint = BrutalGray,
-                        modifier = Modifier.size(14.dp)
+                        tint = DeepSeekTextMuted,
+                        modifier = Modifier.size(13.dp)
                     )
-                    Spacer(modifier = Modifier.width(6.dp))
+                    Spacer(modifier = Modifier.width(5.dp))
                     Text(
-                        text = "HRS: ${place.openingHours}",
-                        color = BrutalGray,
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold
+                        text = place.openingHours,
+                        color = DeepSeekTextMuted,
+                        fontSize = 11.sp
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Action row: GPS coordinates & Navigate button
+            // Action row
             val context = androidx.compose.ui.platform.LocalContext.current
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -159,54 +163,49 @@ fun PlaceCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "GPS: [${String.format("%.4f", place.latitude)}, ${String.format("%.4f", place.longitude)}]",
-                    color = BrutalGray,
+                    text = "${String.format("%.4f", place.latitude)}, ${String.format("%.4f", place.longitude)}",
+                    color = DeepSeekTextMuted,
                     fontFamily = FontFamily.Monospace,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 10.sp
                 )
 
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     val dietCard = remember(place.country) { OfflineGlossaryEngine.getDietaryCard(place.country) }
                     Box(
                         modifier = Modifier
-                            .clip(CircleShape)
-                            .background(if (showDietCard) BrutalNeonGreen else BrutalBlack)
-                            .border(1.5.dp, BrutalNeonGreen, CircleShape)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(if (showDietCard) DeepSeekGreen.copy(alpha = 0.2f) else DeepSeekCard)
+                            .border(1.dp, if (showDietCard) DeepSeekGreen else DeepSeekBorder, RoundedCornerShape(6.dp))
                             .clickable { showDietCard = !showDietCard }
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = if (showDietCard) "HIDE PHRASE" else "DIET PHRASE: ${dietCard.languageCode.uppercase()}",
-                            color = if (showDietCard) BrutalBlack else BrutalNeonGreen,
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Black
+                            text = if (showDietCard) "Hide Phrase" else "Diet Phrase (${dietCard.languageCode.uppercase()})",
+                            color = if (showDietCard) DeepSeekGreen else DeepSeekTextSecondary,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium
                         )
                     }
 
                     Box(
                         modifier = Modifier
-                            .clip(CircleShape)
-                            .background(BrutalBlack)
-                            .border(1.5.dp, BrutalOrange, CircleShape)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(DeepSeekBlue.copy(alpha = 0.15f))
+                            .border(1.dp, DeepSeekBlue.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
                             .clickable {
                                 val uri = android.net.Uri.parse("geo:${place.latitude},${place.longitude}?q=${android.net.Uri.encode(place.name)}")
                                 val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
                                 try {
                                     context.startActivity(intent)
-                                } catch (e: Exception) {
-                                    // Fallback if no map handler installed
-                                }
+                                } catch (_: Exception) {}
                             }
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = "NAVIGATE ->",
-                            color = BrutalOrange,
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Black
+                            text = "Navigate",
+                            color = DeepSeekBlueLight,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 }
@@ -219,11 +218,12 @@ fun PlaceCard(
 
                 Column(
                     modifier = Modifier
-                        .padding(top = 12.dp)
+                        .padding(top = 10.dp)
                         .fillMaxWidth()
-                        .border(1.5.dp, BrutalNeonGreen, RoundedCornerShape(8.dp))
-                        .background(BrutalDarkSurface, RoundedCornerShape(8.dp))
-                        .padding(12.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(DeepSeekCard)
+                        .border(1.dp, DeepSeekBorder, RoundedCornerShape(8.dp))
+                        .padding(10.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -231,77 +231,49 @@ fun PlaceCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "FIELD PHRASEBOOK // ${dietCard.languageName}",
-                            color = BrutalNeonGreen,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 10.sp
+                            text = "Dietary Phrase: ${dietCard.languageName}",
+                            color = DeepSeekGreen,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold
                         )
                         Box(
                             modifier = Modifier
-                                .clip(CircleShape)
-                                .background(BrutalBlack)
-                                .border(1.dp, BrutalWhite, CircleShape)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(DeepSeekSurface)
+                                .border(1.dp, DeepSeekBorder, RoundedCornerShape(4.dp))
                                 .clickable {
                                     val fullPhrase = "${dietCard.headlinePhrase}\n${dietCard.detailedExplanation}"
                                     clipboardManager.setText(AnnotatedString(fullPhrase))
                                     copied = true
                                 }
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
                             Text(
-                                text = if (copied) "COPIED" else "COPY",
-                                color = BrutalWhite,
-                                fontFamily = FontFamily.Monospace,
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Black
+                                text = if (copied) "Copied" else "Copy",
+                                color = DeepSeekTextSecondary,
+                                fontSize = 10.sp
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
                         text = dietCard.headlinePhrase,
-                        color = BrutalWhite,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Black,
+                        color = DeepSeekTextPrimary,
+                        fontWeight = FontWeight.SemiBold,
                         fontSize = 13.sp,
                         lineHeight = 18.sp
                     )
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
                         text = dietCard.detailedExplanation,
-                        color = BrutalGray,
-                        fontFamily = FontFamily.Monospace,
+                        color = DeepSeekTextSecondary,
                         fontSize = 11.sp,
                         lineHeight = 16.sp
                     )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text(
-                        text = "ALLERGENS & RESTRICTIONS TO DECLARE:",
-                        color = BrutalOrange,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Black,
-                        fontSize = 9.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        dietCard.allergensToAvoid.forEach { allergen ->
-                            BrutalCircularStamp(text = allergen, color = BrutalRed)
-                        }
-                    }
                 }
             }
         }
@@ -309,21 +281,24 @@ fun PlaceCard(
 }
 
 @Composable
-fun BrutalCircularStamp(text: String, color: Color) {
+fun ModernBadge(text: String, color: Color) {
     Box(
         modifier = Modifier
-            .clip(CircleShape)
-            .background(BrutalBlack)
-            .border(1.5.dp, color, CircleShape)
-            .padding(horizontal = 8.dp, vertical = 3.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .background(color.copy(alpha = 0.12f))
+            .border(1.dp, color.copy(alpha = 0.3f), RoundedCornerShape(4.dp))
+            .padding(horizontal = 6.dp, vertical = 2.dp)
     ) {
         Text(
             text = text,
             color = color,
-            fontSize = 9.sp,
-            fontFamily = FontFamily.Monospace,
-            fontWeight = FontWeight.Black,
-            letterSpacing = 0.5.sp
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Medium
         )
     }
+}
+
+@Composable
+fun BrutalCircularStamp(text: String, color: Color) {
+    ModernBadge(text = text, color = color)
 }

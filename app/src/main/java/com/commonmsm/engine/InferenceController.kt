@@ -246,51 +246,60 @@ class InferenceController(private val context: Context) {
 
         when (intent) {
             QueryIntent.TRAVEL_PLACES -> {
-                val city = places.firstOrNull()?.city ?: "the city"
-                sentences.add("### Top Curated Places in $city [1]")
-                sentences.add("Based on offline OpenStreetMap and Overture spatial data, here are the highest-rated vegan and plant-based recommendations:")
-                places.take(4).forEachIndexed { i, p ->
-                    val diet = if (p.isStrictlyVegan) "100% Dedicated Plant-Based" else "Extensive Vegan Options"
-                    val addressStr = p.address ?: "Central district"
-                    sentences.add("• **${p.name}** [1] — $diet. Known for ${p.cuisine ?: "specialty cuisine"}. Located at $addressStr. Open ${p.openingHours ?: "daily"}.")
+                val city = places.firstOrNull()?.city ?: "Local Area"
+                sentences.add("### Recommended Places in $city [1]\n")
+                places.take(5).forEach { p ->
+                    val diet = if (p.isStrictlyVegan) "Dedicated vegan" else "Vegan options available"
+                    val addressStr = p.address?.let { ", $it" } ?: ""
+                    val hours = p.openingHours?.let { " | Open: $it" } ?: ""
+                    sentences.add("• **${p.name}** [1] - $diet (${p.cuisine ?: "Food"}$addressStr$hours)")
                 }
-                sentences.add("These venues were ranked locally using fame scores, cross-referenced reviews, and verified dietary tags [1].")
             }
 
             QueryIntent.CRYPTO_EIP_SPECS -> {
-                sentences.add("### Ethereum & Cryptographic Specification Analysis [1]")
                 if (specs.isNotEmpty()) {
                     val mainEip = specs.first()
-                    sentences.add("According to official specifications, **EIP-${mainEip.eipNumber}: ${mainEip.title}** is currently marked **${mainEip.status}** and associated with **${mainEip.networkUpgrade ?: "Consensus Specs"}** [1].")
-                    sentences.add(mainEip.summary + " [1]")
+                    val upgradeInfo = mainEip.networkUpgrade?.let { " ($it)" } ?: ""
+                    sentences.add("### EIP-${mainEip.eipNumber}: ${mainEip.title} [1]\n")
+                    sentences.add("**Status:** ${mainEip.status}$upgradeInfo [1]\n\n${mainEip.summary} [1]")
                     if (specs.size > 1) {
                         val secondary = specs[1]
-                        sentences.add("\n**Comparison with EIP-${secondary.eipNumber}** [2]:")
-                        sentences.add("While EIP-${secondary.eipNumber} focuses on ${secondary.summary.take(120)}... [2], EIP-${mainEip.eipNumber} operates natively at the protocol level.")
+                        val secUpgrade = secondary.networkUpgrade?.let { " ($it)" } ?: ""
+                        sentences.add("\n### EIP-${secondary.eipNumber}: ${secondary.title} [2]\n")
+                        sentences.add("**Status:** ${secondary.status}$secUpgrade [2]\n\n${secondary.summary} [2]")
                     }
                 } else if (query.contains("falcon", ignoreCase = true) || query.contains("dilithium", ignoreCase = true) || query.contains("post-quantum", ignoreCase = true)) {
-                    sentences.add("In post-quantum cryptography, **ML-DSA (Dilithium)** and **Falcon** represent the primary lattice-based signature algorithms standardized by NIST [1].")
-                    sentences.add("Key architectural trade-off for blockchain runtimes like Ethereum:")
-                    sentences.add("1. **Signature Size:** Falcon produces compact signatures of ~666 bytes, compared to ML-DSA's ~2,420 bytes [1]. This provides significant gas and calldata savings.")
-                    sentences.add("2. **Verification Complexity:** ML-DSA relies strictly on modular integer arithmetic, making EVM verification straightforward. Falcon requires high-precision floating-point arithmetic (FFT-based trapdoor sampling), requiring specialized EVM precompiles [1].")
+                    sentences.add("### Post-Quantum Signatures: ML-DSA vs Falcon [1]\n")
+                    sentences.add("NIST standardized two primary lattice-based signature algorithms for post-quantum cryptography [1]:\n")
+                    sentences.add("• **Falcon-512**: Produces ~666-byte signatures. Smaller signatures reduce calldata overhead, but signing requires high-precision floating-point trapdoor sampling [1].\n")
+                    sentences.add("• **ML-DSA-44 (Dilithium)**: Produces ~2,420-byte signatures. It uses modular integer polynomial arithmetic, which is simpler to verify in constant time on general-purpose hardware [1].")
+                } else if (sources.isNotEmpty()) {
+                    val topSource = sources.first()
+                    sentences.add("### ${topSource.title} [1]\n")
+                    sentences.add(topSource.snippet.trim() + " [1]")
                 } else {
-                    sentences.add("Offline cryptographic specification verified against local repository [1].")
+                    sentences.add("No cryptographic specifications found matching the query in the local repository.")
                 }
             }
 
             QueryIntent.ENCYCLOPEDIC_RESEARCH, QueryIntent.REASONING_SYNTHESIS -> {
-                sentences.add("### Comprehensive Offline Synthesis")
                 if (sources.isNotEmpty()) {
                     val topSource = sources.first()
-                    sentences.add("Drawing from local encyclopedic knowledge for **${topSource.title}** [1]:")
-                    sentences.add(topSource.snippet + " [1]")
+                    sentences.add("### ${topSource.title} [1]\n")
+                    sentences.add(topSource.snippet.trim() + " [1]\n")
                     if (sources.size > 1) {
-                        sentences.add("Furthermore, cross-referencing **${sources[1].title}** [2] indicates key structural interplay across these concepts.")
+                        val second = sources[1]
+                        sentences.add("### ${second.title} [2]\n")
+                        sentences.add(second.snippet.trim() + " [2]\n")
+                    }
+                    if (sources.size > 2) {
+                        val third = sources[2]
+                        sentences.add("### ${third.title} [3]\n")
+                        sentences.add(third.snippet.trim() + " [3]\n")
                     }
                 } else {
-                    sentences.add("Analysis complete based on local knowledge bases.")
+                    sentences.add("No matching entries found in the local database for this query.")
                 }
-                sentences.add("Conclusion: The synthesis confirms rigorous alignment between local ground-truth passages and theoretical principles.")
             }
         }
 

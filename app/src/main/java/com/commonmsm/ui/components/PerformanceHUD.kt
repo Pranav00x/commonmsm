@@ -27,8 +27,9 @@ fun PerformanceHUD(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .border(2.dp, BrutalBorder, RoundedCornerShape(12.dp))
-            .background(BrutalDarkSurface)
+            .clip(RoundedCornerShape(12.dp))
+            .background(DeepSeekSurface)
+            .border(1.dp, DeepSeekBorder, RoundedCornerShape(12.dp))
             .padding(12.dp)
     ) {
         Row(
@@ -37,77 +38,74 @@ fun PerformanceHUD(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "TELEMETRY // ON-DEVICE EXECUTION",
-                color = BrutalGray,
-                fontSize = 10.sp,
-                fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.sp
+                text = "On-Device Execution Stats",
+                color = DeepSeekTextSecondary,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (stats.deviceTempCelsius != null) {
                     Text(
-                        text = "${stats.deviceTempCelsius.toInt()}°C // ${stats.thermalStatus ?: "NOMINAL"}",
-                        color = if ((stats.deviceTempCelsius ?: 0f) > 42f) BrutalRed else BrutalNeonGreen,
-                        fontSize = 9.sp,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Black
+                        text = "${stats.deviceTempCelsius.toInt()}°C",
+                        color = if ((stats.deviceTempCelsius ?: 0f) > 42f) DeepSeekRed else DeepSeekGreen,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                 }
                 Box(
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background(if ((stats.deviceTempCelsius ?: 0f) > 42f) BrutalRed else BrutalNeonGreen)
-                        .size(8.dp)
+                        .background(if ((stats.deviceTempCelsius ?: 0f) > 42f) DeepSeekRed else DeepSeekGreen)
+                        .size(7.dp)
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
-        // 4 Circular Gauges in a Row
+        // 4 Modern Stat Badges
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             CircularGaugeItem(
-                label = "TPS",
+                label = "Speed",
                 displayValue = String.format("%.1f", stats.tokensPerSecond),
                 unit = "t/s",
                 progress = (stats.tokensPerSecond / 40f).coerceIn(0.05f, 1f),
-                indicatorColor = if (stats.tokensPerSecond >= 15f) BrutalNeonGreen else BrutalOrange
+                indicatorColor = if (stats.tokensPerSecond >= 15f) DeepSeekGreen else DeepSeekBlue
             )
 
             CircularGaugeItem(
-                label = "TTFT",
+                label = "First Token",
                 displayValue = "${stats.timeToFirstTokenMs}",
                 unit = "ms",
                 progress = (1f - (stats.timeToFirstTokenMs / 3000f)).coerceIn(0.1f, 1f),
-                indicatorColor = BrutalBlue
+                indicatorColor = DeepSeekBlueLight
             )
 
             CircularGaugeItem(
-                label = "RAM",
+                label = "Memory",
                 displayValue = "${stats.memoryUsedMb}",
                 unit = "MB",
                 progress = (stats.memoryUsedMb / 12000f).coerceIn(0.05f, 1f),
-                indicatorColor = BrutalYellow
+                indicatorColor = DeepSeekAmber
             )
 
             CircularGaugeItem(
-                label = if (stats.moeCacheHitRate != null) "HIT" else "TOTAL",
+                label = if (stats.moeCacheHitRate != null) "Cache Hit" else "Latency",
                 displayValue = if (stats.moeCacheHitRate != null)
                     "${(stats.moeCacheHitRate * 100).toInt()}%"
                 else
                     String.format("%.1fs", stats.totalTimeMs / 1000f),
-                unit = if (stats.moeCacheHitRate != null) "cache" else "sec",
+                unit = if (stats.moeCacheHitRate != null) "hit" else "total",
                 progress = if (stats.moeCacheHitRate != null)
                     stats.moeCacheHitRate.toFloat().coerceIn(0.1f, 1f)
                 else
                     0.85f,
-                indicatorColor = if (stats.moeCacheHitRate != null) BrutalNeonGreen else BrutalWhite
+                indicatorColor = if (stats.moeCacheHitRate != null) DeepSeekGreen else DeepSeekTextPrimary
             )
         }
     }
@@ -127,35 +125,31 @@ fun CircularGaugeItem(
     ) {
         Box(
             modifier = Modifier
-                .size(64.dp)
+                .size(56.dp)
                 .clip(CircleShape)
-                .background(BrutalBlack)
-                .border(2.dp, BrutalBorder, CircleShape),
+                .background(DeepSeekCard)
+                .border(1.dp, DeepSeekBorder, CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            // Circular progress ring (solid color, zero gradient)
             CircularProgressIndicator(
                 progress = { progress },
-                modifier = Modifier.size(54.dp),
+                modifier = Modifier.size(46.dp),
                 color = indicatorColor,
-                trackColor = BrutalDarkGray,
-                strokeWidth = 4.dp
+                trackColor = DeepSeekBorder,
+                strokeWidth = 3.dp
             )
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = displayValue,
-                    color = BrutalWhite,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.Black,
+                    color = DeepSeekTextPrimary,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 11.sp
                 )
                 Text(
                     text = unit,
-                    color = BrutalGray,
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 8.sp,
-                    fontWeight = FontWeight.Bold
+                    color = DeepSeekTextMuted,
+                    fontSize = 8.sp
                 )
             }
         }
@@ -164,11 +158,9 @@ fun CircularGaugeItem(
 
         Text(
             text = label,
-            color = BrutalGray,
-            fontFamily = FontFamily.Monospace,
-            fontSize = 9.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 0.5.sp
+            color = DeepSeekTextSecondary,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Normal
         )
     }
 }

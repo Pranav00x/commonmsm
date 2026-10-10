@@ -11,7 +11,7 @@ object LlamaEngineBridge {
         try {
             System.loadLibrary("commonmsm_native")
             isNativeLoaded = true
-        } catch (e: UnsatisfiedLinkError) {
+        } catch (_: Throwable) {
             isNativeLoaded = false
         }
     }

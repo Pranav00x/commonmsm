@@ -9,12 +9,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,8 +38,8 @@ fun FlashcardView(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight(0.88f)
-            .border(2.dp, BrutalBorder, RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
-        color = BrutalBlack,
+            .border(1.dp, DeepSeekBorder, RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+        color = DeepSeekBg,
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
     ) {
         Column(
@@ -56,95 +56,85 @@ fun FlashcardView(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         modifier = Modifier
-                            .size(10.dp)
+                            .size(8.dp)
                             .clip(CircleShape)
-                            .background(BrutalNeonGreen)
+                            .background(DeepSeekGreen)
                     )
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "SM-2 TACTICAL FLASHCARDS",
-                        color = BrutalWhite,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Black,
-                        fontSize = 14.sp
+                        text = "Spaced Repetition Flashcards",
+                        color = DeepSeekTextPrimary,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp
                     )
                 }
 
                 Box(
                     modifier = Modifier
-                        .size(36.dp)
+                        .size(32.dp)
                         .clip(CircleShape)
-                        .background(BrutalDarkSurface)
-                        .border(1.5.dp, BrutalBorder, CircleShape)
+                        .background(DeepSeekSurface)
+                        .border(1.dp, DeepSeekBorder, CircleShape)
                         .clickable { onDismiss() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Close",
-                        tint = BrutalWhite,
-                        modifier = Modifier.size(18.dp)
+                        tint = DeepSeekTextSecondary,
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
-            HorizontalDivider(color = BrutalBorder, thickness = 2.dp)
             Spacer(modifier = Modifier.height(12.dp))
+            HorizontalDivider(color = DeepSeekBorder, thickness = 1.dp)
+            Spacer(modifier = Modifier.height(10.dp))
 
-            // Stats Pill Row
+            // Stats Badges
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                BrutalCircularStamp(text = "TOTAL: ${stats.totalCount}", color = BrutalWhite)
-                BrutalCircularStamp(text = "DUE: ${stats.dueCount}", color = BrutalNeonGreen)
-                BrutalCircularStamp(text = "MASTERED: ${stats.masteredCount}", color = BrutalBlue)
-                BrutalCircularStamp(text = "EF: ${String.format("%.2f", stats.averageEaseFactor)}", color = BrutalYellow)
+                ModernBadge(text = "Total: ${stats.totalCount}", color = DeepSeekTextSecondary)
+                ModernBadge(text = "Due: ${stats.dueCount}", color = DeepSeekGreen)
+                ModernBadge(text = "Mastered: ${stats.masteredCount}", color = DeepSeekBlueLight)
+                ModernBadge(text = "EF: ${String.format("%.2f", stats.averageEaseFactor)}", color = DeepSeekAmber)
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             if (cards.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .border(2.dp, BrutalBorder, RoundedCornerShape(12.dp))
-                        .background(BrutalDarkSurface, RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(DeepSeekSurface)
+                        .border(1.dp, DeepSeekBorder, RoundedCornerShape(12.dp))
                         .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "NO FLASHCARDS IN QUEUE",
-                            color = BrutalWhite,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Black,
+                            text = "No flashcards in queue",
+                            color = DeepSeekTextSecondary,
+                            fontWeight = FontWeight.SemiBold,
                             fontSize = 14.sp
                         )
                         Spacer(modifier = Modifier.height(12.dp))
-                        Box(
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .background(BrutalBlack)
-                                .border(1.5.dp, BrutalNeonGreen, CircleShape)
-                                .clickable {
-                                    ResearchFlashcardEngine.resetDeck()
-                                    cards = ResearchFlashcardEngine.getAllCards()
-                                    currentIndex = 0
-                                    stats = ResearchFlashcardEngine.getDeckStats()
-                                }
-                                .padding(horizontal = 14.dp, vertical = 8.dp)
+                        Button(
+                            onClick = {
+                                ResearchFlashcardEngine.resetDeck()
+                                cards = ResearchFlashcardEngine.getAllCards()
+                                currentIndex = 0
+                                stats = ResearchFlashcardEngine.getDeckStats()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = DeepSeekBlue, contentColor = Color.White),
+                            shape = RoundedCornerShape(8.dp)
                         ) {
-                            Text(
-                                text = "RELOAD PRESET DECK",
-                                color = BrutalNeonGreen,
-                                fontFamily = FontFamily.Monospace,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Black
-                            )
+                            Text("Reload Preset Deck", fontSize = 12.sp)
                         }
                     }
                 }
@@ -156,114 +146,90 @@ fun FlashcardView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .border(2.dp, BrutalBorder, RoundedCornerShape(12.dp))
-                        .background(BrutalDarkSurface, RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(DeepSeekSurface)
+                        .border(1.dp, DeepSeekBorder, RoundedCornerShape(12.dp))
                         .padding(18.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Card Metadata Header
                     Column {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            BrutalCircularStamp(text = currentCard.category, color = BrutalOrange)
+                            ModernBadge(text = currentCard.category, color = DeepSeekBlueLight)
                             Text(
-                                text = "CARD ${currentIndex + 1} / ${cards.size}",
-                                color = BrutalGray,
-                                fontFamily = FontFamily.Monospace,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold
+                                text = "Card ${currentIndex + 1} of ${cards.size}",
+                                color = DeepSeekTextMuted,
+                                fontSize = 12.sp
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "INTERVAL: ${currentCard.intervalDays}D  •  REPS: ${currentCard.repetitions}  •  EF: ${String.format("%.2f", currentCard.easeFactor)}",
-                            color = BrutalGray,
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
+                            text = "Interval: ${currentCard.intervalDays}d • Repetitions: ${currentCard.repetitions} • EF: ${String.format("%.2f", currentCard.easeFactor)}",
+                            color = DeepSeekTextMuted,
+                            fontSize = 11.sp
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Question Block
                         Text(
-                            text = "QUESTION:",
-                            color = BrutalNeonGreen,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 11.sp,
-                            letterSpacing = 1.sp
+                            text = "Question",
+                            color = DeepSeekBlueLight,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 12.sp
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             text = currentCard.question,
-                            color = BrutalWhite,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Black,
+                            color = DeepSeekTextPrimary,
+                            fontWeight = FontWeight.SemiBold,
                             fontSize = 15.sp,
-                            lineHeight = 21.sp
+                            lineHeight = 22.sp
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Answer Block (Animated)
+                        // Answer Block
                         AnimatedVisibility(visible = isRevealed) {
                             Column {
-                                HorizontalDivider(color = BrutalBorder, thickness = 1.dp)
+                                HorizontalDivider(color = DeepSeekBorder, thickness = 1.dp)
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
-                                    text = "ANSWER & SPECIFICATION:",
-                                    color = BrutalBlue,
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Black,
-                                    fontSize = 11.sp,
-                                    letterSpacing = 1.sp
+                                    text = "Answer",
+                                    color = DeepSeekGreen,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 12.sp
                                 )
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
                                     text = currentCard.answer,
-                                    color = BrutalWhite,
-                                    fontFamily = FontFamily.Monospace,
-                                    fontSize = 13.sp,
-                                    lineHeight = 18.sp
+                                    color = DeepSeekTextSecondary,
+                                    fontSize = 14.sp,
+                                    lineHeight = 20.sp
                                 )
                             }
                         }
                     }
 
-                    // Reveal Toggle Button
+                    // Reveal Button or Grading Buttons
                     if (!isRevealed) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(BrutalBlack)
-                                .border(1.5.dp, BrutalWhite, RoundedCornerShape(8.dp))
-                                .clickable { isRevealed = true }
-                                .padding(vertical = 12.dp),
-                            contentAlignment = Alignment.Center
+                        Button(
+                            onClick = { isRevealed = true },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = DeepSeekBlue, contentColor = Color.White),
+                            shape = RoundedCornerShape(8.dp)
                         ) {
-                            Text(
-                                text = "REVEAL ANSWER ->",
-                                color = BrutalWhite,
-                                fontFamily = FontFamily.Monospace,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Black
-                            )
+                            Text("Reveal Answer", fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
                         }
                     } else {
-                        // SM-2 Quality Score Evaluation Matrix
                         Column {
                             Text(
-                                text = "SM-2 RETENTION SCORE:",
-                                color = BrutalGray,
-                                fontFamily = FontFamily.Monospace,
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Black,
+                                text = "Rate Retention (SM-2)",
+                                color = DeepSeekTextMuted,
+                                fontSize = 11.sp,
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
                             Spacer(modifier = Modifier.height(8.dp))
@@ -271,186 +237,124 @@ fun FlashcardView(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                // AGAIN (Score 1)
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(CircleShape)
-                                        .background(BrutalBlack)
-                                        .border(1.5.dp, BrutalRed, CircleShape)
-                                        .clickable {
-                                            ResearchFlashcardEngine.gradeCard(currentCard, 1)
-                                            stats = ResearchFlashcardEngine.getDeckStats()
-                                            isRevealed = false
-                                            currentIndex = (currentIndex + 1) % cards.size
-                                        }
-                                        .padding(vertical = 8.dp),
-                                    contentAlignment = Alignment.Center
+                                GradeButton(
+                                    label = "Again",
+                                    color = DeepSeekRed,
+                                    modifier = Modifier.weight(1f)
                                 ) {
-                                    Text(
-                                        text = "AGAIN (1)",
-                                        color = BrutalRed,
-                                        fontFamily = FontFamily.Monospace,
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.Black
-                                    )
+                                    ResearchFlashcardEngine.gradeCard(currentCard, 1)
+                                    stats = ResearchFlashcardEngine.getDeckStats()
+                                    isRevealed = false
+                                    currentIndex = (currentIndex + 1) % cards.size
                                 }
 
-                                // HARD (Score 3)
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(CircleShape)
-                                        .background(BrutalBlack)
-                                        .border(1.5.dp, BrutalYellow, CircleShape)
-                                        .clickable {
-                                            ResearchFlashcardEngine.gradeCard(currentCard, 3)
-                                            stats = ResearchFlashcardEngine.getDeckStats()
-                                            isRevealed = false
-                                            currentIndex = (currentIndex + 1) % cards.size
-                                        }
-                                        .padding(vertical = 8.dp),
-                                    contentAlignment = Alignment.Center
+                                GradeButton(
+                                    label = "Hard",
+                                    color = DeepSeekAmber,
+                                    modifier = Modifier.weight(1f)
                                 ) {
-                                    Text(
-                                        text = "HARD (3)",
-                                        color = BrutalYellow,
-                                        fontFamily = FontFamily.Monospace,
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.Black
-                                    )
+                                    ResearchFlashcardEngine.gradeCard(currentCard, 3)
+                                    stats = ResearchFlashcardEngine.getDeckStats()
+                                    isRevealed = false
+                                    currentIndex = (currentIndex + 1) % cards.size
                                 }
 
-                                // GOOD (Score 4)
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(CircleShape)
-                                        .background(BrutalBlack)
-                                        .border(1.5.dp, BrutalBlue, CircleShape)
-                                        .clickable {
-                                            ResearchFlashcardEngine.gradeCard(currentCard, 4)
-                                            stats = ResearchFlashcardEngine.getDeckStats()
-                                            isRevealed = false
-                                            currentIndex = (currentIndex + 1) % cards.size
-                                        }
-                                        .padding(vertical = 8.dp),
-                                    contentAlignment = Alignment.Center
+                                GradeButton(
+                                    label = "Good",
+                                    color = DeepSeekBlue,
+                                    modifier = Modifier.weight(1f)
                                 ) {
-                                    Text(
-                                        text = "GOOD (4)",
-                                        color = BrutalBlue,
-                                        fontFamily = FontFamily.Monospace,
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.Black
-                                    )
+                                    ResearchFlashcardEngine.gradeCard(currentCard, 4)
+                                    stats = ResearchFlashcardEngine.getDeckStats()
+                                    isRevealed = false
+                                    currentIndex = (currentIndex + 1) % cards.size
                                 }
 
-                                // EASY (Score 5)
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(CircleShape)
-                                        .background(BrutalBlack)
-                                        .border(1.5.dp, BrutalNeonGreen, CircleShape)
-                                        .clickable {
-                                            ResearchFlashcardEngine.gradeCard(currentCard, 5)
-                                            stats = ResearchFlashcardEngine.getDeckStats()
-                                            isRevealed = false
-                                            currentIndex = (currentIndex + 1) % cards.size
-                                        }
-                                        .padding(vertical = 8.dp),
-                                    contentAlignment = Alignment.Center
+                                GradeButton(
+                                    label = "Easy",
+                                    color = DeepSeekGreen,
+                                    modifier = Modifier.weight(1f)
                                 ) {
-                                    Text(
-                                        text = "EASY (5)",
-                                        color = BrutalNeonGreen,
-                                        fontFamily = FontFamily.Monospace,
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.Black
-                                    )
+                                    ResearchFlashcardEngine.gradeCard(currentCard, 5)
+                                    stats = ResearchFlashcardEngine.getDeckStats()
+                                    isRevealed = false
+                                    currentIndex = (currentIndex + 1) % cards.size
                                 }
                             }
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-                // Bottom Deck Controls
+                // Bottom Navigation
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(BrutalDarkSurface)
-                            .border(1.5.dp, BrutalBorder, CircleShape)
-                            .clickable {
-                                if (currentIndex > 0) {
-                                    currentIndex--
-                                    isRevealed = false
-                                }
-                            }
-                            .padding(horizontal = 14.dp, vertical = 6.dp)
-                    ) {
-                        Text(
-                            text = "<- PREV",
-                            color = BrutalWhite,
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Black
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(BrutalDarkSurface)
-                            .border(1.5.dp, BrutalBorder, CircleShape)
-                            .clickable {
-                                ResearchFlashcardEngine.resetDeck()
-                                cards = ResearchFlashcardEngine.getAllCards()
-                                currentIndex = 0
+                    TextButton(
+                        onClick = {
+                            if (currentIndex > 0) {
+                                currentIndex--
                                 isRevealed = false
-                                stats = ResearchFlashcardEngine.getDeckStats()
                             }
-                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                        },
+                        enabled = currentIndex > 0
                     ) {
-                        Text(
-                            text = "RESET PRESETS",
-                            color = BrutalGray,
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Text("Previous", color = if (currentIndex > 0) DeepSeekTextPrimary else DeepSeekTextMuted)
                     }
 
-                    Box(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(BrutalDarkSurface)
-                            .border(1.5.dp, BrutalBorder, CircleShape)
-                            .clickable {
-                                if (currentIndex < cards.size - 1) {
-                                    currentIndex++
-                                    isRevealed = false
-                                }
-                            }
-                            .padding(horizontal = 14.dp, vertical = 6.dp)
+                    TextButton(
+                        onClick = {
+                            ResearchFlashcardEngine.resetDeck()
+                            cards = ResearchFlashcardEngine.getAllCards()
+                            currentIndex = 0
+                            isRevealed = false
+                            stats = ResearchFlashcardEngine.getDeckStats()
+                        }
                     ) {
-                        Text(
-                            text = "NEXT ->",
-                            color = BrutalWhite,
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Black
-                        )
+                        Text("Reset Deck", color = DeepSeekTextMuted, fontSize = 11.sp)
+                    }
+
+                    TextButton(
+                        onClick = {
+                            if (currentIndex < cards.size - 1) {
+                                currentIndex++
+                                isRevealed = false
+                            }
+                        },
+                        enabled = currentIndex < cards.size - 1
+                    ) {
+                        Text("Next", color = if (currentIndex < cards.size - 1) DeepSeekTextPrimary else DeepSeekTextMuted)
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun GradeButton(
+    label: String,
+    color: Color,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(color.copy(alpha = 0.15f))
+            .border(1.dp, color.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
+            .clickable { onClick() }
+            .padding(vertical = 8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = label,
+            color = color,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }

@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 #include <mutex>
+#include <algorithm>
 #include <android/log.h>
 #include "llama_wrapper.h"
 
@@ -30,10 +31,10 @@ Java_com_commonmsm_engine_LlamaEngineBridge_nativeInitEngine(
 
     commonmsm::EngineConfig config;
     config.model_path = std::string(path);
-    config.n_threads = n_threads;
-    config.n_ctx = n_ctx;
+    config.n_threads = std::clamp(static_cast<int>(n_threads), 1, 32);
+    config.n_ctx = std::clamp(static_cast<int>(n_ctx), 128, 32768);
     config.enable_moe_streaming = enable_moe_streaming;
-    config.moe_cache_mb = static_cast<size_t>(moe_cache_mb);
+    config.moe_cache_mb = (moe_cache_mb > 0 && moe_cache_mb <= 32768) ? static_cast<size_t>(moe_cache_mb) : 4096;
 
     env->ReleaseStringUTFChars(model_path, path);
 

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.speech.RecognizerIntent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,9 +20,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -122,9 +126,8 @@ fun ChatScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(BrutalBlack)
-                    .border(width = 0.dp, color = BrutalBlack)
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .background(DeepSeekBg)
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -132,130 +135,107 @@ fun ChatScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "COMMONMSM",
-                            color = BrutalWhite,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 18.sp,
-                            letterSpacing = (-0.5).sp
-                        )
+                        // DeepSeek Style Logo Avatar
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                                .background(DeepSeekBlue),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "M",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        }
+
                         Spacer(modifier = Modifier.width(10.dp))
 
-                        // Circular Status Pill (No Gradients, Solid Border)
+                        Text(
+                            text = "CommonMSM",
+                            color = DeepSeekTextPrimary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp,
+                            letterSpacing = (-0.3).sp
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        // Offline Status Pill
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .clip(CircleShape)
-                                .background(BrutalBlack)
-                                .border(1.5.dp, BrutalNeonGreen, CircleShape)
-                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(DeepSeekGreen.copy(alpha = 0.12f))
+                                .border(1.dp, DeepSeekGreen.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
                         ) {
                             Box(
                                 modifier = Modifier
                                     .size(6.dp)
                                     .clip(CircleShape)
-                                    .background(BrutalNeonGreen)
+                                    .background(DeepSeekGreen)
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
+                            Spacer(modifier = Modifier.width(5.dp))
                             Text(
-                                text = "OFFLINE",
-                                color = BrutalNeonGreen,
+                                text = "Offline",
+                                color = DeepSeekGreen,
                                 fontSize = 10.sp,
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = 1.sp
+                                fontWeight = FontWeight.SemiBold
                             )
                         }
 
                         Spacer(modifier = Modifier.width(6.dp))
 
-                        // Circular Engine Mode Toggle Pill
+                        // Engine Mode Switcher Pill
                         var isMoEMode by remember { mutableStateOf(inferenceController.isMoEActive()) }
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .clip(CircleShape)
-                                .background(BrutalDarkSurface)
-                                .border(1.5.dp, if (isMoEMode) BrutalOrange else BrutalBlue, CircleShape)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(DeepSeekSurface)
+                                .border(1.dp, DeepSeekBorder, RoundedCornerShape(12.dp))
                                 .clickable {
                                     isMoEMode = !isMoEMode
                                     inferenceController.setMoEActive(isMoEMode)
                                 }
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
                         ) {
                             Text(
-                                text = if (isMoEMode) "MoE: DEEP" else "SLM: FAST",
-                                color = if (isMoEMode) BrutalOrange else BrutalBlue,
-                                fontSize = 9.sp,
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = 0.5.sp
+                                text = if (isMoEMode) "DeepMoE" else "Fast 3B",
+                                color = if (isMoEMode) DeepSeekBlueLight else DeepSeekTextSecondary,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Medium
                             )
                         }
                     }
 
-                    // Circular Action Buttons (Flashcards + Notebook + Settings)
+                    // Top Action Buttons
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(38.dp)
-                                .clip(CircleShape)
-                                .background(BrutalDarkSurface)
-                                .border(2.dp, BrutalBorder, CircleShape)
-                                .clickable {
-                                    showFlashcards = true
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "SM2",
-                                color = BrutalNeonGreen,
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Black,
-                                fontSize = 11.sp
-                            )
-                        }
+                        IconButtonSmall(
+                            text = "SM2",
+                            onClick = { showFlashcards = true }
+                        )
 
-                        Box(
-                            modifier = Modifier
-                                .size(38.dp)
-                                .clip(CircleShape)
-                                .background(BrutalDarkSurface)
-                                .border(2.dp, BrutalBorder, CircleShape)
-                                .clickable {
-                                    savedSessions = DatabaseManager.getRecentSessions(30)
-                                    showNotebook = true
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Default.MenuBook,
-                                contentDescription = "Notebook",
-                                tint = BrutalWhite,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
+                        IconButtonIcon(
+                            icon = Icons.AutoMirrored.Filled.MenuBook,
+                            contentDescription = "History",
+                            onClick = {
+                                savedSessions = DatabaseManager.getRecentSessions(30)
+                                showNotebook = true
+                            }
+                        )
 
-                        Box(
-                            modifier = Modifier
-                                .size(38.dp)
-                                .clip(CircleShape)
-                                .background(BrutalDarkSurface)
-                                .border(2.dp, BrutalBorder, CircleShape)
-                                .clickable { onOpenSettings() },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Default.Settings,
-                                contentDescription = "Config",
-                                tint = BrutalWhite,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
+                        IconButtonIcon(
+                            icon = Icons.Default.Settings,
+                            contentDescription = "Settings",
+                            onClick = { onOpenSettings() }
+                        )
                     }
                 }
             }
@@ -264,41 +244,39 @@ fun ChatScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(BrutalBlack)
-                    .padding(12.dp)
+                    .background(DeepSeekBg)
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
-                // Brutalist Circular Quick Chips
+                // Quick Suggestion Chips (Horizontal Scroll)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState())
-                        .padding(bottom = 10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    CircularBrutalChip("NEAR ME (GNSS)") { sendQuery("Find the best vegan places near me using offline GNSS") }
-                    CircularBrutalChip("CRISPR VS PRIME") { sendQuery("Compare CRISPR-Cas9 and Prime Editing for targeted genetic modification") }
-                    CircularBrutalChip("ROMAN CONCRETE") { sendQuery("Why did ancient Roman maritime concrete exhibit greater longevity in seawater than modern Portland cement?") }
-                    CircularBrutalChip("BRONZE AGE COLLAPSE") { sendQuery("What were the primary hypotheses explaining the Late Bronze Age Collapse around 1200 BCE?") }
-                    CircularBrutalChip("LISBON VEGAN") { sendQuery("Tell me the best vegan restaurants in Lisbon") }
-                    CircularBrutalChip("EIP-7702 // 4337") { sendQuery("Compare EIP-7702 and ERC-4337 for account abstraction") }
-                    CircularBrutalChip("FALCON VS ML-DSA") { sendQuery("Compare Falcon and ML-DSA post-quantum signature schemes for Ethereum") }
-                    CircularBrutalChip("EIP-4844 BLOBS") { sendQuery("How does EIP-4844 reduce Layer 2 rollup transaction costs?") }
-                    CircularBrutalChip("PBS // ePBS") { sendQuery("What are the centralization trade-offs of Proposer-Builder Separation (PBS)?") }
-                    CircularBrutalChip("TOKYO VEGAN") { sendQuery("Find the best vegan restaurants in Tokyo") }
+                    ModernSuggestionPill("CRISPR vs Prime Editing") { sendQuery("Compare CRISPR-Cas9 and Prime Editing for targeted genetic modification") }
+                    ModernSuggestionPill("Roman Concrete") { sendQuery("Why did ancient Roman maritime concrete exhibit greater longevity in seawater than modern Portland cement?") }
+                    ModernSuggestionPill("Late Bronze Age Collapse") { sendQuery("What were the primary hypotheses explaining the Late Bronze Age Collapse around 1200 BCE?") }
+                    ModernSuggestionPill("Lisbon Vegan Cafes") { sendQuery("Tell me the best vegan restaurants in Lisbon") }
+                    ModernSuggestionPill("EIP-7702 vs ERC-4337") { sendQuery("Compare EIP-7702 and ERC-4337 for account abstraction") }
+                    ModernSuggestionPill("Falcon vs ML-DSA") { sendQuery("Compare Falcon and ML-DSA post-quantum signature schemes for Ethereum") }
+                    ModernSuggestionPill("EIP-4844 Blobs") { sendQuery("How does EIP-4844 reduce Layer 2 rollup transaction costs?") }
+                    ModernSuggestionPill("Near Me (Offline GNSS)") { sendQuery("Find the best vegan places near me using offline GNSS") }
                 }
 
-                // Real-time Dynamic Query Auto-Complete Suggestions
+                // Autocomplete Suggestions
                 val suggestions = remember(inputText) { QuerySuggestEngine.getSuggestions(inputText) }
                 if (suggestions.isNotEmpty()) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .horizontalScroll(rememberScrollState())
-                            .padding(bottom = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            .padding(bottom = 6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         suggestions.forEach { sugg ->
-                            CircularBrutalChip(">> $sugg") {
+                            ModernSuggestionPill(sugg) {
                                 inputText = ""
                                 sendQuery(sugg)
                             }
@@ -306,40 +284,54 @@ fun ChatScreen(
                     }
                 }
 
-                // Circular Pill Input Field
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                // DeepSeek Capsule Input Bar
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(DeepSeekCard)
+                        .border(1.dp, if (inputText.isNotBlank()) DeepSeekBlue.copy(alpha = 0.6f) else DeepSeekBorder, RoundedCornerShape(24.dp))
+                        .padding(horizontal = 14.dp, vertical = 4.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(52.dp)
-                            .clip(CircleShape)
-                            .background(BrutalDarkSurface)
-                            .border(2.dp, if (inputText.isNotBlank()) BrutalOrange else BrutalBorder, CircleShape)
-                            .padding(horizontal = 20.dp),
-                        contentAlignment = Alignment.CenterStart
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // DeepSearch Indicator Pill
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(DeepSeekBlue.copy(alpha = 0.15f))
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = "DeepSearch",
+                                color = DeepSeekBlueLight,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        // Text Field
                         TextField(
                             value = inputText,
                             onValueChange = { inputText = it },
                             placeholder = {
                                 Text(
-                                    "QUERY_LOCAL_CORPUS...",
-                                    color = BrutalGray,
-                                    fontSize = 13.sp,
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold
+                                    "Ask a research question...",
+                                    color = DeepSeekTextMuted,
+                                    fontSize = 14.sp
                                 )
                             },
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.weight(1f),
                             colors = TextFieldDefaults.colors(
                                 focusedContainerColor = Color.Transparent,
                                 unfocusedContainerColor = Color.Transparent,
-                                focusedTextColor = BrutalWhite,
-                                unfocusedTextColor = BrutalWhite,
-                                cursorColor = BrutalOrange,
+                                focusedTextColor = DeepSeekTextPrimary,
+                                unfocusedTextColor = DeepSeekTextPrimary,
+                                cursorColor = DeepSeekBlue,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent
                             ),
@@ -347,56 +339,50 @@ fun ChatScreen(
                             keyboardActions = KeyboardActions(onSearch = { sendQuery(inputText) }),
                             singleLine = true
                         )
-                    }
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                        // Voice Mic Button
+                        Box(
+                            modifier = Modifier
+                                .size(34.dp)
+                                .clip(CircleShape)
+                                .clickable {
+                                    val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                        putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                                        putExtra(RecognizerIntent.EXTRA_PROMPT, "Ask offline research query...")
+                                    }
+                                    try {
+                                        speechLauncher.launch(intent)
+                                    } catch (_: Exception) {}
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Default.Mic,
+                                contentDescription = "Voice Input",
+                                tint = DeepSeekTextSecondary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
 
-                    // Solid Circular Mic Button
-                    Box(
-                        modifier = Modifier
-                            .size(52.dp)
-                            .clip(CircleShape)
-                            .background(BrutalDarkSurface)
-                            .border(2.dp, BrutalBorder, CircleShape)
-                            .clickable {
-                                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                                    putExtra(RecognizerIntent.EXTRA_PROMPT, "SPEAK_LOCAL_QUERY...")
-                                }
-                                try {
-                                    speechLauncher.launch(intent)
-                                } catch (e: Exception) {
-                                    // Fallback if offline STT not installed
-                                }
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            Icons.Default.Mic,
-                            contentDescription = "Voice Input",
-                            tint = BrutalWhite,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
+                        Spacer(modifier = Modifier.width(4.dp))
 
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    // Solid Circular Send Button
-                    Box(
-                        modifier = Modifier
-                            .size(52.dp)
-                            .clip(CircleShape)
-                            .background(if (inputText.isNotBlank() && !isGenerating) BrutalOrange else BrutalDarkSurface)
-                            .border(2.dp, if (inputText.isNotBlank() && !isGenerating) BrutalWhite else BrutalBorder, CircleShape)
-                            .clickable(enabled = inputText.isNotBlank() && !isGenerating) { sendQuery(inputText) },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            Icons.Default.ArrowForward,
-                            contentDescription = "Run",
-                            tint = if (inputText.isNotBlank() && !isGenerating) BrutalBlack else BrutalGray,
-                            modifier = Modifier.size(22.dp)
-                        )
+                        // Circular Send Button
+                        val canSend = inputText.isNotBlank() && !isGenerating
+                        Box(
+                            modifier = Modifier
+                                .size(34.dp)
+                                .clip(CircleShape)
+                                .background(if (canSend) DeepSeekBlue else DeepSeekBorder)
+                                .clickable(enabled = canSend) { sendQuery(inputText) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "Send",
+                                tint = if (canSend) Color.White else DeepSeekTextMuted,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -405,75 +391,92 @@ fun ChatScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(BrutalBlack)
+                .background(DeepSeekBg)
                 .padding(innerPadding)
         ) {
             if (messages.isEmpty()) {
-                // Brutalist Empty State
+                // DeepSeek Style Welcoming Hero Empty State
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(24.dp),
+                        .padding(horizontal = 20.dp, vertical = 24.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Circular Hero Core
+                    // Logo Avatar
                     Box(
                         modifier = Modifier
-                            .size(80.dp)
+                            .size(64.dp)
                             .clip(CircleShape)
-                            .background(BrutalDarkSurface)
-                            .border(3.dp, BrutalOrange, CircleShape),
+                            .background(DeepSeekBlue.copy(alpha = 0.15f))
+                            .border(1.5.dp, DeepSeekBlue.copy(alpha = 0.4f), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "MSM",
-                            color = BrutalOrange,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 20.sp
+                            text = "M",
+                            color = DeepSeekBlueLight,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 28.sp
                         )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "COMMONMSM // EDGE ENGINE",
-                        color = BrutalWhite,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Black,
-                        fontSize = 16.sp,
-                        letterSpacing = 1.sp
+                        text = "CommonMSM",
+                        color = DeepSeekTextPrimary,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp,
+                        letterSpacing = (-0.5).sp
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
-                        text = "100% AIR-GAPPED HARDWARE SYNTHESIS",
-                        color = BrutalGray,
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
+                        text = "Offline Information & Research Engine",
+                        color = DeepSeekTextSecondary,
+                        fontSize = 14.sp
                     )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // 4 Clean Prompt Cards
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        HeroPromptCard(
+                            title = "Compare CRISPR-Cas9 and Prime Editing",
+                            subtitle = "Genetics & Molecular Biology",
+                            onClick = { sendQuery("Compare CRISPR-Cas9 and Prime Editing for targeted genetic modification") }
+                        )
+
+                        HeroPromptCard(
+                            title = "Why Roman concrete lasted in seawater",
+                            subtitle = "Material Science & Ancient History",
+                            onClick = { sendQuery("Why did ancient Roman maritime concrete exhibit greater longevity in seawater than modern Portland cement?") }
+                        )
+
+                        HeroPromptCard(
+                            title = "Compare EIP-7702 and ERC-4337",
+                            subtitle = "Ethereum Protocol Specifications",
+                            onClick = { sendQuery("Compare EIP-7702 and ERC-4337 for account abstraction") }
+                        )
+
+                        HeroPromptCard(
+                            title = "Find vegan restaurants in Lisbon",
+                            subtitle = "Local Venue Discovery & Dietary Tags",
+                            onClick = { sendQuery("Tell me the best vegan restaurants in Lisbon") }
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    // Industrial Specs Card
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .border(2.dp, BrutalBorder, RoundedCornerShape(12.dp))
-                            .background(BrutalDarkSurface, RoundedCornerShape(12.dp))
-                            .padding(16.dp)
-                    ) {
-                        Column {
-                            BrutalSpecRow(tag = "CORPUS_PLACES", value = "21.1M POIs (OSM+OVERTURE)")
-                            BrutalSpecRow(tag = "CORPUS_WIKI", value = "2.0M FINEWIKI FTS5")
-                            BrutalSpecRow(tag = "CORPUS_SPECS", value = "1,208 EIPs / NIST PQC")
-                            BrutalSpecRow(tag = "NETWORK_PERMISSION", value = "NONE (KERNEL ENFORCED)")
-                            BrutalSpecRow(tag = "MAX_STORAGE", value = "50.0 GB HARD LIMIT")
-                        }
-                    }
+                    Text(
+                        text = "100% Air-Gapped • No Internet Permission Declared",
+                        color = DeepSeekTextMuted,
+                        fontSize = 11.sp
+                    )
                 }
             } else {
                 LazyColumn(
@@ -485,9 +488,9 @@ fun ChatScreen(
                 ) {
                     items(messages) { msg ->
                         if (msg.isUser) {
-                            UserBrutalBubble(msg.text)
+                            UserMessageBubble(msg.text)
                         } else {
-                            AssistantBrutalCard(
+                            AssistantMessageCard(
                                 msg = msg,
                                 onCitationClick = { selectedCitation = it },
                                 onGenerateFlashcards = { q, text ->
@@ -528,41 +531,102 @@ fun ChatScreen(
 }
 
 @Composable
-private fun CircularBrutalChip(text: String, onClick: () -> Unit) {
+private fun ModernSuggestionPill(text: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
-            .clip(CircleShape)
-            .background(BrutalDarkSurface)
-            .border(1.5.dp, BrutalBorder, CircleShape)
+            .clip(RoundedCornerShape(16.dp))
+            .background(DeepSeekSurface)
+            .border(1.dp, DeepSeekBorder, RoundedCornerShape(16.dp))
             .clickable { onClick() }
-            .padding(horizontal = 14.dp, vertical = 7.dp)
+            .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Text(
             text = text,
-            color = BrutalWhite,
-            fontFamily = FontFamily.Monospace,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Black,
-            letterSpacing = 0.5.sp
+            color = DeepSeekTextSecondary,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium
         )
     }
 }
 
 @Composable
-private fun BrutalSpecRow(tag: String, value: String) {
-    Row(
+private fun HeroPromptCard(
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit
+) {
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 3.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .clip(RoundedCornerShape(10.dp))
+            .background(DeepSeekSurface)
+            .border(1.dp, DeepSeekBorder, RoundedCornerShape(10.dp))
+            .clickable { onClick() }
+            .padding(horizontal = 14.dp, vertical = 10.dp)
     ) {
-        Text(text = "• $tag", color = BrutalGray, fontFamily = FontFamily.Monospace, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-        Text(text = value, color = BrutalWhite, fontFamily = FontFamily.Monospace, fontSize = 10.sp, fontWeight = FontWeight.Black)
+        Column {
+            Text(
+                text = title,
+                color = DeepSeekTextPrimary,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = subtitle,
+                color = DeepSeekTextMuted,
+                fontSize = 11.sp
+            )
+        }
     }
 }
 
 @Composable
-private fun UserBrutalBubble(text: String) {
+private fun IconButtonSmall(text: String, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(34.dp)
+            .clip(CircleShape)
+            .background(DeepSeekSurface)
+            .border(1.dp, DeepSeekBorder, CircleShape)
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            color = DeepSeekGreen,
+            fontWeight = FontWeight.Bold,
+            fontSize = 11.sp
+        )
+    }
+}
+
+@Composable
+private fun IconButtonIcon(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(34.dp)
+            .clip(CircleShape)
+            .background(DeepSeekSurface)
+            .border(1.dp, DeepSeekBorder, CircleShape)
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = DeepSeekTextSecondary,
+            modifier = Modifier.size(16.dp)
+        )
+    }
+}
+
+@Composable
+private fun UserMessageBubble(text: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End
@@ -570,202 +634,272 @@ private fun UserBrutalBubble(text: String) {
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.85f)
-                .clip(RoundedCornerShape(12.dp))
-                .background(BrutalDarkSurface)
-                .border(2.dp, BrutalOrange, RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 4.dp, bottomStart = 16.dp, bottomEnd = 16.dp))
+                .background(DeepSeekUserBubble)
+                .border(1.dp, DeepSeekBorder, RoundedCornerShape(topStart = 16.dp, topEnd = 4.dp, bottomStart = 16.dp, bottomEnd = 16.dp))
                 .padding(14.dp)
         ) {
-            Column {
-                Text(
-                    text = "USER_INPUT >>",
-                    color = BrutalOrange,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.Black,
-                    fontSize = 10.sp,
-                    letterSpacing = 1.sp
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = text,
-                    color = BrutalWhite,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp
-                )
-            }
+            Text(
+                text = text,
+                color = DeepSeekTextPrimary,
+                fontSize = 14.sp,
+                lineHeight = 20.sp
+            )
         }
     }
 }
 
 @Composable
-private fun AssistantBrutalCard(
+private fun AssistantMessageCard(
     msg: ChatMessage,
     onCitationClick: (Citation) -> Unit,
     onGenerateFlashcards: (String, String) -> Unit = { _, _ -> }
 ) {
     val update = msg.update
+    var isThoughtExpanded by remember { mutableStateOf(false) }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(BrutalDarkSurface)
-            .border(2.dp, BrutalBorder, RoundedCornerShape(12.dp))
-            .padding(16.dp)
+            .padding(vertical = 4.dp)
     ) {
-        Column {
+        // Assistant Header
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(22.dp)
+                        .clip(CircleShape)
+                        .background(DeepSeekBlue),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "M",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 11.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = "CommonMSM",
+                    color = DeepSeekTextPrimary,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 13.sp
+                )
+
+                Spacer(modifier = Modifier.width(6.dp))
+
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(DeepSeekBlue.copy(alpha = 0.12f))
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                ) {
+                    Text(
+                        text = "RAG",
+                        color = DeepSeekBlueLight,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+
+            if (update?.isComplete == true) {
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(DeepSeekGreen)
+                        .size(6.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // DeepSeek Style Thought Process Collapsible Box
+        val hasSources = update != null && (update.instantPlaces.isNotEmpty() || update.instantSpecs.isNotEmpty() || update.retrievedSources.isNotEmpty())
+        if (hasSources) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(DeepSeekThinkingBg)
+                    .border(1.dp, DeepSeekThinkingBorder, RoundedCornerShape(8.dp))
+                    .clickable { isThoughtExpanded = !isThoughtExpanded }
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+            ) {
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Thought Process",
+                                color = DeepSeekBlueLight,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            val totalItems = (update?.instantPlaces?.size ?: 0) + (update?.instantSpecs?.size ?: 0) + (update?.retrievedSources?.size ?: 0)
+                            Text(
+                                text = "($totalItems sources retrieved)",
+                                color = DeepSeekTextMuted,
+                                fontSize = 11.sp
+                            )
+                        }
+
+                        Icon(
+                            imageVector = if (isThoughtExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                            contentDescription = "Expand",
+                            tint = DeepSeekTextSecondary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+
+                    AnimatedVisibility(visible = isThoughtExpanded) {
+                        Column(modifier = Modifier.padding(top = 8.dp)) {
+                            // Places in Thought Process
+                            if (update.instantPlaces.isNotEmpty()) {
+                                Text(
+                                    text = "Retrieved Places (${update.instantPlaces.size}):",
+                                    color = DeepSeekTextSecondary,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                SpatialRadarView(places = update.instantPlaces)
+                                Spacer(modifier = Modifier.height(6.dp))
+                                update.instantPlaces.take(3).forEach { place ->
+                                    PlaceCard(place = place)
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+
+                            // Specs in Thought Process
+                            if (update.instantSpecs.isNotEmpty()) {
+                                Text(
+                                    text = "Retrieved Specifications (${update.instantSpecs.size}):",
+                                    color = DeepSeekTextSecondary,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                update.instantSpecs.take(3).forEach { spec ->
+                                    EipCard(spec = spec)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Response Body Text
+        if (msg.text.isNotBlank()) {
+            MarkdownRenderer(text = msg.text)
+        } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(vertical = 10.dp)
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(14.dp),
+                    color = DeepSeekBlue,
+                    trackColor = DeepSeekBorder,
+                    strokeWidth = 2.dp
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "Thinking and synthesizing from local knowledge...",
+                    color = DeepSeekTextMuted,
+                    fontSize = 13.sp
+                )
+            }
+        }
+
+        // Citations Row
+        if (update != null && update.report != null && update.report.citations.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = "Citations",
+                color = DeepSeekTextMuted,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(top = 4.dp)
+            ) {
+                update.report.citations.forEach { citation ->
+                    CitationChip(citation = citation, onClick = onCitationClick)
+                }
+            }
+        }
+
+        // Action Toolbar (Flashcards, Copy, HUD)
+        if (msg.text.isNotBlank()) {
+            Spacer(modifier = Modifier.height(10.dp))
+            val clipboardManager = LocalClipboardManager.current
+            var isCopied by remember { mutableStateOf(false) }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "RESPONSE // GROUNDED ENGINE",
-                    color = BrutalGray,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.Black,
-                    fontSize = 10.sp,
-                    letterSpacing = 1.sp
-                )
-
-                if (update?.isComplete == true) {
-                    Box(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(BrutalNeonGreen)
-                            .size(6.dp)
+                // Left side: stats summary
+                if (update != null && update.report != null) {
+                    val stats = update.report.stats
+                    Text(
+                        text = "${String.format("%.1f", stats.tokensPerSecond)} t/s • ${stats.memoryUsedMb}MB RAM",
+                        color = DeepSeekTextMuted,
+                        fontSize = 11.sp
                     )
+                } else {
+                    Spacer(modifier = Modifier.width(1.dp))
                 }
-            }
 
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Instant Verified Places Section
-            if (update != null && update.instantPlaces.isNotEmpty()) {
-                Text(
-                    text = "INSTANT_POI_MATCHES (${update.instantPlaces.size} FOUND)",
-                    color = BrutalOrange,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.Black,
-                    fontSize = 13.sp
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                SpatialRadarView(places = update.instantPlaces)
-                Spacer(modifier = Modifier.height(10.dp))
-                update.instantPlaces.take(3).forEach { place ->
-                    PlaceCard(place = place)
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-
-            // Instant Verified EIP Specifications Section
-            if (update != null && update.instantSpecs.isNotEmpty()) {
-                Text(
-                    text = "FORMAL_SPEC_MATCHES (${update.instantSpecs.size} FOUND)",
-                    color = BrutalOrange,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.Black,
-                    fontSize = 13.sp
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                update.instantSpecs.take(3).forEach { spec ->
-                    EipCard(spec = spec)
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-
-            // Synthesized Body Text
-            if (msg.text.isNotBlank()) {
-                MarkdownRenderer(text = msg.text)
-            } else {
+                // Right side: Copy & Flashcards buttons
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(vertical = 12.dp)
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(16.dp),
-                        color = BrutalOrange,
-                        trackColor = BrutalDarkGray,
-                        strokeWidth = 2.dp
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = "SYNTHESIZING_GROUNDED_EVIDENCE...",
-                        color = BrutalGray,
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-
-            // Verified Citation Pills
-            if (update != null && update.report != null && update.report.citations.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(14.dp))
-                Text(
-                    text = "VERIFIED CITATIONS:",
-                    color = BrutalGray,
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Black,
-                    letterSpacing = 1.sp
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                        .padding(top = 6.dp)
-                ) {
-                    update.report.citations.forEach { citation ->
-                        CitationChip(citation = citation, onClick = onCitationClick)
-                    }
-                }
-            }
-
-            // Brutalist Circular Performance HUD
-            if (update != null && update.report != null) {
-                Spacer(modifier = Modifier.height(16.dp))
-                PerformanceHUD(stats = update.report.stats)
-            }
-
-            if (msg.text.isNotBlank()) {
-                Spacer(modifier = Modifier.height(12.dp))
-                val clipboardManager = LocalClipboardManager.current
-                var isCopied by remember { mutableStateOf(false) }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .clip(CircleShape)
-                            .background(BrutalBlack)
-                            .border(1.5.dp, BrutalBlue, CircleShape)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(DeepSeekSurface)
+                            .border(1.dp, DeepSeekBorder, RoundedCornerShape(6.dp))
                             .clickable {
                                 val query = update?.report?.query ?: "Research Topic"
                                 onGenerateFlashcards(query, msg.text)
                             }
-                            .padding(horizontal = 12.dp, vertical = 7.dp)
+                            .padding(horizontal = 10.dp, vertical = 5.dp)
                     ) {
                         Text(
-                            text = "+ FLASHCARDS",
-                            color = BrutalBlue,
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 0.5.sp
+                            text = "+ Flashcards",
+                            color = DeepSeekBlueLight,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
-
                     Box(
                         modifier = Modifier
-                            .clip(CircleShape)
-                            .background(BrutalBlack)
-                            .border(1.5.dp, if (isCopied) BrutalNeonGreen else BrutalBorder, CircleShape)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(DeepSeekSurface)
+                            .border(1.dp, DeepSeekBorder, RoundedCornerShape(6.dp))
                             .clickable {
                                 val fullReport = if (update?.report != null) {
                                     AirGapExporter.exportToMarkdown(update.report)
@@ -775,27 +909,31 @@ private fun AssistantBrutalCard(
                                 clipboardManager.setText(AnnotatedString(fullReport))
                                 isCopied = true
                             }
-                            .padding(horizontal = 14.dp, vertical = 7.dp)
+                            .padding(horizontal = 10.dp, vertical = 5.dp)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                Icons.Default.ContentCopy,
-                                contentDescription = "Copy Report",
-                                tint = if (isCopied) BrutalNeonGreen else BrutalGray,
-                                modifier = Modifier.size(13.dp)
+                                if (isCopied) Icons.Default.Check else Icons.Default.ContentCopy,
+                                contentDescription = "Copy",
+                                tint = if (isCopied) DeepSeekGreen else DeepSeekTextSecondary,
+                                modifier = Modifier.size(12.dp)
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = if (isCopied) "REPORT COPIED" else "COPY RESEARCH REPORT",
-                                color = if (isCopied) BrutalNeonGreen else BrutalGray,
-                                fontFamily = FontFamily.Monospace,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = 0.5.sp
+                                text = if (isCopied) "Copied" else "Copy",
+                                color = if (isCopied) DeepSeekGreen else DeepSeekTextSecondary,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium
                             )
                         }
                     }
                 }
+            }
+
+            // Performance Telemetry HUD
+            if (update != null && update.report != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                PerformanceHUD(stats = update.report.stats)
             }
         }
     }
