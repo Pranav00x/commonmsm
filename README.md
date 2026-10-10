@@ -357,21 +357,22 @@ The interface uses a minimalist dark theme optimized for OLED displays:
 
 ## 8. Installation and Quick Start
 
-### 8.1. Immediate Quick Start (Bundled Starter Database)
-The app includes a built-in starter database with sample places, Wikipedia entries, and EIP specifications. You can test the application immediately after installation without downloading external databases.
+### 8.1. Immediate Quick Start (Auto-Initializing Database)
+The application automatically creates, indexes, and populates local SQLite databases (`places.db`, `wiki.db`, `crypto.db`) on internal storage the first time the app is launched. You can test the application immediately after installation without manually pushing or downloading any database files.
 
 #### Option A: Pre-Compiled APK Installation
 Download the signed APK directly from GitHub Releases:
-- **Latest Release**: [https://github.com/Pranav00x/commonmsm/releases/latest](https://github.com/Pranav00x/commonmsm/releases/latest)
-- **Asset**: `commonmsm-v1.0.0-release.apk`
+- **Latest Release**: [https://github.com/Pranav00x/commonmsm/releases/tag/v1.1.0](https://github.com/Pranav00x/commonmsm/releases/tag/v1.1.0)
+- **Asset**: `commonmsm-v1.1.0-release.apk`
 - **Integrity Manifest**: `SHA256SUMS.txt`
+- **SHA-256**: `5ec869996d5d5f71d3e79c435f44c2dcd25439e13985dfb6a415f736e3babef4`
 
 ```bash
 # Verify APK integrity
 sha256sum -c SHA256SUMS.txt
 
-# Install via adb
-adb install -r commonmsm-v1.0.0-release.apk
+# Install via adb (no database push needed)
+adb install -r commonmsm-v1.1.0-release.apk
 ```
 
 #### Option B: Building from Source
